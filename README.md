@@ -13,4 +13,5 @@ In synchronized modes, you can specify time offset for each stream.
 1. Install the Tampermonkey extension for [CHROME](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) or [FIREFOX](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
 2. Click here to open the latest version of userscript: [F1TV+](https://github.com/najdek/f1tv_plus/raw/main/f1tv_plus.user.js)
 3. Tampermonkey should detect userscript automatically. Click on "Install".
-You may have to allow website to open popups.
+
+You may have to allow f1tv website to open popups.
