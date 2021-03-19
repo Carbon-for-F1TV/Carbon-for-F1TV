@@ -493,9 +493,9 @@
                 "<a id='sm-btn-popup-alt' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Open popout (alternative mode)'>" +
                 "<span style='display: inline-block; font-size: 12px;'>POPOUT (ALT)</span></a>" +
                 "<a id='sm-btn-frames' role='button' class='btn btn--transparent' style='color: #000; margin: 6px; display: none;' title='Open popout with 3 streams'>" +
-                "<span style='display: inline-block; font-size: 12px;'>MULTI-VIEW</span></a>" +
+                "<span style='display: inline-block; font-size: 12px;'>TRIPLE-VIEW</span></a>" +
                 "<a id='sm-btn-frames-alt' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Open popout with 3 synchronized streams'>" +
-                "<span style='display: inline-block; font-size: 12px;'>MULTI-VIEW</span></a>" +
+                "<span style='display: inline-block; font-size: 12px;'>TRIPLE-VIEW</span></a>" +
                 "<a id='sm-btn-popups-alt' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Open multiple synchronized popout videos'>" +
                 "<span style='display: inline-block; font-size: 12px;'>MULTI-POPOUT</span></a>" +
                 "<a id='sm-btn-theater' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Toggle theater mode'>" +
@@ -653,8 +653,7 @@
                         ".vod-detail-page .container-lg:first-of-type { width: 100%; max-width: 100%; }" +
                         ".vod-detail-page .container-lg:first-of-type .col-xl-10.offset-xl-1 { margin: 0; width: 100%; max-width: 100%; flex: 0 0 100%; }" +
                         ".inset-video-item-container { margin-top: 0 !important; }" +
-                        ".inset-video-item-image-container { max-height: calc(100vh - 100px); }" +
-                        ".header .navbar-dark .nav-link { padding: 0.7rem .5rem; }" +
+                        ".inset-video-item-image-container { max-height: calc(100vh - 120px); }" +
                         ".inset-video-item-play-action-container { width: 100%; }" +
                         ".sticky-header-wrapper.is-menu { margin-bottom: 94px; }" +
                         "</style>" +
