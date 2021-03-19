@@ -6,6 +6,7 @@ The F1TV+ userscript adds some useful functionality to F1TV website:
 - open video in popup in alternative mode (use default HTML5 player)
 - "triple-view" - open popup with 3 synchronized streams (great on monitors with 21:9 aspect ratio)
 - "multi-popout" - open multiple popups with synchronized streams
+
 In synchronized modes, you can specify time offset for each stream.
 
 # Installation
