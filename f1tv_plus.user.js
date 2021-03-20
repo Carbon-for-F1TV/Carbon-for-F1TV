@@ -1,17 +1,19 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      3.0
+// @version      3.1
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
-// @grant        none
+// @grant        GM.xmlHttpRequest
+// @connect      raw.githubusercontent.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdn.jsdelivr.net/npm/hls.js@0.14.17/dist/hls.min.js
 // ==/UserScript==
 (function() {
     'use strict';
-    var smVersion = "3.0";
+    var smVersion = "3.1";
+    var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
 
     if (window.location.hash == "#sm-popup") {
 
@@ -31,16 +33,18 @@
         var smPopupAltHtml = "<div id='sm-popup-alt-container' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 999;'>" +
             "<img style='display: block; margin: 50vh auto auto auto; transform: translateY(-50%);' src='https://f1tv.formula1.com/static/3adbb5b25a6603f282796363a74f8cf3.png'>" +
             "<video id='sm-popup-video' controls muted style='position: fixed; top: 0; left: 0; height: 100%; width: 100%;'></video>" +
-            "<a id='sm-btn-url' role='button' class='btn' style='display: none; position: fixed; top: 0; left: 50%; transform: translateX(-50%); background-color: #000; width: 40px; height: 30px; line-height: 8px; border-radius: 0px 0px 20px 20px;'>" +
+            "<a id='sm-btn-url' role='button' class='sm-btn' style='display: none; position: fixed; top: 0; left: 50%; transform: translateX(-50%); background-color: #000; width: 40px; height: 30px; line-height: 20px; text-align: center; border-radius: 0px 0px 20px 20px;'>" +
             "<span style='border: solid #fff; border-width: 0 3px 3px 0; display: inline-block; padding: 3px; transform: rotate(45deg);'></span>" +
             "<style>" +
+            "body { font-family: Arial; }" +
             "#sm-popup-alt-container:hover #sm-btn-url { display: block !important; }" +
+            ".sm-btn { display: inline-block; cursor: pointer; }" +
             "</style>" +
             "</div>";
-        document.getElementsByTagName("body")[0].innerHTML = smPopupAltHtml;
+        document.getElementsByTagName("html")[0].innerHTML = smPopupAltHtml;
         document.getElementById("sm-btn-url").addEventListener("click", function() {
             var smUrl_entitlement_token = document.cookie.match('(^|;)\\s*entitlement_token\\s*=\\s*([^;]+)')?.pop() || '';
-            var smUrl_ascendon_token = JSON.parse(decodeURIComponent(document.cookie.match('(^|;)\\s*login-session\\s*=\\s*([^;]+)')?.pop() || '')).data.subscriptionToken;
+            //var smUrl_ascendon_token = JSON.parse(decodeURIComponent(document.cookie.match('(^|;)\\s*login-session\\s*=\\s*([^;]+)')?.pop() || '')).data.subscriptionToken;
             var smUrl_contentId = "not_video";
             if (window.location.href.includes("detail/")) {
                 smUrl_contentId = window.location.href.split("detail/")[1].split("/")[0];
@@ -104,7 +108,7 @@
                                 if (smUrlColor_array[title]) {
                                     color = smUrlColor_array[title];
                                 }
-                                var smBtnHtml = "<a id='sm-btn-url-" + title + "' title='" + team[title] + "' role='button' class='btn' data-url='" + url + "' style='border-bottom: 4px solid " + color + "; background-color: #333; color: #fff; font-size: 12px; margin: 8px; padding: 8px 16px; position: relative;'>" +
+                                var smBtnHtml = "<a id='sm-btn-url-" + title + "' title='" + team[title] + "' role='button' class='sm-btn' data-url='" + url + "' style='border-bottom: 4px solid " + color + "; background-color: #333; color: #fff; font-size: 12px; margin: 8px; padding: 8px 16px; position: relative;'>" +
                                     "<span>" + title.replace(/_+/g, ' ').toUpperCase() + "</span></a>";
                                 document.getElementsByClassName(smUrlElement)[0].insertAdjacentHTML("beforeend", smBtnHtml);
                                 document.getElementById("sm-btn-url-" + title).addEventListener("click", function() {
@@ -114,7 +118,7 @@
                                         type: 'get',
                                         dataType: 'json',
                                         headers: {
-                                            "ascendontoken": smUrl_ascendon_token,
+                                            //"ascendontoken": smUrl_ascendon_token,
                                             "entitlementtoken": smUrl_entitlement_token
                                         },
                                         async: true,
@@ -485,6 +489,28 @@
 
         function smLoad() {
 
+
+            GM.xmlHttpRequest({
+                method: "GET",
+                url: smUpdateUrl,
+                onload: function(response) {
+                    var smNewVersion = response.responseText.split("@version")[1].split("\n")[0].replace(/\s/g, "");
+                    if (smNewVersion != smVersion) {
+                        var smUpdateHtml = "<div id='sm-update' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; text-align: center;'>" +
+                            "<div style='background-color: #0000008f; width: 100%; height: 100%; top: 0; left: 0; position: absolute;' onclick='document.getElementById(&apos;sm-update&apos;).outerHTML = &apos;&apos;'></div>" +
+                            "<div style='background-color: #c70000; color: #fff; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; border-radius: 10px; position: absolute;'>" +
+                            "<h3>F1TV+ update is available!</h3>" +
+                            "<p>Installed version: " + smVersion + "<br>" +
+                            "New version: " + smNewVersion + "</p>" +
+                            "<a href='" + smUpdateUrl + "' target='_blank' style='color: #ff0;'>[Click here to get new version]</a>" +
+                            "</div>" +
+                            "</div>";
+                        document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", smUpdateHtml);
+                    }
+                }
+            });
+
+
             var smBtnHtml = "<div id='sm-menu' style='display: none;'>" +
                 "<a id='sm-btn-url' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Get stream URL'>" +
                 "<span style='display: inline-block; font-size: 12px;'>URL</span></a>" +
@@ -517,7 +543,7 @@
 
             document.getElementById("sm-btn-url").addEventListener("click", function() {
                 var smUrl_entitlement_token = document.cookie.match('(^|;)\\s*entitlement_token\\s*=\\s*([^;]+)')?.pop() || '';
-                var smUrl_ascendon_token = JSON.parse(decodeURIComponent(document.cookie.match('(^|;)\\s*login-session\\s*=\\s*([^;]+)')?.pop() || '')).data.subscriptionToken;
+                //var smUrl_ascendon_token = JSON.parse(decodeURIComponent(document.cookie.match('(^|;)\\s*login-session\\s*=\\s*([^;]+)')?.pop() || '')).data.subscriptionToken;
                 var smUrl_contentId = "not_video";
                 if (window.location.href.includes("detail/")) {
                     smUrl_contentId = window.location.href.split("detail/")[1].split("/")[0];
@@ -590,7 +616,7 @@
                                             type: 'get',
                                             dataType: 'json',
                                             headers: {
-                                                "ascendontoken": smUrl_ascendon_token,
+                                                //"ascendontoken": smUrl_ascendon_token,
                                                 "entitlementtoken": smUrl_entitlement_token
                                             },
                                             async: true,
