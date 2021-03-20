@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      3.3b
+// @version      3.3c
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,8 +13,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "3.3b";
-    //updateDescription:Automatically close all windows in sync mode
+    var smVersion = "3.3c";
+    //<updateDescription=Automatically close all windows in sync mode>
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
 
     if (window.location.hash == "#sm-popup") {
@@ -315,7 +315,7 @@
                 url: smUpdateUrl,
                 onload: function(response) {
                     var smNewVersion = response.responseText.split("@version")[1].split("\n")[0].replace(/\s/g, "");
-                    var smNewVersionDesc = response.responseText.split("/updateDescription:")[1].split("\n")[0];
+                    var smNewVersionDesc = response.responseText.split("<updateDescription=")[1].split(">")[0];
                     if (smNewVersion != smVersion) {
                         var smUpdateHtml = "<div id='sm-update' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; text-align: center;'>" +
                             "<div style='background-color: #0000008f; width: 100%; height: 100%; top: 0; left: 0; position: absolute;' onclick='document.getElementById(&apos;sm-update&apos;).outerHTML = &apos;&apos;'></div>" +
