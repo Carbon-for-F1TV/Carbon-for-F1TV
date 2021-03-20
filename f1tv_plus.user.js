@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      3.3a
+// @version      3.3b
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
