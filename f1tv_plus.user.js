@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      3.3d
+// @version      3.3e
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,8 +13,9 @@
 (function() {
     'use strict';
 
-    var smVersion = "3.3d";
-    //<updateDescription>Test<br>- line 1<br>- line 2</updateDescription>
+    var smVersion = "3.3e";
+    //<updateDescription>Changelog:<br>- Updated theater mode</updateDescription>
+
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
 
     if (window.location.hash == "#sm-popup") {
@@ -492,6 +493,7 @@
                         ".inset-video-item-image-container { max-height: calc(100vh - 120px); }" +
                         ".inset-video-item-play-action-container { width: 100%; }" +
                         ".sticky-header-wrapper.is-menu { margin-bottom: 94px; }" +
+                        "nav.navbar { height: auto !important; }" +
                         "</style>" +
                         "</div>";
                     document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", smHtml);
