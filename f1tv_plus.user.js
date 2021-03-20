@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      3.3
+// @version      3.3a
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -12,7 +12,9 @@
 // ==/UserScript==
 (function() {
     'use strict';
-    var smVersion = "3.3";
+
+    var smVersion = "3.3a";
+    //updateDescription:Automatically close all windows in sync mode
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
 
     if (window.location.hash == "#sm-popup") {
@@ -157,7 +159,7 @@
 
         var smSettingsFrameHtml = "<a href='https://github.com/najdek/f1tv_plus' target='_blank' style='color: #bbb; font-size: 12px;'>F1TV+ v" + smVersion + " by Mateusz Najdek</a>" +
             "<div id='sm-offset-settings' style='padding: 10px;'>" +
-            "<p style='color: #ccc'>All windows are synced to Window #1.<br>Use Window #1 to pause/seek all videos.<br>Sync will stop working after closing any video or this window!</p>" +
+            "<p style='color: #ccc'>All windows are synced to Window #1.<br>Use Window #1 to pause/seek all videos.</p>" +
             "<table>" +
             "<tr><th colspan='2'>OFFSETS [ms]</th></tr>";
 
@@ -285,6 +287,23 @@
             smSync();
         }, 500);
 
+        function smCloseAllWindows() {
+            for (let i = 1; i <= smWindowAmount; i++) {
+                if (!smWindow[i].closed) {
+                    smWindow[i].close();
+                }
+            }
+            window.close();
+        }
+        for (let i = 1; i <= smWindowAmount; i++) {
+            smWindow[i].onbeforeunload = function() {
+                smCloseAllWindows();
+            };
+        }
+        window.onbeforeunload = function() {
+            smCloseAllWindows();
+        };
+
 
     } else {
 
@@ -296,6 +315,7 @@
                 url: smUpdateUrl,
                 onload: function(response) {
                     var smNewVersion = response.responseText.split("@version")[1].split("\n")[0].replace(/\s/g, "");
+                    var smNewVersionDesc = response.responseText.split("/updateDescription:")[1].split("\n")[0]
                     if (smNewVersion != smVersion) {
                         var smUpdateHtml = "<div id='sm-update' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; text-align: center;'>" +
                             "<div style='background-color: #0000008f; width: 100%; height: 100%; top: 0; left: 0; position: absolute;' onclick='document.getElementById(&apos;sm-update&apos;).outerHTML = &apos;&apos;'></div>" +
@@ -303,6 +323,7 @@
                             "<h3>F1TV+ update is available!</h3>" +
                             "<p>Installed version: " + smVersion + "<br>" +
                             "New version: " + smNewVersion + "</p>" +
+                            "<p>Update description:<br><span>" + smNewVersionDesc + "</span></p>" +
                             "<a href='" + smUpdateUrl + "' target='_blank' style='color: #ff0;'>[Click here to get new version]</a>" +
                             "</div>" +
                             "</div>";
