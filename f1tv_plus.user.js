@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      3.2
+// @version      3.3
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -12,7 +12,7 @@
 // ==/UserScript==
 (function() {
     'use strict';
-    var smVersion = "3.2";
+    var smVersion = "3.3";
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
 
     if (window.location.hash == "#sm-popup") {
@@ -189,7 +189,7 @@
         document.getElementsByTagName("html")[0].innerHTML = smSettingsFrameHtml;
 
         for (let i = 1; i <= smWindowAmount; i++) {
-            smWindow[i] = window.open(document.location.href.split("#")[0] + "#sm-popup-alt", Date.now(), "width=1280,height=720");
+            smWindow[i] = window.open(document.location.href.split("#")[0].replace("action=play", "") + "#sm-popup-alt", Date.now(), "width=1280,height=720");
             smWindow[i].addEventListener('load', (event) => {
                 // dirty fix to keep new window names
                 for (let n = 0; n < 30; n++) {
@@ -441,18 +441,18 @@
             });
 
             document.getElementById("sm-btn-popup").addEventListener("click", function() {
-                window.open(document.location.href + "#sm-popup", Date.now(), "width=1280,height=720");
+                window.open(document.location.href.replace("action=play", "") + "#sm-popup", Date.now(), "width=1280,height=720");
                 $("video").trigger("pause");
             });
             document.getElementById("sm-btn-popup-alt").addEventListener("click", function() {
-                window.open(document.location.href + "#sm-popup-alt", Date.now(), "width=1280,height=720");
+                window.open(document.location.href.replace("action=play", "") + "#sm-popup-alt", Date.now(), "width=1280,height=720");
                 $("video").trigger("pause");
             });
             document.getElementById("sm-btn-popups-alt").addEventListener("click", function() {
                 var smWindowAmountInput = prompt("How many windows [2-10]?", "2");
                 smWindowAmountInput = parseInt(smWindowAmountInput);
                 if ((smWindowAmountInput >= 2) && (smWindowAmountInput <= 10)) {
-                    window.open(document.location.href + "#sm-popups-alt-" + smWindowAmountInput, Date.now(), "width=500,height=500");
+                    window.open(document.location.href.replace("action=play", "") + "#sm-popups-alt-" + smWindowAmountInput, Date.now(), "width=500,height=" + (450 + (34 * parseInt(smWindowAmountInput))));
                     $("video").trigger("pause");
                 } else {
                     alert("error: wrong input");
