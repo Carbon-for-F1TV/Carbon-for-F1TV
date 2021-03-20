@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      3.1
+// @version      3.2
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -12,7 +12,7 @@
 // ==/UserScript==
 (function() {
     'use strict';
-    var smVersion = "3.1";
+    var smVersion = "3.2";
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
 
     if (window.location.hash == "#sm-popup") {
@@ -38,7 +38,7 @@
             "<style>" +
             "body { font-family: Arial; }" +
             "#sm-popup-alt-container:hover #sm-btn-url { display: block !important; }" +
-            ".sm-btn { display: inline-block; cursor: pointer; }" +
+            ".sm-btn { display: inline-block; cursor: pointer; border-radius: 4px; }" +
             "</style>" +
             "</div>";
         document.getElementsByTagName("html")[0].innerHTML = smPopupAltHtml;
@@ -180,13 +180,13 @@
             "<div id='sm-sync-status-text' style='text-align: center; font-size: 24px; color: #ff0000;'></div>" +
             "</div>" +
             "<style>" +
-            "body { background-color: #000; color: #fff; }" +
+            "body { background-color: #000; color: #fff; font-family: Arial; margin: 0; }" +
             "td,th { padding: 4px 20px; }" +
             "</style>";
 
         var smWindow = [];
 
-        document.getElementsByTagName("body")[0].innerHTML = smSettingsFrameHtml;
+        document.getElementsByTagName("html")[0].innerHTML = smSettingsFrameHtml;
 
         for (let i = 1; i <= smWindowAmount; i++) {
             smWindow[i] = window.open(document.location.href.split("#")[0] + "#sm-popup-alt", Date.now(), "width=1280,height=720");
@@ -286,205 +286,6 @@
         }, 500);
 
 
-
-
-    } else if (window.location.hash == "#sm-frames-alt") {
-
-        var smFramesAltHtml = "<div style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 999;'>" +
-            "<img style='display: block; margin: 50vh auto auto auto; transform: translateY(-50%);' src='https://f1tv.formula1.com/static/3adbb5b25a6603f282796363a74f8cf3.png'>" +
-            "<div id='sm-frames-status' style='position: fixed; width: 100%; top: 0; left: 0; text-align: center; z-index: 1002; font-size: 20px; color: #ccc;'></div>" +
-            "</div>" +
-            "<div style='position: relative; top: 0; left: 0; width: 100%; height: 100%;'>" +
-            "<div style='position: fixed; z-index: 1001; top: 0; left: 0;'><a style='color: #ccc;' onclick='document.getElementById(&apos;sm-offset-settings&apos;).style.display = &apos;block&apos;;'>[SYNC MENU]</a></div>" +
-            "<div id='sm-offset-settings' style='display: none; position: fixed; z-index: 1002; top: 0; left: 0; background-color: #000; padding: 4px; border-radius: 4px;'><table>" +
-            "<tr><td>OFFSETS [ms]</td><td style='text-align: right;'><a onclick='document.getElementById(&apos;sm-offset-settings&apos;).style.display = &apos;none&apos;;'>[X]</a></td></tr>" +
-            "<tr><td>Frame #1 (left)</td><td><input id='sm-offset-1' type='number' step='250' value='0' style='width: 80px;'></td></tr>" +
-            "<tr><td>Frame #2 (top right)</td><td><input id='sm-offset-2' type='number' step='250' value='0' style='width: 80px;'></td></tr>" +
-            "<tr><td>Frame #3 (bottom right)</td><td><input id='sm-offset-3' type='number' step='250' value='0' style='width: 80px;'></td></tr>" +
-            "<tr><td>Max desync [ms]</td><td><input id='sm-maxdesync' type='number' step='10' value='300' min='0' max='3000' style='width: 80px;'></td></tr>" +
-            "</table></div>" +
-            "<iframe id='sm-frame-1' style='height: 100%; width: 66.6%; top: 0; left: 0; position: absolute; z-index: 1001;'></iframe>" +
-            "<iframe id='sm-frame-2' style='height: 50%; width: 33.3%; bottom: 50%; left: 66.6%; position: absolute; z-index: 1001;'></iframe>" +
-            "<iframe id='sm-frame-3' style='height: 50%; width: 33.3%; top: 50%; left: 66.6%; position: absolute; z-index: 1001;'></iframe>" +
-            "</div>" +
-            "<style>" +
-            "body {overflow: hidden;}" +
-            ".inset-video-item-image-container {position: fixed !important; z-index: 1000; top: 0; left: 0; height: 100%; width: 100%; background-color: #000;}" +
-            ".inset-video-item-image {margin-top: 50vh; transform: translateY(-50%);}" +
-            ".inset-video-item-play-action-container {width: 100%;}" +
-            "</style>";
-        document.getElementsByTagName("body")[0].innerHTML = smFramesAltHtml;
-        document.getElementById("sm-frame-1").src = window.location.href.split("#")[0] + "#sm-popup-alt";
-        document.getElementById("sm-frame-2").src = window.location.href.split("#")[0] + "#sm-popup-alt";
-        document.getElementById("sm-frame-3").src = window.location.href.split("#")[0] + "#sm-popup-alt";
-
-        function smResizeFrames() {
-            if ((jQuery("body").height() / jQuery("body").width()) > 0.3819) {
-                jQuery("#sm-frame-1").css("width", "66.6%");
-                jQuery("#sm-frame-2").css("width", "33.3%");
-                jQuery("#sm-frame-3").css("width", "33.3%");
-                jQuery("#sm-frame-1").css("top", ((jQuery("body").height() - (jQuery("#sm-frame-1").width() * 0.5625)) / 2) + "px");
-                jQuery("#sm-frame-1").height(jQuery("#sm-frame-1").width() * 0.5625);
-                jQuery("#sm-frame-2").height(jQuery("#sm-frame-2").width() * 0.5625);
-                jQuery("#sm-frame-3").height(jQuery("#sm-frame-3").width() * 0.5625);
-                jQuery("#sm-frame-1").css("right", "");
-                jQuery("#sm-frame-1").css("left", "0");
-            } else {
-                jQuery("#sm-frame-1").css("top", "0");
-                jQuery("#sm-frame-1").height("100%");
-                jQuery("#sm-frame-2").height("50%");
-                jQuery("#sm-frame-3").height("50%");
-                jQuery("#sm-frame-1").width(jQuery("#sm-frame-1").height() * 1.7778);
-                jQuery("#sm-frame-2").width(jQuery("#sm-frame-2").height() * 1.7778);
-                jQuery("#sm-frame-3").width(jQuery("#sm-frame-3").height() * 1.7778);
-                jQuery("#sm-frame-1").css("right", "33.3%");
-                jQuery("#sm-frame-1").css("left", "");
-            }
-        }
-        smResizeFrames();
-        window.addEventListener("resize", smResizeFrames);
-
-
-        function smPauseAll() {
-            var video1 = document.getElementById("sm-frame-1").contentDocument || document.getElementById("sm-frame-1").contentWindow.document;
-            var video2 = document.getElementById("sm-frame-2").contentDocument || document.getElementById("sm-frame-2").contentWindow.document;
-            var video3 = document.getElementById("sm-frame-3").contentDocument || document.getElementById("sm-frame-3").contentWindow.document;
-            video1.getElementById("sm-popup-video").pause();
-            video2.getElementById("sm-popup-video").pause();
-            video3.getElementById("sm-popup-video").pause();
-
-        }
-
-        function smResumeAllWhenReady() {
-            var video1 = document.getElementById("sm-frame-1").contentDocument || document.getElementById("sm-frame-1").contentWindow.document;
-            var video2 = document.getElementById("sm-frame-2").contentDocument || document.getElementById("sm-frame-2").contentWindow.document;
-            var video3 = document.getElementById("sm-frame-3").contentDocument || document.getElementById("sm-frame-3").contentWindow.document;
-            var smReadyCheck = setInterval(function() {
-                var smNotReady = 0;
-                if (video1.getElementById("sm-popup-video").readyState != 4) {
-                    smNotReady += 1;
-                }
-                if (video2.getElementById("sm-popup-video").readyState != 4) {
-                    smNotReady += 1;
-                }
-                if (video3.getElementById("sm-popup-video").readyState != 4) {
-                    smNotReady += 1;
-                }
-                if (smNotReady == 0) {
-                    video1.getElementById("sm-popup-video").play();
-                    video2.getElementById("sm-popup-video").play();
-                    video3.getElementById("sm-popup-video").play();
-                    document.getElementById("sm-frames-status").innerHTML = "";
-                    clearInterval(smReadyCheck);
-                }
-            }, 100);
-        }
-
-        function smSync() {
-            var time = [];
-            var offset = [];
-            var timeDiff = [];
-            var smSynced = 0;
-            var video1 = document.getElementById("sm-frame-1").contentDocument || document.getElementById("sm-frame-1").contentWindow.document;
-            var video2 = document.getElementById("sm-frame-2").contentDocument || document.getElementById("sm-frame-2").contentWindow.document;
-            var video3 = document.getElementById("sm-frame-3").contentDocument || document.getElementById("sm-frame-3").contentWindow.document;
-
-            if (video1.getElementById("sm-popup-video").readyState == 0) {
-                return;
-            }
-            if (video2.getElementById("sm-popup-video").readyState == 0) {
-                return;
-            }
-            if (video3.getElementById("sm-popup-video").readyState == 0) {
-                return;
-            }
-            if (video1.getElementById("sm-popup-video").paused) {
-                if (video2.getElementById("sm-popup-video").paused != true) {
-                    video2.getElementById("sm-popup-video").pause()
-                }
-                if (video3.getElementById("sm-popup-video").paused != true) {
-                    video3.getElementById("sm-popup-video").pause()
-                }
-                return;
-            }
-            offset[1] = parseInt(document.getElementById("sm-offset-1").value) / 1000 || 0;
-            offset[2] = parseInt(document.getElementById("sm-offset-2").value) / 1000 || 0;
-            offset[3] = parseInt(document.getElementById("sm-offset-3").value) / 1000 || 0;
-            var maxDesync = parseInt(document.getElementById("sm-maxdesync").value) / 1000 || 0.3;
-            time[1] = video1.getElementById("sm-popup-video").currentTime - offset[1];
-            time[2] = video2.getElementById("sm-popup-video").currentTime - offset[2];
-            time[3] = video3.getElementById("sm-popup-video").currentTime - offset[3];
-            timeDiff[2] = Math.abs(time[1] - time[2]);
-            timeDiff[3] = Math.abs(time[1] - time[3]);
-            console.log(timeDiff);
-            if (timeDiff[2] > maxDesync) {
-                smPauseAll();
-                video2.getElementById("sm-popup-video").currentTime = time[1] + offset[2];
-                smSynced += 1;
-            }
-            if (timeDiff[3] > maxDesync) {
-                smPauseAll();
-                video3.getElementById("sm-popup-video").currentTime = time[1] + offset[3];
-                smSynced += 1;
-            }
-            if (smSynced > 0) {
-                document.getElementById("sm-frames-status").innerHTML = "Syncing...";
-                smResumeAllWhenReady();
-            }
-        }
-        var smSyncLoop = setInterval(function() {
-            smSync();
-        }, 500);
-
-
-
-    } else if (window.location.hash == "#sm-frames") {
-
-        var smFramesHtml = "<div style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 999;'>" +
-            "<img style='display: block; margin: 50vh auto auto auto; transform: translateY(-50%);' src='https://f1tv.formula1.com/static/3adbb5b25a6603f282796363a74f8cf3.png'>" +
-            "</div>" +
-            "<div style='position: relative; top: 0; left: 0; width: 100%; height: 100%;'>" +
-            "<iframe id='sm-frame-1' style='height: 100%; width: 66.6%; top: 0; left: 0; position: absolute; z-index: 1001;'></iframe>" +
-            "<iframe id='sm-frame-2' style='height: 50%; width: 33.3%; bottom: 50%; left: 66.6%; position: absolute; z-index: 1001;'></iframe>" +
-            "<iframe id='sm-frame-3' style='height: 50%; width: 33.3%; top: 50%; left: 66.6%; position: absolute; z-index: 1001;'></iframe>" +
-            "</div>" +
-            "<style>" +
-            "body {overflow: hidden;}" +
-            ".inset-video-item-image-container {position: fixed !important; z-index: 1000; top: 0; left: 0; height: 100%; width: 100%; background-color: #000;}" +
-            ".inset-video-item-image {margin-top: 50vh; transform: translateY(-50%);}" +
-            ".inset-video-item-play-action-container {width: 100%;}" +
-            "</style>";
-        document.getElementsByTagName("body")[0].innerHTML = smFramesHtml;
-        document.getElementById("sm-frame-1").src = window.location.href.split("#")[0] + "#sm-popup";
-        document.getElementById("sm-frame-2").src = window.location.href.split("#")[0] + "#sm-popup";
-        document.getElementById("sm-frame-3").src = window.location.href.split("#")[0] + "#sm-popup";
-
-        function smResizeFrames() {
-            if ((jQuery("body").height() / jQuery("body").width()) > 0.3819) {
-                jQuery("#sm-frame-1").css("width", "66.6%");
-                jQuery("#sm-frame-2").css("width", "33.3%");
-                jQuery("#sm-frame-3").css("width", "33.3%");
-                jQuery("#sm-frame-1").css("top", ((jQuery("body").height() - (jQuery("#sm-frame-1").width() * 0.5625)) / 2) + "px");
-                jQuery("#sm-frame-1").height(jQuery("#sm-frame-1").width() * 0.5625);
-                jQuery("#sm-frame-2").height(jQuery("#sm-frame-2").width() * 0.5625);
-                jQuery("#sm-frame-3").height(jQuery("#sm-frame-3").width() * 0.5625);
-                jQuery("#sm-frame-1").css("right", "");
-                jQuery("#sm-frame-1").css("left", "0");
-            } else {
-                jQuery("#sm-frame-1").css("top", "0");
-                jQuery("#sm-frame-1").height("100%");
-                jQuery("#sm-frame-2").height("50%");
-                jQuery("#sm-frame-3").height("50%");
-                jQuery("#sm-frame-1").width(jQuery("#sm-frame-1").height() * 1.7778);
-                jQuery("#sm-frame-2").width(jQuery("#sm-frame-2").height() * 1.7778);
-                jQuery("#sm-frame-3").width(jQuery("#sm-frame-3").height() * 1.7778);
-                jQuery("#sm-frame-1").css("right", "33.3%");
-                jQuery("#sm-frame-1").css("left", "");
-            }
-        }
-        smResizeFrames();
-        window.addEventListener("resize", smResizeFrames);
-
     } else {
 
         function smLoad() {
@@ -518,10 +319,6 @@
                 "<span style='display: inline-block; font-size: 12px;'>POPOUT</span></a>" +
                 "<a id='sm-btn-popup-alt' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Open popout (alternative mode)'>" +
                 "<span style='display: inline-block; font-size: 12px;'>POPOUT (ALT)</span></a>" +
-                "<a id='sm-btn-frames' role='button' class='btn btn--transparent' style='color: #000; margin: 6px; display: none;' title='Open popout with 3 streams'>" +
-                "<span style='display: inline-block; font-size: 12px;'>TRIPLE-VIEW</span></a>" +
-                "<a id='sm-btn-frames-alt' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Open popout with 3 synchronized streams'>" +
-                "<span style='display: inline-block; font-size: 12px;'>TRIPLE-VIEW</span></a>" +
                 "<a id='sm-btn-popups-alt' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Open multiple synchronized popout videos'>" +
                 "<span style='display: inline-block; font-size: 12px;'>MULTI-POPOUT</span></a>" +
                 "<a id='sm-btn-theater' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Toggle theater mode'>" +
@@ -647,16 +444,8 @@
                 window.open(document.location.href + "#sm-popup", Date.now(), "width=1280,height=720");
                 $("video").trigger("pause");
             });
-            document.getElementById("sm-btn-frames").addEventListener("click", function() {
-                window.open(document.location.href + "#sm-frames", Date.now(), "width=1280,height=720");
-                $("video").trigger("pause");
-            });
             document.getElementById("sm-btn-popup-alt").addEventListener("click", function() {
                 window.open(document.location.href + "#sm-popup-alt", Date.now(), "width=1280,height=720");
-                $("video").trigger("pause");
-            });
-            document.getElementById("sm-btn-frames-alt").addEventListener("click", function() {
-                window.open(document.location.href + "#sm-frames-alt", Date.now(), "width=1870,height=760");
                 $("video").trigger("pause");
             });
             document.getElementById("sm-btn-popups-alt").addEventListener("click", function() {
