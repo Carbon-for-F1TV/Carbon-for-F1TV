@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      3.3e
+// @version      3.3f
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,8 +13,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "3.3e";
-    //<updateDescription>Changelog:<br>- Updated theater mode</updateDescription>
+    var smVersion = "3.3f";
+    //<updateDescription></updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
 
@@ -158,8 +158,7 @@
     } else if (window.location.hash.includes("#sm-popups-alt-")) {
         var smWindowAmount = parseInt(window.location.hash.split("#sm-popups-alt-")[1]);
 
-        var smSettingsFrameHtml = "<a href='https://github.com/najdek/f1tv_plus' target='_blank' style='color: #bbb; font-size: 12px;'>F1TV+ v" + smVersion + " by Mateusz Najdek</a>" +
-            "<div id='sm-offset-settings' style='padding: 10px;'>" +
+        var smSettingsFrameHtml = "<div id='sm-offset-settings' style='padding: 10px;'>" +
             "<p style='color: #ccc'>All windows are synced to Window #1.<br>Use Window #1 to pause/seek all videos.</p>" +
             "<table>" +
             "<tr><th colspan='2'>OFFSETS [ms]</th></tr>";
@@ -197,7 +196,7 @@
                 // dirty fix to keep new window names
                 for (let n = 0; n < 30; n++) {
                     setTimeout(function() {
-                        document.title = "F1TV+ v" + smVersion;
+                        document.title = "SYNC MENU";
                         smWindow[i].document.title = "Window #" + i;
                     }, 1000 * n);
                 }
@@ -490,7 +489,7 @@
                         ".vod-detail-page .container-lg:first-of-type { width: 100%; max-width: 100%; }" +
                         ".vod-detail-page .container-lg:first-of-type .col-xl-10.offset-xl-1 { margin: 0; width: 100%; max-width: 100%; flex: 0 0 100%; }" +
                         ".inset-video-item-container { margin-top: 0 !important; }" +
-                        ".inset-video-item-image-container { max-height: calc(100vh - 120px); }" +
+                        ".inset-video-item-image-container { max-height: calc(100vh - 100px); }" +
                         ".inset-video-item-play-action-container { width: 100%; }" +
                         ".sticky-header-wrapper.is-menu { margin-bottom: 94px; }" +
                         "nav.navbar { height: auto !important; }" +
