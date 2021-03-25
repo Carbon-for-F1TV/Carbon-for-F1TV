@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      3.4
+// @version      3.4a
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,7 +13,7 @@
 (function() {
     'use strict';
 
-    var smVersion = "3.4";
+    var smVersion = "3.4a";
     //<updateDescription>Update details:<br>- Added custom controls in multi-popout mode</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
@@ -58,49 +58,6 @@
             "</div>";
         document.getElementsByTagName("html")[0].innerHTML = smPopupAltHtml;
 
-        document.getElementById("sm-volume-slider").addEventListener("input", function(e) {
-            if (e.target.value > 0) {
-                if (document.getElementById("sm-popup-video").muted) {
-                    document.getElementById("sm-popup-video").muted = false;
-                    $("#sm-volume-toggle .volume-high").show();
-                    $("#sm-volume-toggle .volume-muted").hide();
-                }
-                document.getElementById("sm-popup-video").volume = e.target.value / 100;
-                $("#sm-volume-slider").css("opacity", "1");
-            } else {
-                document.getElementById("sm-popup-video").muted = true;
-                $("#sm-volume-toggle .volume-high").hide();
-                $("#sm-volume-toggle .volume-muted").show();
-                document.getElementById("sm-popup-video").volume = 0;
-                $("#sm-volume-slider").css("opacity", "0.5");
-            }
-            console.log(e.target.value);
-            //            document.getElementById("sm-popup-video").volume =
-        });
-        document.getElementById("sm-volume-toggle").addEventListener("click", function() {
-            if (document.getElementById("sm-popup-video").muted) {
-                document.getElementById("sm-popup-video").muted = false;
-                $("#sm-volume-toggle .volume-high").show();
-                $("#sm-volume-toggle .volume-muted").hide();
-                $("#sm-volume-slider").css("opacity", "1");
-                if (document.getElementById("sm-popup-video").volume == 0) {
-                    document.getElementById("sm-popup-video").volume = 1;
-                    document.getElementById("sm-volume-slider").value = 100;
-                }
-            } else {
-                document.getElementById("sm-popup-video").muted = true;
-                $("#sm-volume-toggle .volume-high").hide();
-                $("#sm-volume-toggle .volume-muted").show();
-                $("#sm-volume-slider").css("opacity", "0.5");
-            }
-        });
-        document.getElementById("sm-fullscreen-toggle").addEventListener("click", function() {
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            } else {
-                document.documentElement.requestFullscreen();
-            }
-        });
         document.getElementById("sm-btn-url").addEventListener("click", function() {
             var smUrl_entitlement_token = document.cookie.match('(^|;)\\s*entitlement_token\\s*=\\s*([^;]+)')?.pop() || '';
             //var smUrl_ascendon_token = JSON.parse(decodeURIComponent(document.cookie.match('(^|;)\\s*login-session\\s*=\\s*([^;]+)')?.pop() || '')).data.subscriptionToken;
@@ -211,6 +168,51 @@
         });
         document.getElementById("sm-btn-url").click();
 
+
+        document.getElementById("sm-volume-slider").addEventListener("input", function(e) {
+            if (e.target.value > 0) {
+                if (document.getElementById("sm-popup-video").muted) {
+                    document.getElementById("sm-popup-video").muted = false;
+                    $("#sm-volume-toggle .volume-high").show();
+                    $("#sm-volume-toggle .volume-muted").hide();
+                }
+                document.getElementById("sm-popup-video").volume = e.target.value / 100;
+                $("#sm-volume-slider").css("opacity", "1");
+            } else {
+                document.getElementById("sm-popup-video").muted = true;
+                $("#sm-volume-toggle .volume-high").hide();
+                $("#sm-volume-toggle .volume-muted").show();
+                document.getElementById("sm-popup-video").volume = 0;
+                $("#sm-volume-slider").css("opacity", "0.5");
+            }
+            console.log(e.target.value);
+        });
+        document.getElementById("sm-volume-toggle").addEventListener("click", function() {
+            if (document.getElementById("sm-popup-video").muted) {
+                document.getElementById("sm-popup-video").muted = false;
+                $("#sm-volume-toggle .volume-high").show();
+                $("#sm-volume-toggle .volume-muted").hide();
+                $("#sm-volume-slider").css("opacity", "1");
+                if (document.getElementById("sm-popup-video").volume == 0) {
+                    document.getElementById("sm-popup-video").volume = 1;
+                    document.getElementById("sm-volume-slider").value = 100;
+                }
+            } else {
+                document.getElementById("sm-popup-video").muted = true;
+                $("#sm-volume-toggle .volume-high").hide();
+                $("#sm-volume-toggle .volume-muted").show();
+                $("#sm-volume-slider").css("opacity", "0.5");
+            }
+        });
+        document.getElementById("sm-fullscreen-toggle").addEventListener("click", function() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen();
+            }
+        });
+
+
     } else if (window.location.hash.includes("#sm-popups-alt-")) {
         var smWindowAmount = parseInt(window.location.hash.split("#sm-popups-alt-")[1]);
 
@@ -254,11 +256,12 @@
                     setTimeout(function() {
                         document.title = "SYNC MENU";
                         smWindow[i].document.title = "Window #" + i;
+                        if (i > 1) {
+                            smWindow[i].document.getElementById("sm-video-menu-container").style.display = "block";
+                            smWindow[i].document.getElementById("sm-popup-video").controls = false;
+                        }
                     }, 1000 * n);
-                    if (i > 1) {
-                        smWindow[i].document.getElementById("sm-video-menu-container").style.display = "block";
-                        smWindow[i].document.getElementById("sm-popup-video").controls = false;
-                    }
+ 
                 }
             });
 
