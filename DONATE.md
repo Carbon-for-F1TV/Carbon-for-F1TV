@@ -1,4 +1,4 @@
-## Donations
+## ❤ Donations
 If you like the extension and would like to support me.
 
 - **BTC:** `bc1qumjflpu6w6ydk37xepslfy75ul63qmwe32qem2`

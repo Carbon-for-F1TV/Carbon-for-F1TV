@@ -12,9 +12,12 @@ All in your browser, no external apps needed.
 In multi-popout mode, you can set offset for each video, to keep them perfectly synchronized in case they are hosted out-of-sync (the main feed is usually a few seconds behind other feeds).
 
 ## Installation
-1. Install the Tampermonkey extension for [[CHROME]](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) or [[FIREFOX]](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
-2. Click here to open the latest version of userscript: [[f1tv_plus.user.js]](https://github.com/najdek/f1tv_plus/raw/main/f1tv_plus.user.js)
-3. Tampermonkey should detect userscript automatically. Click on "Install".
+* Install the Tampermonkey extension for your browser:
+  * [Google Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+  * [Microsoft Edge](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
+  * [Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/)
+* Click here to open the latest version of userscript: [[f1tv_plus.user.js]](https://github.com/najdek/f1tv_plus/raw/main/f1tv_plus.user.js)
+* Tampermonkey should detect userscript automatically. Click on "Install".
 
 You may have to allow F1TV website to open popups.
 
@@ -24,7 +27,7 @@ You may have to allow F1TV website to open popups.
 
 ![Screenshot 2](other/screenshot_2.png)
 
-## Donations
+## ❤ Donations
 If you like the extension and would like to support me.
 
 - **BTC:** `bc1qumjflpu6w6ydk37xepslfy75ul63qmwe32qem2`
