@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      3.3f
+// @version      3.4
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,8 +13,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "3.3f";
-    //<updateDescription></updateDescription>
+    var smVersion = "3.4";
+    //<updateDescription>Update details:<br>- Added custom controls in multi-popout mode</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
 
@@ -36,15 +36,71 @@
         var smPopupAltHtml = "<div id='sm-popup-alt-container' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 999;'>" +
             "<img style='display: block; margin: 50vh auto auto auto; transform: translateY(-50%);' src='https://f1tv.formula1.com/static/3adbb5b25a6603f282796363a74f8cf3.png'>" +
             "<video id='sm-popup-video' controls muted style='position: fixed; top: 0; left: 0; height: 100%; width: 100%;'></video>" +
-            "<a id='sm-btn-url' role='button' class='sm-btn' style='display: none; position: fixed; top: 0; left: 50%; transform: translateX(-50%); background-color: #000; width: 40px; height: 30px; line-height: 20px; text-align: center; border-radius: 0px 0px 20px 20px;'>" +
+            "<div id='sm-top-hover' style='position: absolute; top: 0; left: 0; height: 20%; width: 100%;'></div>" +
+            "<div id='sm-video-menu-container' style='display: none; position: absolute; bottom: 0; height: 20%; width: 100%;'>" +
+            "<div id='sm-video-menu' style='display: none; position: absolute; bottom: 0; right: 0; background-color: #000000aa; padding: 0px 10px; border-radius: 20px 0px 0px;'>" +
+            "<div style='display: inline-block;'><input type='range' id='sm-volume-slider' min='0' max='100' value='0' style='height: 32px; width: 120px; margin-right: 8px; opacity: 0.5;'></div>" +
+            "<div id='sm-volume-toggle' style='display: inline-block; cursor: pointer; margin-right: 16px;'>" +
+            "<svg class='volume-high' style='display: none; height: 32px; width: 32px;' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' aria-hidden='true' focusable='false' width='1em' height='1em' style='-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);' preserveAspectRatio='xMidYMid meet' viewBox='0 0 24 24'><path d='M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.84-5 6.7v2.07c4-.91 7-4.49 7-8.77c0-4.28-3-7.86-7-8.77M16.5 12c0-1.77-1-3.29-2.5-4.03V16c1.5-.71 2.5-2.24 2.5-4M3 9v6h4l5 5V4L7 9H3z' fill='#ffffff'/></svg>" +
+            "<svg class='volume-muted' style='height: 32px; width: 32px;' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' aria-hidden='true' focusable='false' width='1em' height='1em' style='-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);' preserveAspectRatio='xMidYMid meet' viewBox='0 0 24 24'><path d='M3 9h4l5-5v16l-5-5H3V9m13.59 3L14 9.41L15.41 8L18 10.59L20.59 8L22 9.41L19.41 12L22 14.59L20.59 16L18 13.41L15.41 16L14 14.59L16.59 12z' fill='#ffffff'/></svg>" +
+            "</div>" +
+            "<div id='sm-fullscreen-toggle' style='display: inline-block; cursor: pointer;'><svg style='height: 32px; width: 32px;' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' aria-hidden='true' focusable='false' width='1em' height='1em' style='-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);' preserveAspectRatio='xMidYMid meet' viewBox='0 0 24 24'><path d='M5 5h5v2H7v3H5V5m9 0h5v5h-2V7h-3V5m3 9h2v5h-5v-2h3v-3m-7 3v2H5v-5h2v3h3z' fill='#ffffff'/></svg></div>" +
+            "</div>" +
+            "</div>" +
+            "<a id='sm-btn-url' role='button' class='sm-btn' style='display: none; position: fixed; top: 0; left: 50%; transform: translateX(-50%); background-color: #000000aa; width: 40px; height: 30px; line-height: 20px; text-align: center; border-radius: 0px 0px 20px 20px;'>" +
             "<span style='border: solid #fff; border-width: 0 3px 3px 0; display: inline-block; padding: 3px; transform: rotate(45deg);'></span>" +
             "<style>" +
             "body { font-family: Arial; }" +
-            "#sm-popup-alt-container:hover #sm-btn-url { display: block !important; }" +
+            "#sm-top-hover:hover ~ #sm-btn-url, #sm-btn-url:hover { display: block !important; }" +
             ".sm-btn { display: inline-block; cursor: pointer; border-radius: 4px; }" +
+            "#sm-video-menu-container:hover #sm-video-menu { display: block !important; }" +
             "</style>" +
             "</div>";
         document.getElementsByTagName("html")[0].innerHTML = smPopupAltHtml;
+
+        document.getElementById("sm-volume-slider").addEventListener("input", function(e) {
+            if (e.target.value > 0) {
+                if (document.getElementById("sm-popup-video").muted) {
+                    document.getElementById("sm-popup-video").muted = false;
+                    $("#sm-volume-toggle .volume-high").show();
+                    $("#sm-volume-toggle .volume-muted").hide();
+                }
+                document.getElementById("sm-popup-video").volume = e.target.value / 100;
+                $("#sm-volume-slider").css("opacity", "1");
+            } else {
+                document.getElementById("sm-popup-video").muted = true;
+                $("#sm-volume-toggle .volume-high").hide();
+                $("#sm-volume-toggle .volume-muted").show();
+                document.getElementById("sm-popup-video").volume = 0;
+                $("#sm-volume-slider").css("opacity", "0.5");
+            }
+            console.log(e.target.value);
+            //            document.getElementById("sm-popup-video").volume =
+        });
+        document.getElementById("sm-volume-toggle").addEventListener("click", function() {
+            if (document.getElementById("sm-popup-video").muted) {
+                document.getElementById("sm-popup-video").muted = false;
+                $("#sm-volume-toggle .volume-high").show();
+                $("#sm-volume-toggle .volume-muted").hide();
+                $("#sm-volume-slider").css("opacity", "1");
+                if (document.getElementById("sm-popup-video").volume == 0) {
+                    document.getElementById("sm-popup-video").volume = 1;
+                    document.getElementById("sm-volume-slider").value = 100;
+                }
+            } else {
+                document.getElementById("sm-popup-video").muted = true;
+                $("#sm-volume-toggle .volume-high").hide();
+                $("#sm-volume-toggle .volume-muted").show();
+                $("#sm-volume-slider").css("opacity", "0.5");
+            }
+        });
+        document.getElementById("sm-fullscreen-toggle").addEventListener("click", function() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen();
+            }
+        });
         document.getElementById("sm-btn-url").addEventListener("click", function() {
             var smUrl_entitlement_token = document.cookie.match('(^|;)\\s*entitlement_token\\s*=\\s*([^;]+)')?.pop() || '';
             //var smUrl_ascendon_token = JSON.parse(decodeURIComponent(document.cookie.match('(^|;)\\s*login-session\\s*=\\s*([^;]+)')?.pop() || '')).data.subscriptionToken;
@@ -57,7 +113,7 @@
             } else {
                 var smHtml = "<div class='sm-urls-container' style='position: fixed; z-index: 1002; top: 0; left: 0;'>" +
                     "<div onclick='document.getElementsByClassName(&apos;sm-urls-container&apos;)[0].outerHTML = &apos;&apos;' style='position: fixed; z-index: 1002; top: 0; left: 0; height: 100%; width: 100%;'></div>" +
-                    "<div style='position: fixed; text-align: center; background-color: #000; z-index: 1003; width: 100%;'>" +
+                    "<div style='position: fixed; text-align: center; background-color: #000; z-index: 1003; width: 96%; left: 2%; border-radius: 0px 0px 20px 20px;'>" +
                     "<div class='sm-urls-main'></div>" +
                     "<div class='sm-urls'></div>" +
                     "</div>" +
@@ -199,6 +255,10 @@
                         document.title = "SYNC MENU";
                         smWindow[i].document.title = "Window #" + i;
                     }, 1000 * n);
+                    if (i > 1) {
+                        smWindow[i].document.getElementById("sm-video-menu-container").style.display = "block";
+                        smWindow[i].document.getElementById("sm-popup-video").controls = false;
+                    }
                 }
             });
 
