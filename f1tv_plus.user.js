@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      1.0
+// @version      1.0.1
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,8 +13,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "1.0";
-    //<updateDescription>Update details:<br>- First public release</updateDescription>
+    var smVersion = "1.0.1";
+    //<updateDescription>Update details:<br>- Use Main-feed automatically if there's no additional streams</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
 
@@ -79,6 +79,7 @@
                 var smUrl_array = [];
                 var smUrlColor_array = [];
                 var smUrlTeam_array = [];
+                var smAdditionalStreams = true;
                 smUrl_array["main_feed"] = "https://f1tv.formula1.com/1.0/R/ENG/WEB_HLS/ALL/CONTENT/PLAY?contentId=" + smUrl_contentId;
                 smUrlTeam_array["-"] = [];
                 smUrlTeam_array["-"]["main_feed"] = "MAIN FEED";
@@ -104,6 +105,8 @@
                                     smUrlTeam_array[d.teamName][d.title.replace(/\s+/g, '_').toLowerCase()] = d.title.replace(/_+/g, ' ').toUpperCase();
                                 }
                             });
+                        } else {
+                            smAdditionalStreams = false;
                         }
 
                         var smMainFeeds = [
@@ -156,6 +159,9 @@
 
                                 });
                             }
+                        }
+                        if (smAdditionalStreams == false) {
+                            document.getElementById("sm-btn-url-main_feed").click();
                         }
                         console.log(smUrl_array);
                     },
@@ -452,6 +458,7 @@
                     var smUrl_array = [];
                     var smUrlColor_array = [];
                     var smUrlTeam_array = [];
+                    var smAdditionalStreams = true;
                     smUrlTeam_array["-"] = [];
                     smUrlTeam_array["-"]["main_feed"] = "MAIN FEED";
                     smUrl_array["main_feed"] = "https://f1tv.formula1.com/1.0/R/ENG/WEB_HLS/ALL/CONTENT/PLAY?contentId=" + smUrl_contentId;
@@ -477,6 +484,8 @@
                                         smUrlTeam_array[d.teamName][d.title.replace(/\s+/g, '_').toLowerCase()] = d.title.replace(/_+/g, ' ').toUpperCase();
                                     }
                                 });
+                            } else {
+                                smAdditionalStreams = false;
                             }
                             var smMainFeeds = [
                                 "main_feed",
@@ -522,6 +531,9 @@
 
                                     });
                                 }
+                            }
+                            if (smAdditionalStreams == false) {
+                                document.getElementById("sm-btn-url-main_feed").click();
                             }
                             console.log(smUrl_array);
                         },
