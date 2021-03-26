@@ -4,12 +4,12 @@ Userscript that adds some useful features to F1TV.
 All in your browser, no external apps needed.
 
 ## Current features
-- theater mode (bigger video, less wasted space on screen),
-- get video/stream URL (to use in external player, like VLC)
-- open video in popup (keep "original" F1TV player)
-- open video in popup in alternative mode (use default HTML5 player)
-- "multi-popout" - open multiple popups with synchronized streams
-In multi-popout mode, you can set offset for each video, to keep them perfectly synchronized in case they are hosted out-of-sync (the main feed is usually a few seconds behind other feeds).
+* theater mode (bigger video, less wasted space on screen),
+* get video/stream URL (to use in external player, like VLC)
+* open video in popup (keep "original" F1TV player)
+* open video in popup in alternative mode (use default HTML5 player)
+* "multi-popout" - open multiple popups with synchronized streams
+  * In multi-popout mode, you can set offset for each video, to keep them perfectly synchronized in case they are hosted out-of-sync (the main feed is usually a few seconds behind other feeds).
 
 ## Installation
 * Install the Tampermonkey extension for your browser:
