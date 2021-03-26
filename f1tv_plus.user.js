@@ -162,6 +162,8 @@
                         }
                         if (smAdditionalStreams == false) {
                             document.getElementById("sm-btn-url-main_feed").click();
+                            document.getElementById("sm-btn-url").remove();
+                            document.getElementById("sm-top-hover").remove();
                         }
                         console.log(smUrl_array);
                     },
