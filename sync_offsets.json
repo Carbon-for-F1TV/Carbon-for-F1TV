@@ -1,0 +1,32 @@
+{
+  "videos": {
+    "1000003911": {
+      "title": "2021 Bahrain Grand Prix Formula 1 Qualifying",
+      "values": {
+        "data": 1000,
+        "pit_lane": 200,
+        "tracker": 1200,
+        "per": 1200,
+        "ver": 1000,
+        "sai": 1200,
+        "lec": 1900,
+        "rai": 2000,
+        "gio": 1600,
+        "alo": 1600,
+        "oco": 2000,
+        "tsu": 2000,
+        "gas": 1200,
+        "msc": 1500,
+        "maz": 1900,
+        "vet": 0,
+        "str": 2000,
+        "ham": 1200,
+        "bot": 1200,
+        "ric": 600,
+        "nor": 1200,
+        "lat": 1200,
+        "rus": 2000
+      }
+    }
+  }
+}
