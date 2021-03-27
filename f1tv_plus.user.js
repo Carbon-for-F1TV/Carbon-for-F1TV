@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      1.0.2
+// @version      1.0.3
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,10 +13,11 @@
 (function() {
     'use strict';
 
-    var smVersion = "1.0.2";
-    //<updateDescription>Update details:<br>- multi-popout: SYNC MENU is now included in Window #1</updateDescription>
+    var smVersion = "1.0.3";
+    //<updateDescription>Update details:<br>- multi-popout: Load predefined offsets from external .json file</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
+    var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/sync_offsets.json";
 
     if (window.location.hash == "#sm-popup") {
 
@@ -127,11 +128,12 @@
                                 if (smUrlColor_array[title]) {
                                     color = smUrlColor_array[title];
                                 }
-                                var smBtnHtml = "<a id='sm-btn-url-" + title + "' title='" + team[title] + "' role='button' class='sm-btn' data-url='" + url + "' style='border-bottom: 4px solid " + color + "; background-color: #333; color: #fff; font-size: 12px; margin: 8px; padding: 8px 16px; position: relative;'>" +
+                                var smBtnHtml = "<a id='sm-btn-url-" + title + "' title='" + team[title] + "' role='button' class='sm-btn' data-streamid='" + smUrl_contentId + "' data-name='" + title + "' data-url='" + url + "' style='border-bottom: 4px solid " + color + "; background-color: #333; color: #fff; font-size: 12px; margin: 8px; padding: 8px 16px; position: relative;'>" +
                                     "<span>" + title.replace(/_+/g, ' ').toUpperCase() + "</span></a>";
                                 document.getElementsByClassName(smUrlElement)[0].insertAdjacentHTML("beforeend", smBtnHtml);
                                 document.getElementById("sm-btn-url-" + title).addEventListener("click", function() {
-
+                                    var name = $(this).data("name");
+                                    var streamId = $(this).data("streamid");
                                     $.ajax({
                                         url: $(this).data("url"),
                                         type: 'get',
@@ -142,11 +144,12 @@
                                         },
                                         async: true,
                                         success: function(data) {
-                                            //document.getElementById("sm-popup-video-source").src = data.resultObj.url;
                                             var oldTime = document.getElementById("sm-popup-video").currentTime;
                                             var smHls = new Hls();
                                             smHls.loadSource(data.resultObj.url);
                                             smHls.attachMedia(document.getElementById("sm-popup-video"));
+                                            $("#sm-popup-video").attr('data-name', name);
+                                            $("#sm-popup-video").attr('data-streamid', streamId);
                                             document.getElementById("sm-popup-video").currentTime = oldTime;
                                             document.getElementById("sm-popup-video").play();
                                             document.getElementsByClassName("sm-urls-container")[0].outerHTML = "";
@@ -193,7 +196,6 @@
                 document.getElementById("sm-popup-video").volume = 0;
                 $("#sm-volume-slider").css("opacity", "0.5");
             }
-            console.log(e.target.value);
         });
         document.getElementById("sm-volume-toggle").addEventListener("click", function() {
             if (document.getElementById("sm-popup-video").muted) {
@@ -224,6 +226,19 @@
 
         if (window.location.hash.includes("#sm-popups-alt-")) {
 
+            var smSyncData;
+            GM.xmlHttpRequest({
+                method: "GET",
+                url: smSyncDataUrl,
+                onload: function(response) {
+                    smSyncData = JSON.parse(response.responseText);
+                    if (Object.keys(smSyncData.videos).length > 0) {
+                        console.log("F1TV+: Loaded sync offsets for " + Object.keys(smSyncData.videos).length + " videos!");
+                    } else {
+                        console.log("F1TV+: Error loading sync offsets");
+                    }
+                }
+            });
 
             var smWindowAmount = parseInt(window.location.hash.split("#sm-popups-alt-")[1]);
 
@@ -231,11 +246,11 @@
                 "<div id='sm-offset-settings' style='padding: 10px; position: fixed; top: 0; left: 0; background-color: #000; border-radius: 0px 0px 20px; display: none;'>" +
                 "<div style='text-align: right; font-size: 20px; cursor: pointer;' onclick='document.getElementById(&apos;sm-offset-settings&apos;).style.display = &apos;none&apos;'>[x]</div>" +
                 "<table>" +
-                "<tr><th colspan='2'>OFFSETS [ms]</th></tr>";
+                "<tr><th colspan='3'>OFFSETS [ms]</th></tr>";
 
 
             for (let i = 1; i <= smWindowAmount; i++) {
-                smSettingsFrameHtml += "<tr><td>Window #" + i + "</td><td><input id='sm-offset-" + i + "' type='number' step='250' value='0' style='width: 80px;'></td></tr>";
+                smSettingsFrameHtml += "<tr><td>Window #" + i + "</td><td><input id='sm-offset-" + i + "' type='number' step='250' value='' style='width: 80px;'></td><td><span id='sm-offset-external-" + i + "'></span></td></tr>";
             }
 
             smSettingsFrameHtml += "<tr><td>Max desync [ms]</td><td><input id='sm-maxdesync' type='number' step='10' value='300' min='10' max='3000' style='width: 80px;'></td></tr>" +
@@ -331,9 +346,17 @@
                     return;
                 }
 
-
                 for (let i = 1; i <= smWindowAmount; i++) {
                     offset[i] = parseInt(document.getElementById("sm-offset-" + i).value) / 1000 || 0;
+                    if ((document.getElementById("sm-offset-" + i).value == "") && (smSyncData.videos[smWindow[i].document.getElementById("sm-popup-video").dataset.streamid].values[smWindow[i].document.getElementById("sm-popup-video").dataset.name])) {
+                        var smSyncValue = smSyncData.videos[smWindow[i].document.getElementById("sm-popup-video").dataset.streamid].values[smWindow[i].document.getElementById("sm-popup-video").dataset.name];
+                        document.getElementById("sm-offset-external-" + i).innerHTML = smSyncValue;
+                        offset[i] = smSyncValue / 1000;
+                    } else {
+                        if (document.getElementById("sm-offset-external-" + i).innerHTML !== "") {
+                            document.getElementById("sm-offset-external-" + i).innerHTML = "";
+                        }
+                    }
                 }
 
                 var maxDesync = parseInt(document.getElementById("sm-maxdesync").value) / 1000 || 0.3;
