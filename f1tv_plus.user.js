@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      1.0.1
+// @version      1.0.2
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,8 +13,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "1.0.1";
-    //<updateDescription>Update details:<br>- Use Main-feed automatically if there's no additional streams</updateDescription>
+    var smVersion = "1.0.2";
+    //<updateDescription>Update details:<br>- multi-popout: SYNC MENU is now included in Window #1</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
 
@@ -31,7 +31,7 @@
             "</style>";
         document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", smHtml);
 
-    } else if (window.location.hash == "#sm-popup-alt") {
+    } else if ((window.location.hash == "#sm-popup-alt") || (window.location.hash.includes("#sm-popups-alt-"))) {
 
         var smPopupAltHtml = "<div id='sm-popup-alt-container' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 999;'>" +
             "<img style='display: block; margin: 50vh auto auto auto; transform: translateY(-50%);' src='https://f1tv.formula1.com/static/3adbb5b25a6603f282796363a74f8cf3.png'>" +
@@ -221,159 +221,169 @@
         });
 
 
-    } else if (window.location.hash.includes("#sm-popups-alt-")) {
-        var smWindowAmount = parseInt(window.location.hash.split("#sm-popups-alt-")[1]);
 
-        var smSettingsFrameHtml = "<div id='sm-offset-settings' style='padding: 10px;'>" +
-            "<p style='color: #ccc'>All windows are synced to Window #1.<br>Use Window #1 to pause/seek all videos.</p>" +
-            "<table>" +
-            "<tr><th colspan='2'>OFFSETS [ms]</th></tr>";
+        if (window.location.hash.includes("#sm-popups-alt-")) {
 
 
-        for (let i = 1; i <= smWindowAmount; i++) {
-            smSettingsFrameHtml += "<tr><td>Window #" + i + "</td><td><input id='sm-offset-" + i + "' type='number' step='250' value='0' style='width: 80px;'></td></tr>";
-        }
+            var smWindowAmount = parseInt(window.location.hash.split("#sm-popups-alt-")[1]);
 
-        smSettingsFrameHtml += "<tr><td>Max desync [ms]</td><td><input id='sm-maxdesync' type='number' step='10' value='300' min='0' max='3000' style='width: 80px;'></td></tr>" +
-            "</table>" +
-            "<table style='margin-top: 40px;'>" +
-            "<tr><th colspan='2'>CURRENT SYNC [ms]</th></tr>" +
-            "<tr><td>Window #1</td><td>0 ms</td></tr>";
-
-        for (let i = 2; i <= smWindowAmount; i++) {
-            smSettingsFrameHtml += "<tr><td>Window #" + i + "</td><td id='sm-sync-status-" + i + "'></td></tr>";
-        }
-
-        smSettingsFrameHtml += "</table>" +
-            "<div id='sm-sync-status-text' style='text-align: center; font-size: 24px; color: #ff0000;'></div>" +
-            "</div>" +
-            "<style>" +
-            "body { background-color: #000; color: #fff; font-family: Arial; margin: 0; }" +
-            "td,th { padding: 4px 20px; }" +
-            "</style>";
-
-        var smWindow = [];
-
-        document.getElementsByTagName("html")[0].innerHTML = smSettingsFrameHtml;
-
-        for (let i = 1; i <= smWindowAmount; i++) {
-            smWindow[i] = window.open(document.location.href.split("#")[0].replace("action=play", "") + "#sm-popup-alt", Date.now(), "width=1280,height=720");
-            smWindow[i].addEventListener('load', (event) => {
-                // dirty fix to keep new window names
-                for (let n = 0; n < 30; n++) {
-                    setTimeout(function() {
-                        document.title = "SYNC MENU";
-                        smWindow[i].document.title = "Window #" + i;
-                        if (i > 1) {
-                            smWindow[i].document.getElementById("sm-video-menu-container").style.display = "block";
-                            smWindow[i].document.getElementById("sm-popup-video").controls = false;
-                        }
-                    }, 1000 * n);
- 
-                }
-            });
-
-        }
+            var smSettingsFrameHtml = "<div id='sm-offset-settings-btn' onclick='document.getElementById(&apos;sm-offset-settings&apos;).style.display = &apos;block&apos;' style='background-color: #000000aa; color: #fff; font-size: 12px; padding: 8px 16px; border-radius: 0px 0px 20px 20px; position: fixed; top: 0; left: 5%; cursor: pointer;'>SYNC MENU</div>" +
+                "<div id='sm-offset-settings' style='padding: 10px; position: fixed; top: 0; left: 0; background-color: #000; border-radius: 0px 0px 20px; display: none;'>" +
+                "<div style='text-align: right; font-size: 20px; cursor: pointer;' onclick='document.getElementById(&apos;sm-offset-settings&apos;).style.display = &apos;none&apos;'>[x]</div>" +
+                "<table>" +
+                "<tr><th colspan='2'>OFFSETS [ms]</th></tr>";
 
 
-
-        function smPauseAll() {
             for (let i = 1; i <= smWindowAmount; i++) {
-                smWindow[i].document.getElementById("sm-popup-video").pause();
+                smSettingsFrameHtml += "<tr><td>Window #" + i + "</td><td><input id='sm-offset-" + i + "' type='number' step='250' value='0' style='width: 80px;'></td></tr>";
             }
-        }
 
-        function smResumeAllWhenReady() {
-            var smReadyCheck = setInterval(function() {
-                var smNotReady = 0;
+            smSettingsFrameHtml += "<tr><td>Max desync [ms]</td><td><input id='sm-maxdesync' type='number' step='10' value='300' min='10' max='3000' style='width: 80px;'></td></tr>" +
+                "</table>" +
+                "<table style='margin-top: 40px;'>" +
+                "<tr><th colspan='2'>CURRENT SYNC [ms]</th></tr>" +
+                "<tr><td>Window #1</td><td>0 ms</td></tr>";
+
+            for (let i = 2; i <= smWindowAmount; i++) {
+                smSettingsFrameHtml += "<tr><td>Window #" + i + "</td><td id='sm-sync-status-" + i + "'></td></tr>";
+            }
+
+            smSettingsFrameHtml += "</table>" +
+                "<div id='sm-sync-status-text' style='text-align: center; font-size: 24px; line-height: 24px; height: 24px; color: #ff0000;'></div>" +
+                "</div>" +
+                "<style>" +
+                "body { background-color: #000; color: #fff; font-family: Arial; margin: 0; }" +
+                "td,th { padding: 4px 20px; }" +
+                "#sm-offset-settings-btn { display: none; }" +
+                "#sm-top-hover:hover ~ #sm-offset-settings-btn, #sm-offset-settings-btn:hover { display: block !important; }" +
+                "</style>";
+
+            var smWindow = [];
+
+            document.getElementById("sm-popup-alt-container").insertAdjacentHTML("beforeend", smSettingsFrameHtml);
+
+            smWindow[1] = window;
+            for (let i = 2; i <= smWindowAmount; i++) {
+                smWindow[i] = window.open(document.location.href.split("#")[0].replace("action=play", "") + "#sm-popup-alt", Date.now(), "width=1280,height=720");
+                smWindow[i].addEventListener('load', (event) => {
+                    // dirty fix to keep new window names
+                    for (let n = 0; n < 30; n++) {
+                        setTimeout(function() {
+                            document.title = "Window #1 (MAIN)";
+                            smWindow[i].document.title = "Window #" + i;
+                            if (i > 1) {
+                                smWindow[i].document.getElementById("sm-video-menu-container").style.display = "block";
+                                smWindow[i].document.getElementById("sm-popup-video").controls = false;
+                            }
+                        }, 1000 * n);
+
+                    }
+                });
+
+            }
+
+
+
+            function smPauseAll() {
+                for (let i = 1; i <= smWindowAmount; i++) {
+                    smWindow[i].document.getElementById("sm-popup-video").pause();
+                }
+            }
+
+            function smResumeAllWhenReady() {
+                var smReadyCheck = setInterval(function() {
+                    var smNotReady = 0;
+
+                    for (let i = 1; i <= smWindowAmount; i++) {
+                        if (smWindow[i].document.getElementById("sm-popup-video").readyState != 4) {
+                            smNotReady += 1;
+                        }
+                    }
+                    if (smNotReady == 0) {
+                        for (let i = 1; i <= smWindowAmount; i++) {
+                            smWindow[i].document.getElementById("sm-popup-video").play();
+                        }
+                        document.getElementById("sm-sync-status-text").innerHTML = "";
+                        clearInterval(smReadyCheck);
+                    }
+                }, 100);
+            }
+
+            function smSync() {
+                var time = [];
+                var offset = [];
+                var timeDiff = [];
+                var smSynced = 0;
 
                 for (let i = 1; i <= smWindowAmount; i++) {
-                    if (smWindow[i].document.getElementById("sm-popup-video").readyState != 4) {
-                        smNotReady += 1;
+                    if (smWindow[i].document.getElementById("sm-popup-video").readyState == 0) {
+                        return;
                     }
                 }
-                if (smNotReady == 0) {
-                    for (let i = 1; i <= smWindowAmount; i++) {
-                        smWindow[i].document.getElementById("sm-popup-video").play();
+
+                if (smWindow[1].document.getElementById("sm-popup-video").paused) {
+
+                    for (let i = 2; i <= smWindowAmount; i++) {
+                        if (smWindow[i].document.getElementById("sm-popup-video").paused != true) {
+                            smWindow[i].document.getElementById("sm-popup-video").pause();
+                        }
                     }
-                    document.getElementById("sm-sync-status-text").innerHTML = "";
-                    clearInterval(smReadyCheck);
-                }
-            }, 100);
-        }
-
-        function smSync() {
-            var time = [];
-            var offset = [];
-            var timeDiff = [];
-            var smSynced = 0;
-
-            for (let i = 1; i <= smWindowAmount; i++) {
-                if (smWindow[i].document.getElementById("sm-popup-video").readyState == 0) {
                     return;
                 }
-            }
 
-            if (smWindow[1].document.getElementById("sm-popup-video").paused) {
+
+                for (let i = 1; i <= smWindowAmount; i++) {
+                    offset[i] = parseInt(document.getElementById("sm-offset-" + i).value) / 1000 || 0;
+                }
+
+                var maxDesync = parseInt(document.getElementById("sm-maxdesync").value) / 1000 || 0.3;
+                for (let i = 1; i <= smWindowAmount; i++) {
+                    time[i] = smWindow[i].document.getElementById("sm-popup-video").currentTime - offset[i];
+                }
 
                 for (let i = 2; i <= smWindowAmount; i++) {
-                    if (smWindow[i].document.getElementById("sm-popup-video").paused != true) {
-                        smWindow[i].document.getElementById("sm-popup-video").pause();
+                    timeDiff[i] = Math.abs(time[1] - time[i]);
+                    document.getElementById("sm-sync-status-" + i).innerHTML = Math.floor(timeDiff[i] * 1000) + " ms";
+                }
+
+
+                for (let i = 2; i <= smWindowAmount; i++) {
+                    timeDiff[i] = Math.abs(time[1] - time[i]);
+                    if (timeDiff[i] > maxDesync) {
+                        smPauseAll();
+                        smWindow[i].document.getElementById("sm-popup-video").currentTime = time[1] + offset[i];
+                        smSynced += 1;
                     }
                 }
-                return;
-            }
 
-
-            for (let i = 1; i <= smWindowAmount; i++) {
-                offset[i] = parseInt(document.getElementById("sm-offset-" + i).value) / 1000 || 0;
-            }
-
-            var maxDesync = parseInt(document.getElementById("sm-maxdesync").value) / 1000 || 0.3;
-            for (let i = 1; i <= smWindowAmount; i++) {
-                time[i] = smWindow[i].document.getElementById("sm-popup-video").currentTime - offset[i];
-            }
-
-            for (let i = 2; i <= smWindowAmount; i++) {
-                timeDiff[i] = Math.abs(time[1] - time[i]);
-                document.getElementById("sm-sync-status-" + i).innerHTML = Math.floor(timeDiff[i] * 1000) + " ms";
-            }
-
-
-            for (let i = 2; i <= smWindowAmount; i++) {
-                timeDiff[i] = Math.abs(time[1] - time[i]);
-                if (timeDiff[i] > maxDesync) {
-                    smPauseAll();
-                    smWindow[i].document.getElementById("sm-popup-video").currentTime = time[1] + offset[i];
-                    smSynced += 1;
+                if (smSynced > 0) {
+                    document.getElementById("sm-sync-status-text").innerHTML = "SYNCING";
+                    smResumeAllWhenReady();
                 }
             }
+            var smSyncLoop = setInterval(function() {
+                smSync();
+            }, 500);
 
-            if (smSynced > 0) {
-                document.getElementById("sm-sync-status-text").innerHTML = "SYNCING";
-                smResumeAllWhenReady();
-            }
-        }
-        var smSyncLoop = setInterval(function() {
-            smSync();
-        }, 500);
-
-        function smCloseAllWindows() {
-            for (let i = 1; i <= smWindowAmount; i++) {
-                if (!smWindow[i].closed) {
-                    smWindow[i].close();
+            function smCloseAllWindows() {
+                for (let i = 1; i <= smWindowAmount; i++) {
+                    if (!smWindow[i].closed) {
+                        smWindow[i].close();
+                    }
                 }
+                window.close();
             }
-            window.close();
-        }
-        for (let i = 1; i <= smWindowAmount; i++) {
-            smWindow[i].onbeforeunload = function() {
+            for (let i = 1; i <= smWindowAmount; i++) {
+                smWindow[i].onbeforeunload = function() {
+                    smCloseAllWindows();
+                };
+            }
+            window.onbeforeunload = function() {
                 smCloseAllWindows();
             };
+
         }
-        window.onbeforeunload = function() {
-            smCloseAllWindows();
-        };
+
 
 
     } else {
@@ -559,7 +569,7 @@
                 var smWindowAmountInput = prompt("How many windows [2-10]?", "2");
                 smWindowAmountInput = parseInt(smWindowAmountInput);
                 if ((smWindowAmountInput >= 2) && (smWindowAmountInput <= 10)) {
-                    window.open(document.location.href.replace("action=play", "") + "#sm-popups-alt-" + smWindowAmountInput, Date.now(), "width=500,height=" + (450 + (34 * parseInt(smWindowAmountInput))));
+                    window.open(document.location.href.replace("action=play", "") + "#sm-popups-alt-" + smWindowAmountInput, Date.now(), "width=1280,height=720");
                     $("video").trigger("pause");
                 } else {
                     alert("error: wrong input");
