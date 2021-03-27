@@ -9,7 +9,8 @@ All in your browser, no external apps needed.
 * open video in popup (keep "original" F1TV player)
 * open video in popup in alternative mode (use default HTML5 player)
 * "multi-popout" - open multiple popups with synchronized streams
-  * In multi-popout mode, you can set offset for each video, to keep them perfectly synchronized in case they are hosted out-of-sync (the main feed is usually a few seconds behind other feeds).
+  * In multi-popout mode, you can set offset for each video, to keep them perfectly synchronized in case they are hosted out-of-sync
+  * Loads predefined offsets from [sync_offsets.json](sync_offsets.json)
 
 ## Installation
 * Install the Tampermonkey extension for your browser:
