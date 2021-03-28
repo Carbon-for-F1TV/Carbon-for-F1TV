@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      1.0.3
+// @version      1.0.4
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,8 +13,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "1.0.3";
-    //<updateDescription>Update details:<br>- multi-popout: Load predefined offsets from external .json file</updateDescription>
+    var smVersion = "1.0.4";
+    //<updateDescription>Update details:<br>- multi-popout: Fix videos not syncing</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/sync_offsets.json";
@@ -348,13 +348,17 @@
 
                 for (let i = 1; i <= smWindowAmount; i++) {
                     offset[i] = parseInt(document.getElementById("sm-offset-" + i).value) / 1000 || 0;
-                    if ((document.getElementById("sm-offset-" + i).value == "") && (smSyncData.videos[smWindow[i].document.getElementById("sm-popup-video").dataset.streamid].values[smWindow[i].document.getElementById("sm-popup-video").dataset.name])) {
-                        var smSyncValue = smSyncData.videos[smWindow[i].document.getElementById("sm-popup-video").dataset.streamid].values[smWindow[i].document.getElementById("sm-popup-video").dataset.name];
-                        document.getElementById("sm-offset-external-" + i).innerHTML = smSyncValue;
-                        offset[i] = smSyncValue / 1000;
-                    } else {
-                        if (document.getElementById("sm-offset-external-" + i).innerHTML !== "") {
-                            document.getElementById("sm-offset-external-" + i).innerHTML = "";
+                    var streamId = smWindow[i].document.getElementById("sm-popup-video").dataset.streamid;
+                    var name = smWindow[i].document.getElementById("sm-popup-video").dataset.name;
+                    if ((document.getElementById("sm-offset-" + i).value == "") && (smSyncData.videos[streamId])) {
+                        if (smSyncData.videos[streamId].values[name]) {
+                            var smSyncValue = smSyncData.videos[streamId].values[name];
+                            document.getElementById("sm-offset-external-" + i).innerHTML = smSyncValue;
+                            offset[i] = smSyncValue / 1000;
+                        } else {
+                            if (document.getElementById("sm-offset-external-" + i).innerHTML !== "") {
+                                document.getElementById("sm-offset-external-" + i).innerHTML = "";
+                            }
                         }
                     }
                 }
