@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      1.0.5
+// @version      1.0.6
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,8 +13,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "1.0.5";
-    //<updateDescription>-- MAIN CHANGES --<br>POPOUT (alt) / MULTI-POPOUT modes:<br>- Added custom video controls<br>- Added option to change audio track<br>- You can now use arrow keys to seek the video</updateDescription>
+    var smVersion = "1.0.6";
+    //<updateDescription>Update details:<br>POPOUT (alt) / MULTI-POPOUT modes:<br>- Improvements to video controls<br>- Added option to change video quality</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/sync_offsets.json";
@@ -38,8 +38,11 @@
             "<div style='position: absolute; top: 50%; width: 100%; text-align: center; transform: translateY(-50%); font-weight: bold; font-size: 90px; color: #ccc;'>F1TV+</div>" +
             "<video id='sm-popup-video' muted style='position: fixed; top: 0; left: 0; height: 100%; width: 100%;'></video>" +
             "<div id='sm-top-hover' style='position: absolute; top: 0; left: 0; height: 20%; width: 100%;'></div>" +
-            "<div id='sm-audio-tracks-container' onclick='document.getElementById(&apos;sm-audio-tracks-container&apos;).style.display = &apos;none&apos;' style='display: none; position: fixed; top: 0; left: 0; height: 100%; width: 100%; z-index: 2; background-color: #00000080;'>" +
-            "<div id='sm-audio-tracks' style='position: fixed; background-color: #000; color: #fff; text-align: center; padding: 20px; border-radius: 20px; top: 50%; left: 50%; transform: translate(-50%,-50%);'></div>" +
+            "<div id='sm-audio-tracks-container' onclick='document.getElementById(&apos;sm-audio-tracks-container&apos;).style.display = &apos;none&apos;' style='display: none; position: fixed; top: 0; left: 0; height: 100%; width: 100%; z-index: 2;'>" +
+            "<div id='sm-audio-tracks' style='position: fixed; background-color: #000; color: #fff; text-align: center; padding: 20px; border-radius: 20px; right: 155px; bottom: 40px;'></div>" +
+            "</div>" +
+            "<div id='sm-levels-container' onclick='document.getElementById(&apos;sm-levels-container&apos;).style.display = &apos;none&apos;' style='display: none; position: fixed; top: 0; left: 0; height: 100%; width: 100%; z-index: 2;'>" +
+            "<div id='sm-levels' style='position: fixed; background-color: #000; color: #fff; text-align: center; padding: 20px; border-radius: 20px; right: 215px; bottom: 40px;'></div>" +
             "</div>" +
             "<div id='sm-video-menu-container' style='position: absolute; bottom: 0; height: 20%; width: 100%;'>" +
             "<div id='sm-video-menu' style='display: none; position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; background-color: #000;'>" +
@@ -48,14 +51,19 @@
             "<svg class='sm-icon-pause' style='display: none; height: 32px; width: 32px; margin: 4px;' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' aria-hidden='true' focusable='false' width='1em' height='1em' preserveAspectRatio='xMidYMid meet' viewBox='0 0 24 24'><path d='M14 19h4V5h-4M6 19h4V5H6v14z' fill='#ffffff'/></svg>" +
             "<svg class='sm-icon-play' style='height: 32px; width: 32px; margin: 4px;' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' aria-hidden='true' focusable='false' width='1em' height='1em' preserveAspectRatio='xMidYMid meet' viewBox='0 0 24 24'><path d='M8 5.14v14l11-7l-11-7z' fill='#ffffff'/></svg>" +
             "</div>" +
-            "<div style='display: inline-block; position: relative; width: calc(100% - 310px); bottom: 0; left: 0;'>" +
+            "<div style='display: inline-block; position: relative; width: calc(100% - 350px); bottom: 0; left: 0;'>" +
             "<div id='sm-video-seekbar' style='display: inline-block; cursor: pointer; width: 100%; height: 40px; background-color: black;'>" +
             "<div id='sm-video-seekbar-in' style='background-color: #b10000; width: 0%; height: 100%;'></div>" +
-            "<div id='sm-video-seekbar-txt' style='position: absolute; color: #fff; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: monospace; font-size: 16px; line-height: 40px;'></div>" +
+            "<div id='sm-video-seekbar-txt' style='position: absolute; color: #fff; width: 100%; text-align: center; top: 50%; transform: translateY(-50%); font-family: monospace; font-size: 16px; line-height: 40px;'></div>" +
+            "<div id='sm-video-seekbar-txt-onhover' style='display: none; padding: 0 20px; position: absolute; color: #fff; top: 50%; transform: translateY(-50%); font-family: monospace; font-size: 16px; line-height: 40px;'></div>" +
+            "<div id='sm-video-seekbar-pointer-onhover' style='display: none; position: absolute; height: 100%; width: 1px; top: 0; background-color: #fff;'></div>" +
             "</div>" +
             "</div>" +
             "</div>" +
             "<div style='position: absolute; bottom: 0; right: 0; height: 40px;'>" +
+            "<div id='sm-level-change' onclick='document.getElementById(&apos;sm-levels-container&apos;).style.display = &apos;block&apos;' style='display: inline-block; cursor: pointer; height: 40px; margin-right: 8px;'>" +
+            "<svg style='height: 32px; width: 32px; margin: 4px;' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' aria-hidden='true' focusable='false' width='1em' height='1em' preserveAspectRatio='xMidYMid meet' viewBox='0 0 24 24'><path d='M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5a3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97c0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1c0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66z' fill='#ffffff'/></svg>" +
+            "</div>" +
             "<div id='sm-audiotrack-change' onclick='document.getElementById(&apos;sm-audio-tracks-container&apos;).style.display = &apos;block&apos;' style='display: inline-block; cursor: pointer; height: 40px; margin-right: 8px;'>" +
             "<svg style='height: 32px; width: 32px; margin: 4px;' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' aria-hidden='true' focusable='false' width='1em' height='1em' preserveAspectRatio='xMidYMid meet' viewBox='0 0 24 24'><path d='M9 5a4 4 0 0 1 4 4a4 4 0 0 1-4 4a4 4 0 0 1-4-4a4 4 0 0 1 4-4m0 10c2.67 0 8 1.34 8 4v2H1v-2c0-2.66 5.33-4 8-4m7.76-9.64c2.02 2.2 2.02 5.25 0 7.27l-1.68-1.69c.84-1.18.84-2.71 0-3.89l1.68-1.69M20.07 2c3.93 4.05 3.9 10.11 0 14l-1.63-1.63c2.77-3.18 2.77-7.72 0-10.74L20.07 2z' fill='#ffffff'/></svg>" +
             "</div>" +
@@ -74,7 +82,8 @@
             "body { font-family: Arial; }" +
             "#sm-top-hover:hover ~ #sm-btn-url, #sm-btn-url:hover { display: block !important; }" +
             ".sm-btn { display: inline-block; cursor: pointer; border-radius: 4px; }" +
-            ".sm-btn-audiotrack { background-color: #333; color: #fff; font-size: 12px; margin: 2px; padding: 8px 16px; position: relative; } " +
+            ".sm-btn-audiotrack, .sm-btn-level { background-color: #333; color: #fff; font-size: 12px; width: 100%; margin: 2px 0; padding: 8px 0; position: relative; } " +
+            ".sm-btn-active { background-color: #b10000; }" +
             "#sm-video-menu-container:hover #sm-video-menu { display: block !important; }" +
             "</style>" +
             "</div>";
@@ -177,16 +186,39 @@
                                                     document.getElementById("sm-audio-tracks").innerHTML += "<a class='sm-btn sm-btn-audiotrack' data-id='" + track.id + "' id='sm-btn-audiotrack-" + track.id + "'>" + track.name + "</a><br>";
                                                     smAudioTracks[track.id] = track.name;
                                                 });
+                                                $("#sm-btn-audiotrack-" + smHls.audioTrack).addClass("sm-btn-active");
                                                 for (var i in smAudioTracks) {
                                                     document.getElementById("sm-btn-audiotrack-" + i).addEventListener("click", function() {
                                                         smHls.audioTrack = ($(this).data("id"));
+                                                        $(".sm-btn-audiotrack").removeClass("sm-btn-active");
+                                                        $(this).addClass("sm-btn-active");
                                                     });
                                                 }
+
+
+                                                document.getElementById("sm-levels").innerHTML = "<div style='margin-bottom: 8px;'>Select quality</div>";
+                                                var smLevels = [];
+                                                document.getElementById("sm-levels").innerHTML += "<a class='sm-btn sm-btn-level' data-id='-1' id='sm-btn-level--1'>Auto</a><br>";
+                                                smLevels[-1] = "Auto";
+                                                for (var level in smHls.levels) {
+                                                    document.getElementById("sm-levels").innerHTML += "<a class='sm-btn sm-btn-level' data-id='" + level + "' id='sm-btn-level-" + level + "'>" + smHls.levels[level].height + "p</a><br>";
+                                                    smLevels[level] = smHls.levels[level].height;
+                                                }
+                                                $("#sm-btn-level-" + smHls.currentLevel).addClass("sm-btn-active");
+                                                for (var smLevel in smLevels) {
+                                                    document.getElementById("sm-btn-level-" + smLevel).addEventListener("click", function() {
+                                                        smHls.currentLevel = ($(this).data("id"));
+                                                        $(".sm-btn-level").removeClass("sm-btn-active");
+                                                        $(this).addClass("sm-btn-active");
+                                                    });
+                                                }
+
                                             });
                                             $("#sm-popup-video").attr('data-name', name);
                                             $("#sm-popup-video").attr('data-streamid', streamId);
                                             document.getElementById("sm-popup-video").currentTime = oldTime;
                                             document.getElementById("sm-popup-video").play();
+
                                             document.getElementsByClassName("sm-urls-container")[0].outerHTML = "";
                                         },
                                         error: function() {
@@ -200,6 +232,7 @@
                         }
                         if (smAdditionalStreams == false) {
                             document.getElementById("sm-btn-url-main_feed").click();
+                            document.getElementById("sm-btn-url").style = "display: none !important;";
                         }
                         console.log(smUrl_array);
                     },
@@ -269,6 +302,28 @@
 
         $("#sm-video-seekbar").on("click", function(e) {
             document.getElementById("sm-popup-video").currentTime = document.getElementById("sm-popup-video").duration * ((e.pageX - $(this).offset().left) / $("#sm-video-seekbar").width());
+        });
+
+        $("#sm-video-seekbar").on("mousemove", function(e) {
+            var p = ((e.pageX - $(this).offset().left) / $("#sm-video-seekbar").width());
+            $("#sm-video-seekbar-txt").hide();
+            $("#sm-video-seekbar-txt-onhover").show();
+            $("#sm-video-seekbar-pointer-onhover").show();
+            document.getElementById("sm-video-seekbar-txt-onhover").innerHTML = new Date(1000 * document.getElementById("sm-popup-video").duration * p).toISOString().substr(11, 8);
+            if (p < 0.5) {
+                $("#sm-video-seekbar-txt-onhover").css("left", p * 100 + "%");
+                $("#sm-video-seekbar-txt-onhover").css("right", "auto");
+            } else {
+                $("#sm-video-seekbar-txt-onhover").css("right", (1 - p) * 100 + "%");
+                $("#sm-video-seekbar-txt-onhover").css("left", "auto");
+            }
+            $("#sm-video-seekbar-pointer-onhover").css("left", p * 100 + "%");
+        });
+
+        $("#sm-video-seekbar").on("mouseleave", function(e) {
+            $("#sm-video-seekbar-txt-onhover").hide();
+            $("#sm-video-seekbar-pointer-onhover").hide();
+            $("#sm-video-seekbar-txt").show();
         });
 
         document.getElementById("sm-popup-video").onpause = function() {
