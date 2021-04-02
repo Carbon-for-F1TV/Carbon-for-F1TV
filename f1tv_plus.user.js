@@ -14,7 +14,7 @@
     'use strict';
 
     var smVersion = "1.0.6";
-    //<updateDescription>Update details:<br>POPOUT (alt) / MULTI-POPOUT modes:<br>- Improvements to video controls<br>- Added option to change video quality</updateDescription>
+    //<updateDescription></updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/sync_offsets.json";
@@ -35,6 +35,7 @@
     } else if ((window.location.hash == "#sm-popup-alt") || (window.location.hash.includes("#sm-popups-alt-"))) {
 
         var smPopupAltHtml = "<div id='sm-popup-alt-container' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 999;'>" +
+            "<div id='sm-popup-id' style='display: none;'>0</div>" +
             "<div style='position: absolute; top: 50%; width: 100%; text-align: center; transform: translateY(-50%); font-weight: bold; font-size: 90px; color: #ccc;'>F1TV+</div>" +
             "<video id='sm-popup-video' muted style='position: fixed; top: 0; left: 0; height: 100%; width: 100%;'></video>" +
             "<div id='sm-top-hover' style='position: absolute; top: 0; left: 0; height: 20%; width: 100%;'></div>" +
@@ -46,6 +47,7 @@
             "</div>" +
             "<div id='sm-video-menu-container' style='position: absolute; bottom: 0; height: 20%; width: 100%;'>" +
             "<div id='sm-video-menu' style='display: none; position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; background-color: #000;'>" +
+            "<div id='sm-video-titlebar' style='display: none; cursor: default; width: 100%; height: 40px; background-color: black;'><div id='sm-video-titlebar-txt' style='position: absolute; color: #fff; width: 100%; text-align: left; top: 50%; transform: translateY(-50%); font-family: monospace; font-size: 16px; line-height: 40px;'><span id='sm-video-title' style='margin-left: 20px;'></span><span class='sm-hide-from-900px' style='margin-left: 40px; color: #bbb;'>Use Window #1 to control all feeds.</span></div></div>" +
             "<div id='sm-video-primary-controls'>" +
             "<div id='sm-pause-toggle' style='display: inline-block; cursor: pointer; height: 40px;'>" +
             "<svg class='sm-icon-pause' style='display: none; height: 32px; width: 32px; margin: 4px;' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' aria-hidden='true' focusable='false' width='1em' height='1em' preserveAspectRatio='xMidYMid meet' viewBox='0 0 24 24'><path d='M14 19h4V5h-4M6 19h4V5H6v14z' fill='#ffffff'/></svg>" +
@@ -85,6 +87,7 @@
             ".sm-btn-audiotrack, .sm-btn-level { background-color: #333; color: #fff; font-size: 12px; width: 100%; margin: 2px 0; padding: 8px 0; position: relative; } " +
             ".sm-btn-active { background-color: #b10000; }" +
             "#sm-video-menu-container:hover #sm-video-menu { display: block !important; }" +
+            "@media screen and (max-width: 900px) { .sm-hide-from-900px { display: none; } }" +
             "</style>" +
             "</div>";
         document.getElementsByTagName("html")[0].innerHTML = smPopupAltHtml;
@@ -158,11 +161,12 @@
                                 if (smUrlColor_array[title]) {
                                     color = smUrlColor_array[title];
                                 }
-                                var smBtnHtml = "<a id='sm-btn-url-" + title + "' title='" + team[title] + "' role='button' class='sm-btn' data-streamid='" + smUrl_contentId + "' data-name='" + title + "' data-url='" + url + "' style='border-bottom: 4px solid " + color + "; background-color: #333; color: #fff; font-size: 12px; margin: 8px; padding: 8px 16px; position: relative;'>" +
+                                var smBtnHtml = "<a id='sm-btn-url-" + title + "' title='" + team[title] + "' role='button' class='sm-btn' data-streamid='" + smUrl_contentId + "' data-name='" + title + "' data-fullname='" + team[title] + "' data-url='" + url + "' style='border-bottom: 4px solid " + color + "; background-color: #333; color: #fff; font-size: 12px; margin: 8px; padding: 8px 16px; position: relative;'>" +
                                     "<span>" + title.replace(/_+/g, ' ').toUpperCase() + "</span></a>";
                                 document.getElementsByClassName(smUrlElement)[0].insertAdjacentHTML("beforeend", smBtnHtml);
                                 document.getElementById("sm-btn-url-" + title).addEventListener("click", function() {
                                     var name = $(this).data("name");
+                                    var fullname = $(this).data("fullname");
                                     var streamId = $(this).data("streamid");
                                     $.ajax({
                                         url: $(this).data("url"),
@@ -212,6 +216,11 @@
                                                         $(this).addClass("sm-btn-active");
                                                     });
                                                 }
+                                                if (parseInt(document.getElementById("sm-popup-id").innerHTML) > 0) {
+                                                    document.title = "(#" + document.getElementById("sm-popup-id").innerHTML + ") " + fullname;
+                                                    document.getElementById("sm-video-title").innerHTML = fullname;
+                                                }
+
 
                                             });
                                             $("#sm-popup-video").attr('data-name', name);
@@ -414,14 +423,18 @@
                     // dirty fix to keep new window names
                     for (let n = 0; n < 30; n++) {
                         setTimeout(function() {
-                            document.title = "Window #1 (MAIN)";
-                            smWindow[i].document.title = "Window #" + i;
                             smWindow[i].document.getElementById("sm-video-primary-controls").style.display = "none";
+                            smWindow[i].document.getElementById("sm-video-titlebar").style.display = "inline-block";
+                            document.title = "(#1) " + document.getElementById("sm-video-title").innerHTML;
+                            smWindow[i].document.title = "(#" + i + ") " + smWindow[i].document.getElementById("sm-video-title").innerHTML;
                         }, 1000 * n);
-
                     }
                 });
-
+            }
+            for (let i = 1; i <= smWindowAmount; i++) {
+                smWindow[i].addEventListener('load', (event) => {
+                    smWindow[i].document.getElementById("sm-popup-id").innerHTML = i;
+                });
             }
 
 
