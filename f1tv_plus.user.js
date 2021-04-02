@@ -354,6 +354,9 @@
                 case "ArrowRight":
                     document.getElementById("sm-popup-video").currentTime += 5;
                     break;
+                case " ": //space
+                    document.getElementById("sm-pause-toggle").click();
+                    break;
             }
         });
 
