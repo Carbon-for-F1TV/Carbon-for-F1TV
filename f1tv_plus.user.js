@@ -428,8 +428,10 @@
                     // dirty fix to keep new window names
                     for (let n = 0; n < 30; n++) {
                         setTimeout(function() {
-                            smWindow[i].document.getElementById("sm-video-primary-controls").style.display = "none";
-                            smWindow[i].document.getElementById("sm-video-titlebar").style.display = "inline-block";
+                            if (i > 1) {
+                                smWindow[i].document.getElementById("sm-video-primary-controls").style.display = "none";
+                                smWindow[i].document.getElementById("sm-video-titlebar").style.display = "inline-block";
+                            }
                             smWindow[i].document.title = "(#" + i + ") " + smWindow[i].document.getElementById("sm-video-title").innerHTML;
                             smWindow[i].document.getElementById("sm-popup-id").innerHTML = i;
                         }, 1000 * n);
