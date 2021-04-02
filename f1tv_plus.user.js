@@ -420,23 +420,20 @@
             });
 
             smWindow[1] = window;
-            for (let i = 2; i <= smWindowAmount; i++) {
-                smWindow[i] = window.open(document.location.href.split("#")[0].replace("action=play", "") + "#sm-popup-alt", Date.now(), "width=1280,height=720");
+            for (let i = 1; i <= smWindowAmount; i++) {
+                if (i > 1) {
+                    smWindow[i] = window.open(document.location.href.split("#")[0].replace("action=play", "") + "#sm-popup-alt", Date.now(), "width=1280,height=720");
+                }
                 smWindow[i].addEventListener('load', (event) => {
                     // dirty fix to keep new window names
                     for (let n = 0; n < 30; n++) {
                         setTimeout(function() {
                             smWindow[i].document.getElementById("sm-video-primary-controls").style.display = "none";
                             smWindow[i].document.getElementById("sm-video-titlebar").style.display = "inline-block";
-                            document.title = "(#1) " + document.getElementById("sm-video-title").innerHTML;
                             smWindow[i].document.title = "(#" + i + ") " + smWindow[i].document.getElementById("sm-video-title").innerHTML;
+                            smWindow[i].document.getElementById("sm-popup-id").innerHTML = i;
                         }, 1000 * n);
                     }
-                });
-            }
-            for (let i = 1; i <= smWindowAmount; i++) {
-                smWindow[i].addEventListener('load', (event) => {
-                    smWindow[i].document.getElementById("sm-popup-id").innerHTML = i;
                 });
             }
 
