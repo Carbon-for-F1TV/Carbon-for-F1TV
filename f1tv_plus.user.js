@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.me/
-// @version      1.0.6
+// @version      1.0.7
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,11 +13,108 @@
 (function() {
     'use strict';
 
-    var smVersion = "1.0.6";
-    //<updateDescription></updateDescription>
+    var smVersion = "1.0.7";
+    //<updateDescription>Update details:<br>-multi-popout: Feed names in window titles,<br>-popout (alt)/multi-popout: Pause video with spacebar,<br>-multi-popout: Automatically position windows on screen</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/sync_offsets.json";
+
+
+    //// SETTINGS FOR MULTI-POPOUT MODE ////
+    var BROWSER_USED_HEIGHT = 70; // height [px] of window that is used by browser/system (title bar, url bar, etc) | Default value: 70
+    var BROWSER_USED_WIDTH = 9; // width [px] of window that is used by browser/system | Default value: 9
+    // settings above are browser and OS dependent. If values are too small, windows will overlap. If too high, there will be gaps between windows.
+
+    var smPopupPositions = [
+        [],
+        [],
+        // offset X %, offset Y %, width %, height %
+        // 2 WINDOWS:
+        [
+            [0, 0, 50, 100],
+            [50, 0, 50, 100]
+        ],
+        // 3 WINDOWS:
+        [
+            [0, 0, 66.6, 100],
+            [66.6, 0, 33.3, 50],
+            [66.6, 50, 33.3, 50]
+        ],
+        // 4 WINDOWS:
+        [
+            [0, 0, 50, 50],
+            [50, 0, 50, 50],
+            [0, 50, 50, 50],
+            [50, 50, 50, 50]
+        ],
+        // 5 WINDOWS:
+        [
+            [30, 0, 40, 100],
+            [0, 0, 30, 50],
+            [0, 50, 30, 50],
+            [70, 0, 30, 50],
+            [70, 50, 30, 50]
+        ],
+        // 6 WINDOWS:
+        [
+            [0, 0, 33.3, 50],
+            [33.3, 0, 33.3, 50],
+            [66.6, 0, 33.3, 50],
+            [0, 50, 33.3, 50],
+            [33.3, 50, 33.3, 50],
+            [66.6, 50, 33.3, 50]
+        ],
+        // 7 WINDOWS:
+        [
+            [30, 0, 40, 100],
+            [0, 0, 30, 33.3],
+            [0, 33.3, 30, 33.3],
+            [0, 66.6, 30, 33.3],
+            [70, 0, 30, 33.3],
+            [70, 33.3, 30, 33.3],
+            [70, 66.6, 30, 33.3]
+        ],
+        // 8 WINDOWS:
+        [
+            [0, 0, 25, 50],
+            [25, 0, 25, 50],
+            [50, 0, 25, 50],
+            [75, 0, 25, 50],
+            [0, 50, 25, 50],
+            [25, 50, 25, 50],
+            [50, 50, 25, 50],
+            [75, 50, 25, 50]
+        ],
+        // 9 WINDOWS:
+        [
+            [0, 0, 33.3, 33.3],
+            [33.3, 0, 33.3, 33.3],
+            [66.6, 0, 33.3, 33.3],
+            [0, 33.3, 33.3, 33.3],
+            [33.3, 33.3, 33.3, 33.3],
+            [66.6, 33.3, 33.3, 33.3],
+            [0, 66.6, 33.3, 33.3],
+            [33.3, 66.6, 33.3, 33.3],
+            [66.6, 66.6, 33.3, 33.3]
+        ],
+        // 10 WINDOWS:
+        [
+            [25, 0, 50, 50],
+            [25, 50, 50, 50],
+            [0, 0, 25, 25],
+            [0, 25, 25, 25],
+            [0, 50, 25, 25],
+            [0, 75, 25, 25],
+            [75, 0, 25, 25],
+            [75, 25, 25, 25],
+            [75, 50, 25, 25],
+            [75, 75, 25, 25]
+        ]
+    ];
+    ////////////////////////////////////////
+
+
+
 
     if (window.location.hash == "#sm-popup") {
 
@@ -419,10 +516,17 @@
                 }
             });
 
+
+
             smWindow[1] = window;
             for (let i = 1; i <= smWindowAmount; i++) {
                 if (i > 1) {
-                    smWindow[i] = window.open(document.location.href.split("#")[0].replace("action=play", "") + "#sm-popup-alt", Date.now(), "width=1280,height=720");
+                    var smWindowOffsetX = Math.round(smPopupPositions[smWindowAmount][i - 1][0] * screen.availWidth / 100);
+                    var smWindowOffsetY = Math.round(smPopupPositions[smWindowAmount][i - 1][1] * screen.availHeight / 100);
+                    var smWindowWidth = Math.round(smPopupPositions[smWindowAmount][i - 1][2] * screen.availWidth / 100) - BROWSER_USED_WIDTH;
+                    var smWindowHeight = Math.round(smPopupPositions[smWindowAmount][i - 1][3] * screen.availHeight / 100) - BROWSER_USED_HEIGHT;
+                    console.log("left=" + smWindowOffsetX + ",top=" + smWindowOffsetY + ",width=" + smWindowWidth + ",height=" + smWindowHeight);
+                    smWindow[i] = window.open(document.location.href.split("#")[0].replace("action=play", "") + "#sm-popup-alt", Date.now(), "left=" + smWindowOffsetX + ",top=" + smWindowOffsetY + ",width=" + smWindowWidth + ",height=" + smWindowHeight);
                 }
                 smWindow[i].addEventListener('load', (event) => {
                     // dirty fix to keep new window names
@@ -738,7 +842,12 @@
                 var smWindowAmountInput = prompt("How many windows [2-10]?", "2");
                 smWindowAmountInput = parseInt(smWindowAmountInput);
                 if ((smWindowAmountInput >= 2) && (smWindowAmountInput <= 10)) {
-                    window.open(document.location.href.replace("action=play", "") + "#sm-popups-alt-" + smWindowAmountInput, Date.now(), "width=1280,height=720");
+                    var smWindowOffsetX = Math.round(smPopupPositions[smWindowAmountInput][0][0] * screen.availWidth / 100);
+                    var smWindowOffsetY = Math.round(smPopupPositions[smWindowAmountInput][0][1] * screen.availHeight / 100);
+                    var smWindowWidth = Math.round(smPopupPositions[smWindowAmountInput][0][2] * screen.availWidth / 100) - BROWSER_USED_WIDTH;
+                    var smWindowHeight = Math.round(smPopupPositions[smWindowAmountInput][0][3] * screen.availHeight / 100) - BROWSER_USED_HEIGHT;
+                    console.log("left=" + smWindowOffsetX + ",top=" + smWindowOffsetY + ",width=" + smWindowWidth + ",height=" + smWindowHeight);
+                    window.open(document.location.href.split("#")[0].replace("action=play", "") + "#sm-popups-alt-" + smWindowAmountInput, Date.now(), "left=" + smWindowOffsetX + ",top=" + smWindowOffsetY + ",width=" + smWindowWidth + ",height=" + smWindowHeight);
                     $("video").trigger("pause");
                 } else {
                     alert("error: wrong input");
