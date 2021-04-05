@@ -19,7 +19,6 @@
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/main/sync_offsets.json";
 
-
     //// SETTINGS FOR MULTI-POPOUT MODE ////
     var BROWSER_USED_HEIGHT = 70; // height [px] of window that is used by browser/system (title bar, url bar, etc) | Default value: 70
     var BROWSER_USED_WIDTH = 9; // width [px] of window that is used by browser/system | Default value: 9
@@ -124,8 +123,6 @@
         [200, "2x"],
         [400, "4x"]
     ];
-
-
 
     if (window.location.hash == "#sm-popup") {
 
@@ -314,7 +311,6 @@
                                                     });
                                                 }
 
-
                                                 document.getElementById("sm-levels").innerHTML = "<div style='margin-bottom: 8px;'>Video quality</div>";
                                                 var smLevels = [];
                                                 document.getElementById("sm-levels").innerHTML += "<a class='sm-btn sm-btn-level' data-id='-1' id='sm-btn-level--1'>Auto</a><br>";
@@ -431,7 +427,6 @@
             }
         });
 
-
         document.getElementById("sm-popup-video").ontimeupdate = function() {
             $("#sm-video-seekbar-in").css("width", ((document.getElementById("sm-popup-video").currentTime / document.getElementById("sm-popup-video").duration) * 100) + "%");
             document.getElementById("sm-video-seekbar-txt").innerHTML = new Date(1000 * document.getElementById("sm-popup-video").currentTime).toISOString().substr(11, 8) + " / " + new Date(1000 * document.getElementById("sm-popup-video").duration).toISOString().substr(11, 8);
@@ -488,7 +483,6 @@
             }
         });
 
-
         if (window.location.hash.includes("#sm-popups-alt-")) {
 
             var smWindowAmount = parseInt(window.location.hash.split("#sm-popups-alt-")[1]);
@@ -496,10 +490,9 @@
             var smSettingsFrameHtml = "<div id='sm-offset-settings-btn' onclick='document.getElementById(&apos;sm-offset-settings&apos;).style.display = &apos;block&apos;' style='background-color: #000000aa; color: #fff; font-size: 12px; padding: 8px 16px; border-radius: 0px 0px 20px 20px; position: fixed; top: 0; left: 5%; cursor: pointer;'>SYNC MENU</div>" +
                 "<div id='sm-offset-settings' style='padding: 10px; position: fixed; top: 0; left: 0; background-color: #000; border-radius: 0px 0px 20px; display: none;'>" +
                 "<div style='text-align: right; font-size: 20px; cursor: pointer;' onclick='document.getElementById(&apos;sm-offset-settings&apos;).style.display = &apos;none&apos;'>[x]</div>" +
-                "<div id='sm-offset-settings-msg-top' style='padding: 10px; margin: 10px 0px; border-radius: 10px; font-size: 14px; background-color: #ffef5b; color: #000;'></div>" +
+                "<div id='sm-offset-settings-msg-top' style='margin: 10px 0px;'></div>" +
                 "<table>" +
                 "<tr><th colspan='3'>OFFSETS [ms]</th></tr>";
-
 
             for (let i = 1; i <= smWindowAmount; i++) {
                 smSettingsFrameHtml += "<tr><td>Window #" + i + "</td><td><input id='sm-offset-" + i + "' type='number' step='250' value='' style='width: 80px;'></td><td><span id='sm-offset-external-" + i + "'></span></td></tr>";
@@ -523,6 +516,7 @@
                 "td,th { padding: 4px 20px; }" +
                 "#sm-offset-settings-btn { display: none; }" +
                 "#sm-top-hover:hover ~ #sm-offset-settings-btn, #sm-offset-settings-btn:hover { display: block !important; }" +
+                "#sm-offset-settings-msg-top p { padding: 10px; border-radius: 10px; font-size: 14px; background-color: #ffef5b; color: #000; }" +
                 "</style>";
 
             var smWindow = [];
@@ -539,15 +533,13 @@
                         console.log("F1TV+: Loaded sync offsets for " + Object.keys(smSyncData.videos).length + " videos!");
                         if (smSyncData.videos[window.location.href.split("detail/")[1].split("/")[0]]) {
                             console.log("F1TV+: Found sync offsets for current video!");
-                            document.getElementById("sm-offset-settings-msg-top").innerHTML = "Loaded offsets for this video from F1TV+ database!<br>All feeds should be perfectly synchronized!";
+                            document.getElementById("sm-offset-settings-msg-top").innerHTML = "<p>Loaded offsets for this video from F1TV+ database!<br>All feeds should be perfectly synchronized!</p>";
                         }
                     } else {
                         console.log("F1TV+: Error loading sync offsets");
                     }
                 }
             });
-
-
 
             smWindow[1] = window;
             for (let i = 1; i <= smWindowAmount; i++) {
@@ -573,8 +565,6 @@
                     }
                 });
             }
-
-
 
             function smPauseAll() {
                 for (let i = 1; i <= smWindowAmount; i++) {
@@ -656,7 +646,6 @@
                     document.getElementById("sm-sync-status-" + i).innerHTML = Math.floor(timeDiff[i] * 1000) + " ms";
                 }
 
-
                 for (let i = 2; i <= smWindowAmount; i++) {
                     timeDiff[i] = Math.abs(time[1] - time[i]);
                     if (timeDiff[i] > maxDesync) {
@@ -694,12 +683,9 @@
 
         }
 
-
-
     } else {
 
         function smLoad() {
-
 
             GM.xmlHttpRequest({
                 method: "GET",
@@ -722,7 +708,6 @@
                     }
                 }
             });
-
 
             var smBtnHtml = "<div id='sm-menu' style='display: none;'>" +
                 "<a id='sm-btn-url' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Get stream URL'>" +
@@ -757,7 +742,6 @@
                 "</div>" +
                 "<style> .full-footer { padding-bottom: 0 !important; } </style>";
             document.getElementsByClassName("full-footer")[0].insertAdjacentHTML("beforeend", smFooterHtml);
-
 
             document.getElementById("sm-btn-url").addEventListener("click", function() {
                 var smUrl_entitlement_token = document.cookie.match('(^|;)\\s*entitlement_token\\s*=\\s*([^;]+)')?.pop() || '';
