@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         F1TV+
-// @namespace    https://najdek.github.io/f1tv_plus/
+// @namespace    https://najdek.me/
 // @version      1.0.8
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
