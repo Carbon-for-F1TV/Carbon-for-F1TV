@@ -1,5 +1,33 @@
 {
   "videos": {
+    "1000003917": {
+      "title": "2021 Emilia Romagna Grand Prix",
+      "values": {
+        "data": 500,
+        "pit_lane": 0,
+        "tracker": 1700,
+        "per": -1250,
+        "ver": -600,
+        "sai": -1100,
+        "lec": -1800,
+        "rai": 50,
+        "gio": 230,
+        "alo": -500,
+        "oco": -150,
+        "tsu": -550,
+        "gas": -2000,
+        "msc": -1000,
+        "maz": -800,
+        "vet": -1100,
+        "str": -750,
+        "ham": -1450,
+        "bot": -1100,
+        "ric": -400,
+        "nor": -1450,
+        "lat": -1750,
+        "rus": -1450
+      }
+    },
     "1000003912": {
       "title": "2021 Bahrain Grand Prix Formula 1 Race",
       "values": {
