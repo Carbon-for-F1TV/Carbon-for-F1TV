@@ -22,11 +22,10 @@ All in your browser, no external apps needed.
 
 You may have to allow F1TV website to open popups.
 
-
 ## Screenshots
-![Screenshot 1](other/screenshot_1.png)
+[![Video 1](other/video_1.png)](https://streamable.com/gsjp2c)
 
-![Screenshot 2](other/screenshot_2.png)
+![Screenshot 1](other/screenshot_1.png)
 
 ## ❤ Donations
 If you like the extension and would like to support me.
