@@ -23,7 +23,7 @@ All in your browser, no external apps needed.
 You may have to allow F1TV website to open popups.
 
 ## Screenshots
-[![Video 1](other/video_1.png)](https://streamable.com/gsjp2c)
+[![Video 1](other/video_1.png)](https://streamable.com/lpd4tt)
 
 ![Screenshot 1](other/screenshot_1.png)
 
