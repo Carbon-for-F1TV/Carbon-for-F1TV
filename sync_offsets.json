@@ -1,5 +1,33 @@
 {
   "videos": {
+    "1000004011": {
+      "title": "2021 Spanish Grand Prix",
+      "values": {
+        "data": 175,
+        "pit_lane": -950,
+        "tracker": 175,
+        "per": -1450,
+        "ver": -600,
+        "sai": 200,
+        "lec": -900,
+        "rai": -775,
+        "gio": -475,
+        "alo": 300,
+        "oco": -1550,
+        "tsu": -100,
+        "gas": -900,
+        "msc": -1200,
+        "maz": -300,
+        "vet": -1600,
+        "str": 400,
+        "ham": -50,
+        "bot": -2025,
+        "ric": -25,
+        "nor": -1175,
+        "lat": 100,
+        "rus": -1225
+      }
+    },
     "1000004110": {
       "title": "2021 Portuguese Grand Prix",
       "values": {
