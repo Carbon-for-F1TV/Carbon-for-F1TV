@@ -472,10 +472,10 @@
             const key = event.key;
             switch (key) {
                 case "ArrowLeft":
-                    document.getElementById("sm-popup-video").currentTime += -5;
+                    document.getElementById("sm-popup-video").currentTime += -5 * document.getElementById("sm-popup-video").playbackRate;
                     break;
                 case "ArrowRight":
-                    document.getElementById("sm-popup-video").currentTime += 5;
+                    document.getElementById("sm-popup-video").currentTime += 5 * document.getElementById("sm-popup-video").playbackRate;
                     break;
                 case " ": //space
                     document.getElementById("sm-pause-toggle").click();
