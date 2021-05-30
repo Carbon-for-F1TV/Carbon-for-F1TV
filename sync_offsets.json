@@ -1,5 +1,33 @@
 {
   "videos": {
+    "1000003922": {
+      "title": "2021 Monaco Grand Prix",
+      "values": {
+        "data": 1200,
+        "pit_lane": -900,
+        "tracker": 1200,
+        "per": -500,
+        "ver": -1650,
+        "sai": 100,
+        "lec": 0,
+        "rai": 300,
+        "gio": -950,
+        "alo": -1325,
+        "oco": -250,
+        "tsu": 300,
+        "gas": -1500,
+        "msc": 200,
+        "maz": -1300,
+        "vet": -800,
+        "str": -500,
+        "ham": -850,
+        "bot": 850,
+        "ric": -100,
+        "nor": -1000,
+        "lat": -1600,
+        "rus": 950
+      }
+    },
     "1000004011": {
       "title": "2021 Spanish Grand Prix",
       "values": {
