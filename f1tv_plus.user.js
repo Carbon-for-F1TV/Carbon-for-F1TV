@@ -14,7 +14,7 @@
     'use strict';
 
     var smVersion = "1.2";
-    //<updateDescription>IMPORTANT UPDATE<br>Fixes issue with some buttons not working</updateDescription>
+    //<updateDescription></updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
@@ -724,32 +724,32 @@
     } else {
 
         function smLoad() {
-
-            GM.xmlHttpRequest({
-                method: "GET",
-                url: smUpdateUrl,
-                onload: function(response) {
-                    var smNewVersion = response.responseText.split("@version")[1].split("\n")[0].replace(/\s/g, "");
-                    var smNewVersionDesc = response.responseText.split("<updateDescription>")[1].split("</updateDescription>")[0];
-                    if (smNewVersion != smVersion) {
-                        var smUpdateHtml = "<div id='sm-update' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; text-align: center;'>" +
-                            "<div id='sm-update-bg' style='background-color: #0000008f; width: 100%; height: 100%; top: 0; left: 0; position: absolute;'></div>" +
-                            "<div style='background-color: #c70000; color: #fff; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; border-radius: 10px; position: absolute;'>" +
-                            "<h3>F1TV+ update is available!</h3>" +
-                            "<p>Installed version: " + smVersion + "<br>" +
-                            "New version: " + smNewVersion + "</p>" +
-                            "<p>" + smNewVersionDesc + "</p>" +
-                            "<a href='" + smUpdateUrl + "' target='_blank' style='color: #ff0;'>[Click here to get new version]</a>" +
-                            "</div>" +
-                            "</div>";
-                        document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", smUpdateHtml);
-                        document.getElementById("sm-update-bg").addEventListener("click", function() {
-                            document.getElementById("sm-update").outerHTML = "";
-                        });
+            if (navigator.vendor !== "Apple Computer, Inc.") { // not supported in Safari
+                GM.xmlHttpRequest({
+                    method: "GET",
+                    url: smUpdateUrl,
+                    onload: function(response) {
+                        var smNewVersion = response.responseText.split("@version")[1].split("\n")[0].replace(/\s/g, "");
+                        var smNewVersionDesc = response.responseText.split("<updateDescription>")[1].split("</updateDescription>")[0];
+                        if (smNewVersion != smVersion) {
+                            var smUpdateHtml = "<div id='sm-update' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; text-align: center;'>" +
+                                "<div id='sm-update-bg' style='background-color: #0000008f; width: 100%; height: 100%; top: 0; left: 0; position: absolute;'></div>" +
+                                "<div style='background-color: #c70000; color: #fff; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; border-radius: 10px; position: absolute;'>" +
+                                "<h3>F1TV+ update is available!</h3>" +
+                                "<p>Installed version: " + smVersion + "<br>" +
+                                "New version: " + smNewVersion + "</p>" +
+                                "<p>" + smNewVersionDesc + "</p>" +
+                                "<a href='" + smUpdateUrl + "' target='_blank' style='color: #ff0;'>[Click here to get new version]</a>" +
+                                "</div>" +
+                                "</div>";
+                            document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", smUpdateHtml);
+                            document.getElementById("sm-update-bg").addEventListener("click", function() {
+                                document.getElementById("sm-update").outerHTML = "";
+                            });
+                        }
                     }
-                }
-            });
-
+                });
+            }
             var smBtnHtml = "<div id='sm-menu' style='display: none;'>" +
                 "<a id='sm-btn-url' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Get stream URL'>" +
                 "<span style='display: inline-block; font-size: 12px;'>URL</span></a>" +
@@ -903,22 +903,28 @@
                 window.open(document.location.href.replace("action=play", "") + "#sm-popup-alt", Date.now(), "width=1280,height=720");
                 $("video").trigger("pause");
             });
-            document.getElementById("sm-btn-popups-alt").addEventListener("click", function() {
-                var smWindowAmountInput = prompt("How many windows [2-10]?", "2");
-                smWindowAmountInput = parseInt(smWindowAmountInput);
-                if ((smWindowAmountInput >= 2) && (smWindowAmountInput <= 10)) {
-                    var smWindowOffsetX = Math.round(smPopupPositions[smWindowAmountInput][0][0] * screen.availWidth / 100);
-                    var smWindowOffsetY = Math.round(smPopupPositions[smWindowAmountInput][0][1] * screen.availHeight / 100);
-                    var smWindowWidth = Math.round(smPopupPositions[smWindowAmountInput][0][2] * screen.availWidth / 100) - BROWSER_USED_WIDTH;
-                    var smWindowHeight = Math.round(smPopupPositions[smWindowAmountInput][0][3] * screen.availHeight / 100) - BROWSER_USED_HEIGHT;
-                    console.log("left=" + smWindowOffsetX + ",top=" + smWindowOffsetY + ",width=" + smWindowWidth + ",height=" + smWindowHeight);
-                    window.open(document.location.href.split("#")[0].replace("action=play", "") + "#sm-popups-alt-" + smWindowAmountInput, Date.now(), "left=" + smWindowOffsetX + ",top=" + smWindowOffsetY + ",width=" + smWindowWidth + ",height=" + smWindowHeight);
-                    $("video").trigger("pause");
-                } else {
-                    alert("error: wrong input");
-                }
+            if (navigator.vendor == "Apple Computer, Inc.") { // not supported in Safari
+                document.getElementById("sm-btn-popups-alt").addEventListener("click", function() {
+                    alert("Not supported in Safari. Please, use another browser...");
+                });
+            } else {
+                document.getElementById("sm-btn-popups-alt").addEventListener("click", function() {
+                    var smWindowAmountInput = prompt("How many windows [2-10]?", "2");
+                    smWindowAmountInput = parseInt(smWindowAmountInput);
+                    if ((smWindowAmountInput >= 2) && (smWindowAmountInput <= 10)) {
+                        var smWindowOffsetX = Math.round(smPopupPositions[smWindowAmountInput][0][0] * screen.availWidth / 100);
+                        var smWindowOffsetY = Math.round(smPopupPositions[smWindowAmountInput][0][1] * screen.availHeight / 100);
+                        var smWindowWidth = Math.round(smPopupPositions[smWindowAmountInput][0][2] * screen.availWidth / 100) - BROWSER_USED_WIDTH;
+                        var smWindowHeight = Math.round(smPopupPositions[smWindowAmountInput][0][3] * screen.availHeight / 100) - BROWSER_USED_HEIGHT;
+                        console.log("left=" + smWindowOffsetX + ",top=" + smWindowOffsetY + ",width=" + smWindowWidth + ",height=" + smWindowHeight);
+                        window.open(document.location.href.split("#")[0].replace("action=play", "") + "#sm-popups-alt-" + smWindowAmountInput, Date.now(), "left=" + smWindowOffsetX + ",top=" + smWindowOffsetY + ",width=" + smWindowWidth + ",height=" + smWindowHeight);
+                        $("video").trigger("pause");
+                    } else {
+                        alert("error: wrong input");
+                    }
+                });
+            }
 
-            });
 
             document.getElementById("sm-btn-theater").addEventListener("click", function() {
                 if (!document.getElementById("sm-theater-style")) {
