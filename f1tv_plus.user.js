@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      1.2
+// @version      1.3
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,8 +13,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "1.2";
-    //<updateDescription></updateDescription>
+    var smVersion = "1.3";
+    //<updateDescription>Update details:<br>Fixed streams not loading in popout modes</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
@@ -321,7 +321,12 @@
                                         async: true,
                                         success: function(data) {
                                             var oldTime = document.getElementById("sm-popup-video").currentTime;
-                                            var smHls = new Hls();
+                                            var smHls = new Hls({
+                                                xhrSetup: xhr => {
+                                                    xhr.withCredentials = true;
+                                                    xhr.setRequestHeader('cookie', document.cookie);
+                                                }
+                                            });
                                             smHls.loadSource(data.resultObj.url);
                                             smHls.attachMedia(document.getElementById("sm-popup-video"));
                                             smHls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
