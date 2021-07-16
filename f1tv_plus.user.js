@@ -324,7 +324,6 @@
                                             var smHls = new Hls({
                                                 xhrSetup: xhr => {
                                                     xhr.withCredentials = true;
-                                                    xhr.setRequestHeader('cookie', document.cookie);
                                                 }
                                             });
                                             smHls.loadSource(data.resultObj.url);
