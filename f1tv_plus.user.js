@@ -728,32 +728,6 @@
     } else {
 
         function smLoad() {
-            if (navigator.vendor !== "Apple Computer, Inc.") { // not supported in Safari
-                GM.xmlHttpRequest({
-                    method: "GET",
-                    url: smUpdateUrl,
-                    onload: function(response) {
-                        var smNewVersion = response.responseText.split("@version")[1].split("\n")[0].replace(/\s/g, "");
-                        var smNewVersionDesc = response.responseText.split("<updateDescription>")[1].split("</updateDescription>")[0];
-                        if (smNewVersion != smVersion) {
-                            var smUpdateHtml = "<div id='sm-update' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; text-align: center;'>" +
-                                "<div id='sm-update-bg' style='background-color: #0000008f; width: 100%; height: 100%; top: 0; left: 0; position: absolute;'></div>" +
-                                "<div style='background-color: #c70000; color: #fff; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; border-radius: 10px; position: absolute;'>" +
-                                "<h3>F1TV+ update is available!</h3>" +
-                                "<p>Installed version: " + smVersion + "<br>" +
-                                "New version: " + smNewVersion + "</p>" +
-                                "<p>" + smNewVersionDesc + "</p>" +
-                                "<a href='" + smUpdateUrl + "' target='_blank' style='color: #ff0;'>[Click here to get new version]</a>" +
-                                "</div>" +
-                                "</div>";
-                            document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", smUpdateHtml);
-                            document.getElementById("sm-update-bg").addEventListener("click", function() {
-                                document.getElementById("sm-update").outerHTML = "";
-                            });
-                        }
-                    }
-                });
-            }
             var smBtnHtml = "<div id='sm-menu' style='display: none;'>" +
                 "<a id='sm-btn-url' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Get stream URL'>" +
                 "<span style='display: inline-block; font-size: 12px;'>URL</span></a>" +
