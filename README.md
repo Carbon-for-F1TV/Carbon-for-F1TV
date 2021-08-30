@@ -1,17 +1,6 @@
 # F1TV+
 Userscript that adds some useful features to F1TV.
 
-All in your browser, no external apps needed.
-
-## Current features
-* theater mode (bigger video, less wasted space on screen),
-* get video/stream URL (to use in external player, like VLC)
-* open video in popup (keep "original" F1TV player)
-* open video in popup in alternative mode (use default HTML5 player)
-* "multi-popout" - open multiple popups with synchronized streams
-  * In multi-popout mode, you can set offset for each video, to keep them perfectly synchronized in case they are hosted out-of-sync
-  * Loads predefined offsets from [sync_offsets.json](sync_offsets.json)
-
 ## Installation
 * Install the Tampermonkey extension for your browser:
   * [Google Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
@@ -24,8 +13,6 @@ You may have to allow F1TV website to open popups.
 
 ## Screenshots
 [![Video 1](other/video_1.png)](https://streamable.com/lpd4tt)
-
-![Screenshot 1](other/screenshot_1.png)
 
 ## ❤ Donations
 If you like the extension and would like to support me.
