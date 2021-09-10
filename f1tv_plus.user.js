@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      2.0
+// @version      2.1
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,8 +13,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "2.0";
-    //<updateDescription>Update details:<br>Big update.<br>Completely replaced default player with F1TV+ player</updateDescription>
+    var smVersion = "2.1";
+    //<updateDescription>Update details:<br>multi-view: Added option to open multiple streams in one browser window</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
@@ -113,6 +113,157 @@
             [75, 75, 25, 25]
         ]
     ];
+
+    // settings optimized for display with 16:9 aspect ratio (full screen)
+    var smFramePositions16by9 = [
+        [],
+        // offset X %, offset Y %, width %, height %
+        // 1 WINDOW:
+        [],
+        // 2 WINDOWS:
+        [
+            [0, 25, 50, 50],
+            [50, 25, 50, 50]
+        ],
+        // 3 WINDOWS:
+        [
+            [0, 16.667, 66.667, 66.667],
+            [66.667, 16.667, 33.333, 33.333],
+            [66.667, 50, 33.333, 33.333]
+        ],
+        // 4 WINDOWS:
+        [
+            [0, 0, 50, 50],
+            [50, 0, 50, 50],
+            [0, 50, 50, 50],
+            [50, 50, 50, 50]
+        ],
+        // 5 WINDOWS:
+        [
+            [0, 8.333, 50, 50],
+            [50, 8.333, 50, 50],
+            [0, 58.333, 33.333, 33.333],
+            [33.333, 58.333, 33.333, 33.333],
+            [66.666, 58.333, 33.333, 33.333]
+        ],
+        // 6 WINDOWS:
+        [
+            [0, 0, 66.666, 66.666],
+            [66.666, 0, 33.333, 33.333],
+            [66.666, 33.333, 33.333, 33.333],
+            [0, 66.666, 33.333, 33.333],
+            [33.333, 66.666, 33.333, 33.333],
+            [66.666, 66.666, 33.333, 33.333]
+        ],
+        // 7 WINDOWS:
+        [],
+        // 8 WINDOWS:
+        [],
+        // 9 WINDOWS:
+        [
+            [0, 0, 33.3, 33.3],
+            [33.3, 0, 33.3, 33.3],
+            [66.6, 0, 33.3, 33.3],
+            [0, 33.3, 33.3, 33.3],
+            [33.3, 33.3, 33.3, 33.3],
+            [66.6, 33.3, 33.3, 33.3],
+            [0, 66.6, 33.3, 33.3],
+            [33.3, 66.6, 33.3, 33.3],
+            [66.6, 66.6, 33.3, 33.3]
+        ],
+        // 10 WINDOWS:
+        [
+            [25, 0, 50, 50],
+            [25, 50, 50, 50],
+            [0, 0, 25, 25],
+            [0, 25, 25, 25],
+            [0, 50, 25, 25],
+            [0, 75, 25, 25],
+            [75, 0, 25, 25],
+            [75, 25, 25, 25],
+            [75, 50, 25, 25],
+            [75, 75, 25, 25]
+        ]
+    ];
+
+    // settings optimized for display with 21:9 aspect ratio (full screen)
+    var smFramePositions21by9 = [
+        [],
+        // offset X %, offset Y %, width %, height %
+        // 1 WINDOW:
+        [
+            [0, 0, 100, 100]
+        ],
+        // 2 WINDOWS:
+        [
+            [0, 16.25, 50, 50],
+            [50, 16.25, 50, 50]
+        ],
+        // 3 WINDOWS:
+        [
+            [0, 5, 66.666, 90],
+            [66.666, 5, 33.333, 45],
+            [66.666, 50, 33.333, 45]
+        ],
+        // 4 WINDOWS:
+        [
+            [12.943, 0, 37.057, 50],
+            [50, 0, 37.057, 50],
+            [12.943, 50, 37.057, 50],
+            [50, 50, 37.057, 50]
+        ],
+        // 5 WINDOWS:
+        [
+            [25, 16.25, 50, 67.5],
+            [0, 16.25, 25, 33.75],
+            [0, 50, 25, 33.75],
+            [75, 16.25, 25, 33.75],
+            [75, 50, 25, 33.75]
+        ],
+        // 6 WINDOWS:
+        [
+            [0, 5, 33.333, 45],
+            [33.333, 5, 33.333, 45],
+            [66.666, 5, 33.333, 45],
+            [0, 50, 33.333, 45],
+            [33.333, 50, 33.333, 45],
+            [66.666, 50, 33.333, 45]
+        ],
+        // 7 WINDOWS:
+        [
+            [25, 16.25, 50, 67.5],
+            [0, 0, 25, 33.333],
+            [0, 33.333, 25, 33.333],
+            [0, 66.666, 25, 33.333],
+            [75, 0, 25, 33.333],
+            [75, 33.333, 25, 33.333],
+            [75, 66.666, 25, 33.333]
+        ],
+        // 8 WINDOWS:
+        [
+            [31.458, 0, 37.057, 50],
+            [31.458, 50, 37.057, 50],
+            [6.458, 0, 25, 33.333],
+            [6.458, 33.333, 25, 33.333],
+            [6.458, 66.666, 25, 33.333],
+            [68.515, 0, 25, 33.333],
+            [68.515, 33.333, 25, 33.333],
+            [68.515, 66.666, 25, 33.333]
+        ],
+        // 9 WINDOWS:
+        [
+            [12.995, 0, 25, 33.333],
+            [37.995, 0, 25, 33.333],
+            [62.995, 0, 25, 33.333],
+            [12.995, 33.333, 25, 33.333],
+            [37.995, 33.333, 25, 33.333],
+            [62.995, 33.333, 25, 33.333],
+            [12.995, 66.666, 25, 33.333],
+            [37.995, 66.666, 25, 33.333],
+            [62.995, 66.666, 25, 33.333]
+        ]
+    ];
+
     ////////////////////////////////////////
 
     var VIDEO_SPEEDS = [
@@ -140,11 +291,11 @@
             if (window.location.hash.split("_")[1].split("=")[0] == "play" ||
                 window.location.hash.split("_")[1].split("=")[0] == "popout" ||
                 window.location.hash.split("_")[1].split("=")[0].split(":")[0] == "multipopout") {
-                var smPopupAltHtml = "<div id='sm-header' style='display: flex; justify-content: space-between; align-items: center; user-select: none; position: fixed; top: 0; left: 0; width: 100%; height: 50px; line-height: 30px; background-color: #b10000; color: #fff;'>" +
+                var smPopupAltHtml = "<div id='sm-header' style='display: none; justify-content: space-between; align-items: center; user-select: none; position: fixed; top: 0; left: 0; width: 100%; height: 50px; line-height: 30px; background-color: #b10000; color: #fff;'>" +
                     "<div id='header-title' style='padding: 10px 20px; font-size: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;'></div>" +
                     "<div id='header-links' style='padding: 10px; display: flex;'>" +
                     "<div id='header-btn-url' style='display: inline-flex; background-color: #af2020; font-size: 14px; padding: 2px 10px; border-radius: 6px; border: 1px solid #ffc0c0; cursor: pointer;'>URL</div>" +
-                    "<div id='header-btn-popout' style='display: inline-flex; background-color: #af2020; font-size: 14px; padding: 2px 10px; border-radius: 6px; border: 1px solid #ffc0c0; cursor: pointer; margin-left: 10px;'>POPOUT</div>" +
+                    "<div id='header-btn-popout' style='display: inline-flex; background-color: #af2020; font-size: 14px; padding: 2px 10px; border-radius: 6px; border: 1px solid #ffc0c0; cursor: pointer; margin-left: 10px;'>MULTI-VIEW</div>" +
                     "<div style='display: inline-flex; align-items: center; margin-left: 20px;'><div style='font-size: 24px;'>F1TV+</div><div id='header-btn-checkupdates' style='display: inline-flex; font-size: 10px; padding: 2px 10px; cursor: pointer; margin-left: 10px; line-height: 12px; text-align: center; text-decoration: underline;'>CHECK FOR<br>UPDATES</div></div>" +
                     "</div>" +
                     "</div>" +
@@ -219,6 +370,7 @@
                 document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", smPopupAltHtml);
 
                 if (window.location.hash.split("_")[1].split("=")[0] == "play") {
+                    $("#sm-header").css("display", "flex");
                     $("#sm-popup-alt-container").css("top", "50px");
                     $("#sm-popup-alt-container").css("height", "calc(100% - 50px)");
 
@@ -331,15 +483,57 @@
                         var smPopoutMenuHtml = "<div id='sm-popout-menu' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1001; text-align: center;'>" +
                             "<div id='sm-popout-menu-bg' style='background-color: #0000008f; width: 100%; height: 100%; top: 0; left: 0; position: absolute;'></div>" +
                             "<div style='background-color: #c70000; color: #fff; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; border-radius: 10px; position: absolute;'>" +
-                            "<div style='font-size: 20px;'>Select amount of popout windows</div>" +
-                            "<div style='font-size: 12px;'>All popouts will be synchronized!</div>" +
-                            "<div id='sm-popout-menu-options' style='text-align: center; margin-top: 16px;'></div>" +
+                            "<div style='font-size: 20px;'>F1TV+ MULTI-VIEW</div>" +
+                            "<div id='sm-popout-menu-mode-selection' style='margin-top: 10px;'>" +
+                            "<div style='font-size: 12px;'>Select mode:</div>" +
+                            "<div id='sm-popout-menu-mode-multipopout' style='display: inline-block; padding: 10px 20px; text-transform: uppercase; border: 1px solid #ff7171; border-radius: 20px 0px 0px 20px; background-color: #9a0000; cursor: pointer;'>Popouts</div>" +
+                            "<div id='sm-popout-menu-mode-onewindow' style='display: inline-block; padding: 10px 20px; text-transform: uppercase; border: 1px solid #ff7171; border-radius: 0px 20px 20px 0px; background-color: #c13636; cursor: pointer;'>Frames</div>" +
+                            "</div>" +
+                            "<div id='sm-popout-menu-frame-selection' style='display: none; margin-top: 10px;'>" +
+                            "<div style='font-size: 12px;'>Display aspect ratio:</div>" +
+                            "<div id='sm-popout-menu-frame-16by9' style='display: inline-block; padding: 10px 20px; text-transform: uppercase; border: 1px solid #ff7171; border-radius: 20px 0px 0px 20px; background-color: #9a0000; cursor: pointer;'>16:9</div>" +
+                            "<div id='sm-popout-menu-frame-21by9' style='display: inline-block; padding: 10px 20px; text-transform: uppercase; border: 1px solid #ff7171; border-radius: 0px 20px 20px 0px; background-color: #c13636; cursor: pointer;'>21:9</div>" +
+                            "</div>" +
+                            "<div id='sm-popout-menu-options' style='text-align: center; margin-top: 16px;'>" +
+                            "<div id='sm-popout-options-list'></div>" +
+                            "<div id='sm-popout-options-frames' style='display: none;'>" +
+                            "<div id='sm-popout-options-frame-16by9-list'></div>" +
+                            "<div id='sm-popout-options-frame-21by9-list' style='display: none;'></div>" +
+                            "</div>" +
+                            "</div>" +
                             "</div>" +
                             "</div>";
                         document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", smPopoutMenuHtml);
                         document.getElementById("sm-popout-menu-bg").addEventListener("click", function() {
                             $("#sm-popout-menu").remove();
                         });
+                        document.getElementById("sm-popout-menu-mode-multipopout").addEventListener("click", function() {
+                            $("#sm-popout-menu-mode-multipopout").css("background-color", "#9a0000");
+                            $("#sm-popout-menu-mode-onewindow").css("background-color", "#c13636");
+                            $("#sm-popout-menu-frame-selection").hide();
+                            $("#sm-popout-options-list").show();
+                            $("#sm-popout-options-frames").hide();
+                        });
+                        document.getElementById("sm-popout-menu-mode-onewindow").addEventListener("click", function() {
+                            $("#sm-popout-menu-mode-multipopout").css("background-color", "#c13636");
+                            $("#sm-popout-menu-mode-onewindow").css("background-color", "#9a0000");
+                            $("#sm-popout-menu-frame-selection").show();
+                            $("#sm-popout-options-list").hide();
+                            $("#sm-popout-options-frames").show();
+                        });
+                        document.getElementById("sm-popout-menu-frame-16by9").addEventListener("click", function() {
+                            $("#sm-popout-menu-frame-16by9").css("background-color", "#9a0000");
+                            $("#sm-popout-menu-frame-21by9").css("background-color", "#c13636");
+                            $("#sm-popout-options-frame-16by9-list").show();
+                            $("#sm-popout-options-frame-21by9-list").hide();
+                        });
+                        document.getElementById("sm-popout-menu-frame-21by9").addEventListener("click", function() {
+                            $("#sm-popout-menu-frame-16by9").css("background-color", "#c13636");
+                            $("#sm-popout-menu-frame-21by9").css("background-color", "#9a0000");
+                            $("#sm-popout-options-frame-16by9-list").hide();
+                            $("#sm-popout-options-frame-21by9-list").show();
+                        });
+                        // popout list
                         for (var i in smPopupPositions) {
                             if (i == 0) {
                                 continue;
@@ -355,7 +549,7 @@
                                 "<div id='popout-icon-" + i + "' style='width: " + btnWidth + "px; height: " + btnHeight + "px; position: relative;'></div>" +
                                 "<div style='font-size: 20px; margin-top: 10px;'>" + i + "</div>" +
                                 "</div>";
-                            document.getElementById("sm-popout-menu-options").insertAdjacentHTML("beforeend", btnHtml);
+                            document.getElementById("sm-popout-options-list").insertAdjacentHTML("beforeend", btnHtml);
                             document.getElementById("sm-popout-menu-option-" + i).addEventListener("click", function() {
                                 if ($(this).data("i") == 1) {
                                     window.open("https://" + document.location.href.split("/")[2] + smURL_EMPTYPAGE + "#f1tvplus_popout=" + $(this).data("contentid"), Date.now(), "width=1280,height=720");
@@ -378,6 +572,50 @@
                             for (var popoutAmount in smPopupPositions[i]) {
                                 var smPopoutIconHtml = "<div style='position: absolute; left: " + smPopupPositions[i][popoutAmount][0] * btnWidth / 100 + "px; top: " + smPopupPositions[i][popoutAmount][1] * btnHeight / 100 + "px; width: " + smPopupPositions[i][popoutAmount][2] * btnWidth / 100 + "px; height: " + smPopupPositions[i][popoutAmount][3] * btnHeight / 100 + "px; background-color: #fff; border: 1px solid #000; border-radius: 2px;'></div>";
                                 document.getElementById("popout-icon-" + i).insertAdjacentHTML("beforeend", smPopoutIconHtml);
+                            }
+                        }
+
+                        // frame 16by9 list
+                        for (var i in smFramePositions16by9) {
+                            if (smFramePositions16by9[i].length < 2) {
+                                continue;
+                            }
+                            var btnWidth = 112;
+                            var btnHeight = 63;
+                            var smUrl_contentId = window.location.hash.split("_")[1].split("=")[1];
+                            var btnHtml = "<div id='sm-popout-menu-option-frame-16by9-" + i + "' data-i='" + i + "' data-contentid='" + smUrl_contentId + "' style='display: inline-block; margin: 6px; padding: 10px; border-radius: 6px; border: 1px solid #ffc0c0; background-color: #af2020; cursor: pointer;'>" +
+                                "<div id='frame-16by9-icon-" + i + "' style='width: " + btnWidth + "px; height: " + btnHeight + "px; position: relative;'></div>" +
+                                "<div style='font-size: 20px; margin-top: 10px;'>" + i + "</div>" +
+                                "</div>";
+                            document.getElementById("sm-popout-options-frame-16by9-list").insertAdjacentHTML("beforeend", btnHtml);
+                            document.getElementById("sm-popout-menu-option-frame-16by9-" + i).addEventListener("click", function() {
+                                window.location.href = "https://" + document.location.href.split("/")[2] + smURL_EMPTYPAGE + "#f1tvplus_multipopout:" + $(this).data("i") + ":onewindow:16by9=" + $(this).data("contentid");
+                            });
+                            for (var popoutAmount in smFramePositions16by9[i]) {
+                                var smPopoutIconHtml = "<div style='position: absolute; left: " + smFramePositions16by9[i][popoutAmount][0] * btnWidth / 100 + "px; top: " + smFramePositions16by9[i][popoutAmount][1] * btnHeight / 100 + "px; width: " + smFramePositions16by9[i][popoutAmount][2] * btnWidth / 100 + "px; height: " + smFramePositions16by9[i][popoutAmount][3] * btnHeight / 100 + "px; background-color: #fff; border: 1px solid #000; border-radius: 2px;'></div>";
+                                document.getElementById("frame-16by9-icon-" + i).insertAdjacentHTML("beforeend", smPopoutIconHtml);
+                            }
+                        }
+
+                        // frame 21by9 list
+                        for (var i in smFramePositions21by9) {
+                            if (smFramePositions21by9[i].length < 2) {
+                                continue;
+                            }
+                            var btnWidth = 147;
+                            var btnHeight = 63;
+                            var smUrl_contentId = window.location.hash.split("_")[1].split("=")[1];
+                            var btnHtml = "<div id='sm-popout-menu-option-frame-21by9-" + i + "' data-i='" + i + "' data-contentid='" + smUrl_contentId + "' style='display: inline-block; margin: 6px; padding: 10px; border-radius: 6px; border: 1px solid #ffc0c0; background-color: #af2020; cursor: pointer;'>" +
+                                "<div id='frame-21by9-icon-" + i + "' style='width: " + btnWidth + "px; height: " + btnHeight + "px; position: relative;'></div>" +
+                                "<div style='font-size: 20px; margin-top: 10px;'>" + i + "</div>" +
+                                "</div>";
+                            document.getElementById("sm-popout-options-frame-21by9-list").insertAdjacentHTML("beforeend", btnHtml);
+                            document.getElementById("sm-popout-menu-option-frame-21by9-" + i).addEventListener("click", function() {
+                                window.location.href = "https://" + document.location.href.split("/")[2] + smURL_EMPTYPAGE + "#f1tvplus_multipopout:" + $(this).data("i") + ":onewindow:21by9=" + $(this).data("contentid");
+                            });
+                            for (var popoutAmount in smFramePositions21by9[i]) {
+                                var smPopoutIconHtml = "<div style='position: absolute; left: " + smFramePositions21by9[i][popoutAmount][0] * btnWidth / 100 + "px; top: " + smFramePositions21by9[i][popoutAmount][1] * btnHeight / 100 + "px; width: " + smFramePositions21by9[i][popoutAmount][2] * btnWidth / 100 + "px; height: " + smFramePositions21by9[i][popoutAmount][3] * btnHeight / 100 + "px; background-color: #fff; border: 1px solid #000; border-radius: 2px;'></div>";
+                                document.getElementById("frame-21by9-icon-" + i).insertAdjacentHTML("beforeend", smPopoutIconHtml);
                             }
                         }
                     });
@@ -783,6 +1021,26 @@
                 });
 
                 if (window.location.hash.split("_")[1].split(":")[0] == "multipopout") {
+                    if (window.location.hash.split("_")[1].split("=")[0].split(":")[2] == "onewindow") {
+                        var oneWindow = true;
+                        var oneWindowAr = window.location.hash.split("_")[1].split("=")[0].split(":")[3];
+                        if (oneWindowAr == "16by9") {
+                            smPopupPositions = smFramePositions16by9;
+                        } else if (oneWindowAr == "21by9") {
+                            smPopupPositions = smFramePositions21by9;
+                        }
+                        var smGoFullscreenHtml = "<div id='sm-gofullscreen' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1001; text-align: center;'>" +
+                            "<div style='background-color: #0000008f; width: 100%; height: 100%; top: 0; left: 0; position: absolute;'></div>" +
+                            "<div style='background-color: #c70000; color: #fff; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; border-radius: 10px; position: absolute;'>" +
+                            "<h3>Click anywhere to go fullscreen...</h3>" +
+                            "</div>" +
+                            "</div>";
+                        document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", smGoFullscreenHtml);
+                        document.getElementById("sm-gofullscreen").addEventListener("click", function() {
+                            $("#sm-gofullscreen").hide();
+                            document.getElementsByTagName("body")[0].requestFullscreen();
+                        });
+                    }
 
                     var smWindowAmount = parseInt(window.location.hash.split("_")[1].split(":")[1]);
 
@@ -848,28 +1106,59 @@
                         }
                     });
 
+                    if (oneWindow) {
+                        $("#sm-popup-alt-container").css("position", "absolute");
+                        $("#sm-popup-alt-container").css("left", smPopupPositions[smWindowAmount][0][0] + "%");
+                        $("#sm-popup-alt-container").css("top", smPopupPositions[smWindowAmount][0][1] + "%");
+                        $("#sm-popup-alt-container").css("width", smPopupPositions[smWindowAmount][0][2] + "%");
+                        $("#sm-popup-alt-container").css("height", smPopupPositions[smWindowAmount][0][3] + "%");
+                    }
+
                     smWindow[1] = window;
-                    for (let i = 1; i <= smWindowAmount; i++) {
-                        if (i > 1) {
-                            var smWindowOffsetX = Math.round(smPopupPositions[smWindowAmount][i - 1][0] * screen.availWidth / 100);
-                            var smWindowOffsetY = Math.round(smPopupPositions[smWindowAmount][i - 1][1] * screen.availHeight / 100);
-                            var smWindowWidth = Math.round(smPopupPositions[smWindowAmount][i - 1][2] * screen.availWidth / 100) - BROWSER_USED_WIDTH;
-                            var smWindowHeight = Math.round(smPopupPositions[smWindowAmount][i - 1][3] * screen.availHeight / 100) - BROWSER_USED_HEIGHT;
-                            smWindow[i] = window.open(document.location.href.split("_multipopout")[0] + "_popout=" + window.location.hash.split("_")[1].split("=")[1], Date.now(), "left=" + smWindowOffsetX + ",top=" + smWindowOffsetY + ",width=" + smWindowWidth + ",height=" + smWindowHeight);
+
+                    if (oneWindow) {
+                        for (let i = 2; i <= smWindowAmount; i++) {
+                            var smWindowOffsetX = smPopupPositions[smWindowAmount][i - 1][0];
+                            var smWindowOffsetY = smPopupPositions[smWindowAmount][i - 1][1];
+                            var smWindowWidth = smPopupPositions[smWindowAmount][i - 1][2];
+                            var smWindowHeight = smPopupPositions[smWindowAmount][i - 1][3];
+                            var frameHtml = '<iframe id="sm-frame-' + i + '" style="position: absolute; border: 0; left: ' + smWindowOffsetX + '%; top: ' + smWindowOffsetY + '%; width: ' + smWindowWidth + '%; height: ' + smWindowHeight + '%;" src="' + document.location.href.split("_multipopout")[0] + "_popout=" + window.location.hash.split("_")[1].split("=")[1] + '"></iframe>';
+                            document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", frameHtml);
+                            smWindow[i] = document.getElementById("sm-frame-" + i).contentWindow;
+
+                            smWindow[i].addEventListener('load', (event) => {
+                                setTimeout(function() {
+                                    if (i > 1) {
+                                        smWindow[i].document.getElementById("sm-video-primary-controls").style.display = "none";
+                                        smWindow[i].document.getElementById("sm-video-titlebar").style.display = "inline-block";
+                                    }
+                                    smWindow[i].document.title = "(#" + i + ") " + smWindow[i].document.getElementById("sm-video-title").innerHTML;
+                                    smWindow[i].document.getElementById("sm-popup-id").innerHTML = i;
+                                }, 500);
+                            });
                         }
+                    } else {
+                        for (let i = 1; i <= smWindowAmount; i++) {
+                            if (i > 1) {
+                                var smWindowOffsetX = Math.round(smPopupPositions[smWindowAmount][i - 1][0] * screen.availWidth / 100);
+                                var smWindowOffsetY = Math.round(smPopupPositions[smWindowAmount][i - 1][1] * screen.availHeight / 100);
+                                var smWindowWidth = Math.round(smPopupPositions[smWindowAmount][i - 1][2] * screen.availWidth / 100) - BROWSER_USED_WIDTH;
+                                var smWindowHeight = Math.round(smPopupPositions[smWindowAmount][i - 1][3] * screen.availHeight / 100) - BROWSER_USED_HEIGHT;
+                                smWindow[i] = window.open(document.location.href.split("_multipopout")[0] + "_popout=" + window.location.hash.split("_")[1].split("=")[1], Date.now(), "left=" + smWindowOffsetX + ",top=" + smWindowOffsetY + ",width=" + smWindowWidth + ",height=" + smWindowHeight);
+                            }
+                            smWindow[i].addEventListener('load', (event) => {
+                                setTimeout(function() {
+                                    if (i > 1) {
+                                        smWindow[i].document.getElementById("sm-video-primary-controls").style.display = "none";
+                                        smWindow[i].document.getElementById("sm-video-titlebar").style.display = "inline-block";
+                                    }
+                                    smWindow[i].document.title = "(#" + i + ") " + smWindow[i].document.getElementById("sm-video-title").innerHTML;
+                                    smWindow[i].document.getElementById("sm-popup-id").innerHTML = i;
+                                }, 500);
 
-                        smWindow[i].addEventListener('load', (event) => {
-                            setTimeout(function() {
-                                if (i > 1) {
-                                    smWindow[i].document.getElementById("sm-video-primary-controls").style.display = "none";
-                                    smWindow[i].document.getElementById("sm-video-titlebar").style.display = "inline-block";
-                                }
-                                smWindow[i].document.title = "(#" + i + ") " + smWindow[i].document.getElementById("sm-video-title").innerHTML;
-                                smWindow[i].document.getElementById("sm-popup-id").innerHTML = i;
-                            }, 500);
 
-
-                        });
+                            });
+                        }
                     }
 
                     function smPauseAll() {
