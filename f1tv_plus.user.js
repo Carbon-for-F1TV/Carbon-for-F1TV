@@ -875,6 +875,7 @@
                                 }
                                 if (smAdditionalStreams == false) {
                                     document.getElementById("sm-btn-feeds").style = "display: none !important;";
+                                    $("#header-btn-popout").text("POPOUT");
                                 }
                             },
                             error: function() {
