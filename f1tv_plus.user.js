@@ -697,7 +697,7 @@
                         var smUrl_contentId = window.location.hash.split("_")[1].split("=")[1];
                         var smHtml = "<div class='sm-feeds-container' style='position: relative; z-index: 1002; top: 0; left: 0; width: 100%; height: 100%;'>" +
                             "<div id='sm-feeds-container-bg' style='position: absolute; z-index: 1002; top: 0; left: 0; height: 100%; width: 100%;'></div>" +
-                            "<div style='position: absolute; text-align: center; background-color: #000; z-index: 1003; width: 96%; left: 2%; border-radius: 0px 0px 20px 20px;'>" +
+                            "<div style='position: absolute; text-align: center; background-color: rgba(0, 0, 0, 0.65); z-index: 1003; width: 96%; left: 2%; border-radius: 0px 0px 20px 20px;'>" +
                             "<div class='sm-feeds-main'></div>" +
                             "<div class='sm-feeds'></div>" +
                             "</div>" +
