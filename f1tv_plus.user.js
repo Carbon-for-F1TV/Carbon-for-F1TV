@@ -294,9 +294,9 @@
                 var smPopupAltHtml = "<div id='sm-header' style='display: none; justify-content: space-between; align-items: center; user-select: none; position: fixed; top: 0; left: 0; width: 100%; height: 50px; line-height: 30px; background-color: #e10600; color: #fff;'>" +
                     "<div id='header-title' style='padding: 10px 20px; font-size: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;'></div>" +
                     "<div id='header-links' style='padding: 10px; display: flex;'>" +
-                    "<div id='header-btn-url' style='display: inline-flex; background-color: #af2020; font-size: 14px; padding: 2px 10px; border-radius: 6px; border: 1px solid #ffc0c0; cursor: pointer;'>URL</div>" +
-                    "<div id='header-btn-popout' style='display: inline-flex; background-color: #af2020; font-size: 14px; padding: 2px 10px; border-radius: 6px; border: 1px solid #ffc0c0; cursor: pointer; margin-left: 10px;'>MULTI-VIEW</div>" +
-                    "<div style='display: inline-flex; align-items: center; margin-left: 20px;'><div style='font-size: 24px;'>F1TV+</div><div id='header-btn-checkupdates' style='display: inline-flex; font-size: 10px; padding: 2px 10px; cursor: pointer; margin-left: 10px; line-height: 12px; text-align: center; text-decoration: underline;'>CHECK FOR<br>UPDATES</div></div>" +
+                    "<div id='header-btn-url' style='font-family: Formula1-Bold, sans-serif; display: inline-flex; background-color: #af2020; font-size: 14px; padding: 2px 10px; border-radius: 6px; border: 1px solid #ffc0c0; cursor: pointer;'>URL</div>" +
+                    "<div id='header-btn-popout' style='font-family: Formula1-Bold, sans-serif; display: inline-flex; background-color: #af2020; font-size: 14px; padding: 2px 10px; border-radius: 6px; border: 1px solid #ffc0c0; cursor: pointer; margin-left: 10px;'>MULTI-VIEW</div>" +
+                    "<div style='display: inline-flex; align-items: center; margin-left: 20px;'><div style='font-size: 24px; font-family: Formula1-Bold, sans-serif'; >F1TV+</div><div id='header-btn-checkupdates' style='display: inline-flex; font-size: 10px; padding: 2px 10px; cursor: pointer; margin-left: 10px; line-height: 12px; text-align: center; text-decoration: underline;'>CHECK FOR<br>UPDATES</div></div>" +
                     "</div>" +
                     "</div>" +
                     "<div id='sm-popup-alt-container' style='user-select: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 999;'>" +
