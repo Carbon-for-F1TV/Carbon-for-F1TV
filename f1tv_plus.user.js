@@ -291,7 +291,7 @@
             if (window.location.hash.split("_")[1].split("=")[0] == "play" ||
                 window.location.hash.split("_")[1].split("=")[0] == "popout" ||
                 window.location.hash.split("_")[1].split("=")[0].split(":")[0] == "multipopout") {
-                var smPopupAltHtml = "<div id='sm-header' style='display: none; justify-content: space-between; align-items: center; user-select: none; position: fixed; top: 0; left: 0; width: 100%; height: 50px; line-height: 30px; background-color: #b10000; color: #fff;'>" +
+                var smPopupAltHtml = "<div id='sm-header' style='display: none; justify-content: space-between; align-items: center; user-select: none; position: fixed; top: 0; left: 0; width: 100%; height: 50px; line-height: 30px; background-color: #e10600; color: #fff;'>" +
                     "<div id='header-title' style='padding: 10px 20px; font-size: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;'></div>" +
                     "<div id='header-links' style='padding: 10px; display: flex;'>" +
                     "<div id='header-btn-url' style='display: inline-flex; background-color: #af2020; font-size: 14px; padding: 2px 10px; border-radius: 6px; border: 1px solid #ffc0c0; cursor: pointer;'>URL</div>" +
