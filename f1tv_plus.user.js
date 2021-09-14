@@ -280,6 +280,8 @@
 
     var DEFAULT_AUDIOTRACK = "English";
 
+    var USE_F1_FONT = true;
+
     var smURL_DOMAIN = "f1tv.formula1.com";
     var smURL_EMPTYPAGE = "/1.0/R/ENG/WEB_DASH/ALL/GETSTATICTEXT/"; // an empty page on F1TV domain
 
@@ -291,12 +293,12 @@
             if (window.location.hash.split("_")[1].split("=")[0] == "play" ||
                 window.location.hash.split("_")[1].split("=")[0] == "popout" ||
                 window.location.hash.split("_")[1].split("=")[0].split(":")[0] == "multipopout") {
-                var smPopupAltHtml = "<div id='sm-header' style='display: none; justify-content: space-between; align-items: center; user-select: none; position: fixed; top: 0; left: 0; width: 100%; height: 50px; line-height: 30px; background-color: #b10000; color: #fff;'>" +
+                var smPopupAltHtml = "<div id='sm-header' style='display: none; justify-content: space-between; align-items: center; user-select: none; position: fixed; top: 0; left: 0; width: 100%; height: 50px; line-height: 30px; background-color: #e10600; color: #fff;'>" +
                     "<div id='header-title' style='padding: 10px 20px; font-size: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;'></div>" +
                     "<div id='header-links' style='padding: 10px; display: flex;'>" +
                     "<div id='header-btn-url' style='display: inline-flex; background-color: #af2020; font-size: 14px; padding: 2px 10px; border-radius: 6px; border: 1px solid #ffc0c0; cursor: pointer;'>URL</div>" +
                     "<div id='header-btn-popout' style='display: inline-flex; background-color: #af2020; font-size: 14px; padding: 2px 10px; border-radius: 6px; border: 1px solid #ffc0c0; cursor: pointer; margin-left: 10px;'>MULTI-VIEW</div>" +
-                    "<div style='display: inline-flex; align-items: center; margin-left: 20px;'><div style='font-size: 24px;'>F1TV+</div><div id='header-btn-checkupdates' style='display: inline-flex; font-size: 10px; padding: 2px 10px; cursor: pointer; margin-left: 10px; line-height: 12px; text-align: center; text-decoration: underline;'>CHECK FOR<br>UPDATES</div></div>" +
+                    "<div style='display: inline-flex; align-items: center; margin-left: 20px;'><div style='font-size: 24px; font-weight: bold;'>F1TV+</div><div id='header-btn-checkupdates' style='display: inline-flex; font-size: 10px; padding: 2px 10px; cursor: pointer; margin-left: 10px; line-height: 12px; text-align: center; text-decoration: underline;'>CHECK FOR<br>UPDATES</div></div>" +
                     "</div>" +
                     "</div>" +
                     "<div id='sm-popup-alt-container' style='user-select: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 999;'>" +
@@ -305,13 +307,13 @@
                     "<div style='position: absolute; top: 50%; width: 100%; text-align: center; transform: translateY(-50%); font-weight: bold; font-size: 90px; color: #ccc;'>F1TV+</div>" +
                     "<video id='sm-popup-video' muted style='position: absolute; top: 0; left: 0; height: 100%; width: 100%;'></video>" +
                     "<div id='sm-audio-tracks-container' style='display: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%; z-index: 2;'>" +
-                    "<div id='sm-audio-tracks' style='position: absolute; background-color: #000; color: #fff; text-align: center; padding: 20px; border-radius: 20px; right: 180px; bottom: 40px;'></div>" +
+                    "<div id='sm-audio-tracks' style='position: absolute; background-color: #000; color: #fff; text-align: center; padding: 20px; border-radius: 20px; right: 165px; bottom: 40px;'></div>" +
                     "</div>" +
                     "<div id='sm-levels-container' style='display: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%; z-index: 2;'>" +
-                    "<div id='sm-levels' style='position: absolute; background-color: #000; color: #fff; text-align: center; padding: 20px; border-radius: 20px; right: 215px; bottom: 40px;'></div>" +
+                    "<div id='sm-levels' style='position: absolute; background-color: #000; color: #fff; text-align: center; padding: 20px; border-radius: 20px; right: 205px; bottom: 40px;'></div>" +
                     "</div>" +
                     "<div id='sm-speeds-container' style='display: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%; z-index: 2;'>" +
-                    "<div id='sm-speeds' style='position: absolute; background-color: #000; color: #fff; text-align: center; padding: 20px; border-radius: 20px; right: 250px; bottom: 40px;'></div>" +
+                    "<div id='sm-speeds' style='position: absolute; background-color: #000; color: #fff; text-align: center; padding: 20px; border-radius: 20px; right: 235px; bottom: 40px;'></div>" +
                     "</div>" +
                     "<div id='sm-video-menu' class='sm-autohide' style='position: absolute; bottom: 0; left: 0; width: 100%; height: 40px; background-color: #000;'>" +
                     "<div id='sm-video-titlebar' style='display: none; cursor: default; width: 100%; height: 40px; background-color: black;'><div id='sm-video-titlebar-txt' style='position: absolute; color: #fff; width: 100%; text-align: left; top: 50%; transform: translateY(-50%); font-family: monospace; font-size: 16px; line-height: 40px;'><span id='sm-video-title' style='margin-left: 20px;'></span><span class='sm-hide-from-900px' style='margin-left: 40px; color: #bbb;'>Use Window #1 to control all feeds.</span></div></div>" +
@@ -322,7 +324,7 @@
                     "</div>" +
                     "<div style='display: inline-block; position: relative; width: calc(100% - 390px); bottom: 0; left: 0;'>" +
                     "<div id='sm-video-seekbar' style='display: inline-block; cursor: pointer; width: 100%; height: 40px; background-color: black;'>" +
-                    "<div id='sm-video-seekbar-in' style='background-color: #b10000; width: 0%; height: 100%;'></div>" +
+                    "<div id='sm-video-seekbar-in' style='background-color: #e10600; width: 0%; height: 100%;'></div>" +
                     "<div id='sm-video-seekbar-txt' style='position: absolute; color: #fff; width: 100%; text-align: center; top: 0; font-family: monospace; font-size: 16px; line-height: 40px;'></div>" +
                     "<div id='sm-video-seekbar-txt-onhover' style='display: none; padding: 0 20px; position: absolute; color: #fff; top: 0; font-family: monospace; font-size: 16px; line-height: 40px;'></div>" +
                     "<div id='sm-video-seekbar-pointer-onhover' style='display: none; position: absolute; height: 100%; width: 1px; top: 0; background-color: #fff;'></div>" +
@@ -367,7 +369,16 @@
                     "}" +
                     "</style>" +
                     "</div>";
+
                 document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", smPopupAltHtml);
+
+                if (USE_F1_FONT) {
+                    var fontHtml = "<style>" +
+                        "@font-face {font-family: 'Formula1-Regular'; src: url(/static/0f4e3d54644717199c6f6c04c19737f1.ttf) format('truetype')}" +
+                        "body {font-family: 'Formula1-Regular';}"
+                        "</style>";
+                    document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", fontHtml);
+                }
 
                 if (window.location.hash.split("_")[1].split("=")[0] == "play") {
                     $("#sm-header").css("display", "flex");
@@ -483,14 +494,14 @@
                         var smPopoutMenuHtml = "<div id='sm-popout-menu' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1001; text-align: center;'>" +
                             "<div id='sm-popout-menu-bg' style='background-color: #0000008f; width: 100%; height: 100%; top: 0; left: 0; position: absolute;'></div>" +
                             "<div style='background-color: #c70000; color: #fff; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; border-radius: 10px; position: absolute;'>" +
-                            "<div style='font-size: 20px;'>F1TV+ MULTI-VIEW</div>" +
+                            "<div style='font-size: 20px; font-weight: bold;'>F1TV+ MULTI-VIEW</div>" +
                             "<div id='sm-popout-menu-mode-selection' style='margin-top: 10px;'>" +
-                            "<div style='font-size: 12px;'>Select mode:</div>" +
+                            "<div style='font-size: 12px; margin: 4px;'>Select mode:</div>" +
                             "<div id='sm-popout-menu-mode-multipopout' style='display: inline-block; padding: 10px 20px; text-transform: uppercase; border: 1px solid #ff7171; border-radius: 20px 0px 0px 20px; background-color: #9a0000; cursor: pointer;'>Popouts</div>" +
                             "<div id='sm-popout-menu-mode-onewindow' style='display: inline-block; padding: 10px 20px; text-transform: uppercase; border: 1px solid #ff7171; border-radius: 0px 20px 20px 0px; background-color: #c13636; cursor: pointer;'>Frames</div>" +
                             "</div>" +
                             "<div id='sm-popout-menu-frame-selection' style='display: none; margin-top: 10px;'>" +
-                            "<div style='font-size: 12px;'>Display aspect ratio:</div>" +
+                            "<div style='font-size: 12px; margin: 4px;'>Display aspect ratio:</div>" +
                             "<div id='sm-popout-menu-frame-16by9' style='display: inline-block; padding: 10px 20px; text-transform: uppercase; border: 1px solid #ff7171; border-radius: 20px 0px 0px 20px; background-color: #9a0000; cursor: pointer;'>16:9</div>" +
                             "<div id='sm-popout-menu-frame-21by9' style='display: inline-block; padding: 10px 20px; text-transform: uppercase; border: 1px solid #ff7171; border-radius: 0px 20px 20px 0px; background-color: #c13636; cursor: pointer;'>21:9</div>" +
                             "</div>" +
@@ -647,7 +658,7 @@
                                     var smUpdateHtml = "<div id='sm-update' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1001; text-align: center;'>" +
                                         "<div id='sm-update-bg' style='background-color: #0000008f; width: 100%; height: 100%; top: 0; left: 0; position: absolute;'></div>" +
                                         "<div style='background-color: #c70000; color: #fff; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; border-radius: 10px; position: absolute;'>" +
-                                        "<h3>F1TV+ v" + smVersion + "</h3>" +
+                                        "<div style='font-weight: bold; font-size: 20px;'>F1TV+ v" + smVersion + "</div>" +
                                         "<p>Your version is up to date!</p>" +
                                         "</div>" +
                                         "</div>";
@@ -696,7 +707,7 @@
                         var smUrl_contentId = window.location.hash.split("_")[1].split("=")[1];
                         var smHtml = "<div class='sm-feeds-container' style='position: relative; z-index: 1002; top: 0; left: 0; width: 100%; height: 100%;'>" +
                             "<div id='sm-feeds-container-bg' style='position: absolute; z-index: 1002; top: 0; left: 0; height: 100%; width: 100%;'></div>" +
-                            "<div style='position: absolute; text-align: center; background-color: #000; z-index: 1003; width: 96%; left: 2%; border-radius: 0px 0px 20px 20px;'>" +
+                            "<div style='position: absolute; text-align: center; background-color: #000000dd; z-index: 1003; width: 96%; left: 2%; border-radius: 0px 0px 20px 20px;'>" +
                             "<div class='sm-feeds-main'></div>" +
                             "<div class='sm-feeds'></div>" +
                             "</div>" +
