@@ -322,9 +322,9 @@
                     "</div>" +
                     "<div style='display: inline-block; position: relative; width: calc(100% - 390px); bottom: 0; left: 0;'>" +
                     "<div id='sm-video-seekbar' style='display: inline-block; cursor: pointer; width: 100%; height: 40px; background-color: black;'>" +
-                    "<div id='sm-video-seekbar-in' style='background-color: #b10000; width: 0%; height: 100%;'></div>" +
-                    "<div id='sm-video-seekbar-txt' style='position: absolute; color: #fff; width: 100%; text-align: center; top: 0; font-family: monospace; font-size: 16px; line-height: 40px;'></div>" +
-                    "<div id='sm-video-seekbar-txt-onhover' style='display: none; padding: 0 20px; position: absolute; color: #fff; top: 0; font-family: monospace; font-size: 16px; line-height: 40px;'></div>" +
+                    "<div id='sm-video-seekbar-in' style='background-color: #e10600; width: 0%; height: 100%;'></div>" +
+                    "<div id='sm-video-seekbar-txt' style='position: absolute; color: #fff; width: 100%; text-align: center; top: 0; font-family: Formula1-Regular; font-size: 16px; line-height: 40px;'></div>" +
+                    "<div id='sm-video-seekbar-txt-onhover' style='display: none; padding: 0 20px; position: absolute; color: #fff; top: 0; font-family: Formula1-Regular; font-size: 16px; line-height: 40px;'></div>" +
                     "<div id='sm-video-seekbar-pointer-onhover' style='display: none; position: absolute; height: 100%; width: 1px; top: 0; background-color: #fff;'></div>" +
                     "</div>" +
                     "</div>" +
