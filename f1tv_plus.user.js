@@ -351,7 +351,8 @@
                     "<span style='border: solid #fff; border-width: 0 3px 3px 0; display: inline-block; padding: 3px; transform: rotate(45deg);'></span>" +
                     "</a>" +
                     "<style>" +
-                    "body { font-family: Arial; }" +
+                    "@font-face {font-family: 'Formula1-Regular';src: url(https://f1tv.formula1.com/static/d1d39b845a89c835e9fcd325a694ec36.eot);src: url(https://f1tv.formula1.com/static/d1d39b845a89c835e9fcd325a694ec36.eot) format('embedded-opentype'), url(https://f1tv.formula1.com/static/3bf645d6cd79321cc27ca7418fb29453.woff2) format('woff2'), url(https://f1tv.formula1.com/static/5d7c9e4436f635f56710f23ff0dcfe55.woff) format('woff'), url(https://f1tv.formula1.com/static/0f4e3d54644717199c6f6c04c19737f1.ttf) format('truetype'), url(https://f1tv.formula1.com/static/502a91b9cd1b280a3235bdd9aab4e127.svg) format('svg');}@font-face {font-family: 'Formula1-Bold';src: url(/static/f4014f0577c6e1852123e1284a13912a.eot);src: url(https://f1tv.formula1.com/static/f4014f0577c6e1852123e1284a13912a.eot) format('embedded-opentype'), url(https://f1tv.formula1.com/static/97ed1d3feb0592f810f542dd72ea5fbf.woff2) format('woff2'), url(https://f1tv.formula1.com/static/f3becdb0493e0b1a2346be544ed2aca5.woff) format('woff'), url(https://f1tv.formula1.com/static/a1d6ae91f3373c37e162a5f43d575fd0.ttf) format('truetype'), url(https://f1tv.formula1.com/static/6f3655fcb933a6a6b1ce04a644b5af50.svg) format('svg');}" +
+                    "body { font-family: Formula1-Regular; }" +
                     ".sm-btn { display: inline-block; cursor: pointer; border-radius: 4px; }" +
                     ".sm-btn-audiotrack, .sm-btn-level, .sm-btn-speed { background-color: #333; color: #fff; font-size: 12px; width: 100%; margin: 2px 0; padding: 8px 0; position: relative; } " +
                     ".sm-btn-speed { padding: 6px 0; }" +
