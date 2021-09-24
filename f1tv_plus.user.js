@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      2.1
+// @version      2.1.1
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,8 +13,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "2.1";
-    //<updateDescription>Update details:<br>multi-view: Added option to open multiple streams in one browser window</updateDescription>
+    var smVersion = "2.1.1";
+    //<updateDescription></updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
@@ -280,7 +280,7 @@
 
     var DEFAULT_AUDIOTRACK = "English";
 
-    var USE_F1_FONT = true;
+    var USE_F1_FONT = false;
 
     var smURL_DOMAIN = "f1tv.formula1.com";
     var smURL_EMPTYPAGE = "/1.0/R/ENG/WEB_DASH/ALL/GETSTATICTEXT/"; // an empty page on F1TV domain
@@ -452,7 +452,7 @@
                                             if (smUrlColor_array[title]) {
                                                 color = smUrlColor_array[title];
                                             }
-                                            var smBtnHtml = "<a id='btn-url-" + title + "' title='" + team[title] + "' role='button' class='sm-btn' data-url='" + url + "' style='border-bottom: 4px solid " + color + "; background-color: #333; color: #fff; font-size: 12px; margin: 8px; padding: 8px 16px; position: relative;'>" +
+                                            var smBtnHtml = "<a id='btn-url-" + title + "' title='" + team[title] + "' role='button' class='sm-btn' data-url='" + url + "' style='border-bottom: 4px solid " + color + "; background-color: #333; color: #fff; font-size: 12px; margin: 3px; padding: 8px 14px; position: relative;'>" +
                                                 "<span>" + title.replace(/_+/g, ' ').toUpperCase() + "</span></a>";
                                             document.getElementsByClassName(smUrlElement)[0].insertAdjacentHTML("beforeend", smBtnHtml);
                                             document.getElementById("btn-url-" + title).addEventListener("click", function() {
@@ -772,7 +772,7 @@
                                         if (smUrlColor_array[title]) {
                                             color = smUrlColor_array[title];
                                         }
-                                        var smBtnHtml = "<a id='sm-btn-feeds-" + title + "' title='" + team[title] + "' role='button' class='sm-btn' data-streamid='" + smUrl_contentId + "' data-name='" + title + "' data-fullname='" + team[title] + "' data-url='" + url + "' style='border-bottom: 4px solid " + color + "; background-color: #333; color: #fff; font-size: 12px; margin: 8px; padding: 8px 16px; position: relative;'>" +
+                                        var smBtnHtml = "<a id='sm-btn-feeds-" + title + "' title='" + team[title] + "' role='button' class='sm-btn' data-streamid='" + smUrl_contentId + "' data-name='" + title + "' data-fullname='" + team[title] + "' data-url='" + url + "' style='border-bottom: 4px solid " + color + "; background-color: #333; color: #fff; font-size: 12px; margin: 3px; padding: 8px 14px; position: relative;'>" +
                                             "<span>" + title.replace(/_+/g, ' ').toUpperCase() + "</span></a>";
                                         document.getElementsByClassName(smUrlElement)[0].insertAdjacentHTML("beforeend", smBtnHtml);
                                         document.getElementById("sm-btn-feeds-" + title).addEventListener("click", function() {
