@@ -1,19 +1,19 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      2.1.1
+// @version      2.1.2
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
 // @grant        GM.xmlHttpRequest
 // @connect      raw.githubusercontent.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
-// @require      https://cdn.jsdelivr.net/npm/hls.js@1.0.10/dist/hls.min.js
+// @require      https://cdn.jsdelivr.net/npm/hls.js@1.1.1/dist/hls.min.js
 // ==/UserScript==
 (function() {
     'use strict';
 
-    var smVersion = "2.1.1";
+    var smVersion = "2.1.2";
     //<updateDescription></updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
@@ -284,6 +284,8 @@
 
     var smURL_DOMAIN = "f1tv.formula1.com";
     var smURL_EMPTYPAGE = "/1.0/R/ENG/WEB_DASH/ALL/GETSTATICTEXT/"; // an empty page on F1TV domain
+    var LOGIN_PAGE = "https://account.formula1.com/#/en/login?redirect=https%3A%2F%2Ff1tv.formula1.com%2F";
+
 
     if (window.location.href.split(smURL_DOMAIN)[1].split("#")[0] == smURL_EMPTYPAGE) {
         if (window.location.hash.split("_")[0] == "#f1tvplus") {
@@ -808,12 +810,12 @@
                                                                 smAudioTrack = track.id;
                                                             }
                                                         });
+                                                        var smForceAudioTrackSwitch = false;
                                                         if (smAudioTracks[smAudioTrack] !== DEFAULT_AUDIOTRACK && smAudioTracks[smAudioTrack] !== "Team Radio") {
                                                             for (var id in smAudioTracks) {
                                                                 if (smAudioTracks[id] == DEFAULT_AUDIOTRACK) {
                                                                     console.log("[F1TV+] Changing audio track: " + smAudioTracks[smAudioTrack] + " -> " + DEFAULT_AUDIOTRACK);
-                                                                    smHls.audioTrackController.audioTrack = id;
-                                                                    smAudioTrack = id;
+                                                                    smForceAudioTrackSwitch = id;
                                                                 }
                                                             }
 
@@ -826,7 +828,11 @@
                                                                 $(this).addClass("sm-btn-active");
                                                             });
                                                         }
-
+                                                        if (smForceAudioTrackSwitch !== false) {
+                                                            setTimeout(function() {
+                                                                document.getElementById("sm-btn-audiotrack-" + smForceAudioTrackSwitch).click();
+                                                            }, 1000);
+                                                        }
                                                         document.getElementById("sm-levels").innerHTML = "<div style='margin-bottom: 8px;'>Video quality</div>";
                                                         var smLevels = [];
                                                         document.getElementById("sm-levels").innerHTML += "<a class='sm-btn sm-btn-level' data-id='-1' id='sm-btn-level--1'>Auto</a><br>";
@@ -870,9 +876,13 @@
 
                                                     $(".sm-feeds-container").hide();
                                                 },
-                                                error: function() {
-                                                    alert("Error: Can't get stream URL...");
-                                                    $(".sm-feeds-container").hide();
+                                                error: function(data) {
+                                                    if (data.responseJSON.errorDescription == "ACN_1001") { // Missing parameter Ascendon Token or Entitlement Token
+                                                        window.location.href = LOGIN_PAGE;
+                                                    } else {
+                                                        alert("Error: Can't get stream URL...");
+                                                        $(".sm-feeds-container").hide();
+                                                    }
                                                 }
                                             });
 
