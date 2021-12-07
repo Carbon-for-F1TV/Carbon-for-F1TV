@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      2.1.2
+// @version      2.2
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -9,12 +9,13 @@
 // @connect      raw.githubusercontent.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
 // @require      https://cdn.jsdelivr.net/npm/hls.js@1.1.1/dist/hls.min.js
+// @require      https://cdn.jsdelivr.net/npm/shaka-player@3.2.1/dist/shaka-player.compiled.min.js
 // ==/UserScript==
 (function() {
     'use strict';
 
-    var smVersion = "2.1.2";
-    //<updateDescription></updateDescription>
+    var smVersion = "2.2";
+    //<updateDescription>- Added support for MPEG-DASH streaming<br>This fixes videos not loading on Chrome</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
@@ -287,6 +288,8 @@
     var LOGIN_PAGE = "https://account.formula1.com/#/en/login?redirect=https%3A%2F%2Ff1tv.formula1.com%2F";
 
 
+    shaka.polyfill.installAll();
+
     if (window.location.href.split(smURL_DOMAIN)[1].split("#")[0] == smURL_EMPTYPAGE) {
         if (window.location.hash.split("_")[0] == "#f1tvplus") {
             window.onhashchange = function() {
@@ -378,7 +381,7 @@
                     var fontHtml = "<style>" +
                         "@font-face {font-family: 'Formula1-Regular'; src: url(/static/0f4e3d54644717199c6f6c04c19737f1.ttf) format('truetype')}" +
                         "body {font-family: 'Formula1-Regular';}"
-                        "</style>";
+                    "</style>";
                     document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", fontHtml);
                 }
 
@@ -790,89 +793,222 @@
                                                 },
                                                 async: true,
                                                 success: function(data) {
+
                                                     var oldTime = document.getElementById("sm-popup-video").currentTime;
-                                                    var smHls = new Hls({
-                                                        xhrSetup: xhr => {
-                                                            xhr.withCredentials = true;
+
+                                                    if (parseInt(document.getElementById("sm-popup-id").innerHTML) > 0) {
+                                                        document.title = "(#" + document.getElementById("sm-popup-id").innerHTML + ") " + fullname;
+                                                        document.getElementById("sm-video-title").innerHTML = fullname;
+                                                    }
+
+                                                    document.getElementById("sm-speeds").innerHTML = "<div style='margin-bottom: 8px;'>Playback speed</div>";
+                                                    var smSpeed;
+                                                    for (smSpeed in VIDEO_SPEEDS) {
+                                                        document.getElementById("sm-speeds").innerHTML += "<a class='sm-btn sm-btn-speed' data-speed='" + VIDEO_SPEEDS[smSpeed][0] + "' id='sm-btn-speed-" + VIDEO_SPEEDS[smSpeed][0] + "'>" + VIDEO_SPEEDS[smSpeed][1] + "</a><br>";
+                                                    }
+                                                    $("#sm-btn-speed-100").addClass("sm-btn-active");
+                                                    for (smSpeed in VIDEO_SPEEDS) {
+                                                        document.getElementById("sm-btn-speed-" + VIDEO_SPEEDS[smSpeed][0]).addEventListener("click", function() {
+                                                            document.getElementById("sm-popup-video").playbackRate = parseInt($(this).data("speed")) / 100;
+                                                            $(".sm-btn-speed").removeClass("sm-btn-active");
+                                                            $(this).addClass("sm-btn-active");
+                                                        });
+                                                    }
+
+
+                                                    function waitForVideo() {
+                                                        if (document.getElementById("sm-popup-video").readyState > 0 && $("#sm-popup-video").attr('data-name') == name) {
+                                                            document.getElementById("sm-popup-video").currentTime = oldTime;
+                                                            document.getElementById("sm-popup-video").play();
+                                                        } else {
+                                                            setTimeout(waitForVideo, 200);
                                                         }
-                                                    });
-                                                    smHls.loadSource(data.resultObj.url);
-                                                    smHls.attachMedia(document.getElementById("sm-popup-video"));
-                                                    smHls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
-                                                        smHls.subtitleDisplay = false;
-                                                        document.getElementById("sm-audio-tracks").innerHTML = "<div style='margin-bottom: 8px;'>Audio track</div>";
-                                                        var smAudioTracks = [];
-                                                        var smAudioTrack;
-                                                        data.audioTracks.forEach(function(track) {
-                                                            document.getElementById("sm-audio-tracks").innerHTML += "<a class='sm-btn sm-btn-audiotrack' data-id='" + track.id + "' id='sm-btn-audiotrack-" + track.id + "'>" + track.name + "</a><br>";
-                                                            smAudioTracks[track.id] = track.name;
-                                                            if (track.default == true) {
-                                                                smAudioTrack = track.id;
+                                                    }
+                                                    waitForVideo();
+                                                    $("#sm-popup-video").attr('data-name', name);
+                                                    $("#sm-popup-video").attr('data-streamid', streamId);
+
+                                                    if (data.resultObj.url.includes("index.mpd")) {
+                                                        console.log("[F1TV+] Streaming protocol: DASH");
+                                                        var smPlayer = new shaka.Player(document.getElementById("sm-popup-video"));
+                                                        smPlayer.getNetworkingEngine().registerRequestFilter(function(type, request) {
+                                                            request.allowCrossSiteCredentials = true;
+                                                        });
+
+
+                                                        smPlayer.configure({
+                                                            streaming: {
+                                                                inaccurateManifestTolerance: 0,
+                                                                rebufferingGoal: 0.01,
+                                                                bufferingGoal: 30,
+                                                                bufferBehind: 15
+                                                            },
+                                                            manifest: {
+                                                                dash: {
+                                                                    ignoreMinBufferTime: true
+                                                                },
                                                             }
                                                         });
-                                                        var smForceAudioTrackSwitch = false;
-                                                        if (smAudioTracks[smAudioTrack] !== DEFAULT_AUDIOTRACK && smAudioTracks[smAudioTrack] !== "Team Radio") {
-                                                            for (var id in smAudioTracks) {
-                                                                if (smAudioTracks[id] == DEFAULT_AUDIOTRACK) {
-                                                                    console.log("[F1TV+] Changing audio track: " + smAudioTracks[smAudioTrack] + " -> " + DEFAULT_AUDIOTRACK);
-                                                                    smForceAudioTrackSwitch = id;
+                                                        smPlayer.load(data.resultObj.url).then(function() {
+                                                            console.log('[F1TV+] Shaka-Player loaded');
+                                                            document.getElementById("sm-popup-video").play();
+                                                            document.getElementById("sm-audio-tracks").innerHTML = "<div style='margin-bottom: 8px;'>Audio track</div>";
+                                                            document.getElementById("sm-levels").innerHTML = "<div style='margin-bottom: 8px;'>Video quality</div>";
+
+                                                            var smAudioTracks = [];
+                                                            var smAudioTrack;
+                                                            var smLevels = [];
+                                                            var smLevel;
+                                                            smPlayer.getVariantTracks().forEach(function(track) {
+                                                                if (smAudioTracks.indexOf(track.language) === -1) {
+                                                                    smAudioTracks[track.language] = track.label;
+                                                                }
+                                                                if (smLevels.indexOf(track.height) === -1) {
+                                                                    smLevels[track.height] = track.height + "p";
+                                                                }
+                                                                if (track.active == true) {
+                                                                    smAudioTrack = track.language;
+                                                                    smLevel = track.height;
+                                                                }
+                                                            });
+
+
+                                                            var smForceAudioTrackSwitch = false;
+                                                            if (smAudioTracks[smAudioTrack] !== DEFAULT_AUDIOTRACK && smAudioTracks[smAudioTrack] !== "Team Radio") {
+                                                                for (var id in smAudioTracks) {
+                                                                    if (smAudioTracks[id] == DEFAULT_AUDIOTRACK) {
+                                                                        console.log("[F1TV+] Changing audio track: " + smAudioTracks[smAudioTrack] + " -> " + DEFAULT_AUDIOTRACK);
+                                                                        smForceAudioTrackSwitch = id;
+                                                                    }
                                                                 }
                                                             }
 
-                                                        }
-                                                        $("#sm-btn-audiotrack-" + smAudioTrack).addClass("sm-btn-active");
-                                                        for (var i in smAudioTracks) {
-                                                            document.getElementById("sm-btn-audiotrack-" + i).addEventListener("click", function() {
-                                                                smHls.audioTrackController.audioTrack = ($(this).data("id"));
-                                                                $(".sm-btn-audiotrack").removeClass("sm-btn-active");
-                                                                $(this).addClass("sm-btn-active");
-                                                            });
-                                                        }
-                                                        if (smForceAudioTrackSwitch !== false) {
-                                                            setTimeout(function() {
-                                                                document.getElementById("sm-btn-audiotrack-" + smForceAudioTrackSwitch).click();
-                                                            }, 1000);
-                                                        }
-                                                        document.getElementById("sm-levels").innerHTML = "<div style='margin-bottom: 8px;'>Video quality</div>";
-                                                        var smLevels = [];
-                                                        document.getElementById("sm-levels").innerHTML += "<a class='sm-btn sm-btn-level' data-id='-1' id='sm-btn-level--1'>Auto</a><br>";
-                                                        smLevels[-1] = "Auto";
-                                                        for (var level in smHls.levels) {
-                                                            document.getElementById("sm-levels").innerHTML += "<a class='sm-btn sm-btn-level' data-id='" + level + "' id='sm-btn-level-" + level + "'>" + smHls.levels[level].height + "p</a><br>";
-                                                            smLevels[level] = smHls.levels[level].height;
-                                                        }
-                                                        $("#sm-btn-level-" + smHls.currentLevel).addClass("sm-btn-active");
-                                                        for (var smLevel in smLevels) {
-                                                            document.getElementById("sm-btn-level-" + smLevel).addEventListener("click", function() {
-                                                                smHls.currentLevel = ($(this).data("id"));
+                                                            for (var id in smAudioTracks) {
+                                                                document.getElementById("sm-audio-tracks").innerHTML += "<a class='sm-btn sm-btn-audiotrack' data-id='" + id + "' id='sm-btn-audiotrack-" + id + "'>" + smAudioTracks[id] + "</a><br>";
+                                                            }
+
+                                                            $("#sm-btn-audiotrack-" + smAudioTrack).addClass("sm-btn-active");
+                                                            for (var id in smAudioTracks) {
+                                                                document.getElementById("sm-btn-audiotrack-" + id).addEventListener("click", function() {
+                                                                    smPlayer.selectAudioLanguage($(this).data("id"));
+                                                                    $(".sm-btn-audiotrack").removeClass("sm-btn-active");
+                                                                    $(this).addClass("sm-btn-active");
+                                                                });
+                                                            }
+
+                                                            if (smForceAudioTrackSwitch !== false) {
+                                                                setTimeout(function() {
+                                                                    document.getElementById("sm-btn-audiotrack-" + smForceAudioTrackSwitch).click();
+                                                                }, 1000);
+                                                            }
+
+
+                                                            document.getElementById("sm-levels").innerHTML += "<a class='sm-btn sm-btn-level sm-btn-active' data-id='-1' id='sm-btn-level--1'>Auto</a><br>";
+                                                            for (var id in smLevels) {
+                                                                document.getElementById("sm-levels").innerHTML += "<a class='sm-btn sm-btn-level' data-id='" + id + "' id='sm-btn-level-" + id + "'>" + smLevels[id] + "</a><br>";
+                                                            }
+                                                            document.getElementById("sm-btn-level--1").addEventListener("click", function() {
+                                                                smPlayer.configure({
+                                                                    abr: {
+                                                                        enabled: true
+                                                                    }
+                                                                });
                                                                 $(".sm-btn-level").removeClass("sm-btn-active");
                                                                 $(this).addClass("sm-btn-active");
                                                             });
-                                                        }
-                                                        if (parseInt(document.getElementById("sm-popup-id").innerHTML) > 0) {
-                                                            document.title = "(#" + document.getElementById("sm-popup-id").innerHTML + ") " + fullname;
-                                                            document.getElementById("sm-video-title").innerHTML = fullname;
-                                                        }
+                                                            for (var id in smLevels) {
+                                                                document.getElementById("sm-btn-level-" + id).addEventListener("click", function() {
+                                                                    var targetLanguage;
+                                                                    var targetHeight = $(this).data("id");
+                                                                    var tracks = smPlayer.getVariantTracks();
+                                                                    tracks.forEach(function(track) {
+                                                                        if (track.active == true) {
+                                                                            targetLanguage = track.language;
+                                                                        }
+                                                                    });
+                                                                    tracks.forEach(function(track) {
+                                                                        if (track.language == targetLanguage && track.height == targetHeight) {
+                                                                            smPlayer.configure({
+                                                                                abr: {
+                                                                                    enabled: false
+                                                                                }
+                                                                            });
+                                                                            smPlayer.selectVariantTrack(track, true);
+                                                                        }
+                                                                    });
+                                                                    $(".sm-btn-level").removeClass("sm-btn-active");
+                                                                    $(this).addClass("sm-btn-active");
+                                                                });
+                                                            }
+                                                        });
 
-                                                        document.getElementById("sm-speeds").innerHTML = "<div style='margin-bottom: 8px;'>Playback speed</div>";
-                                                        var smSpeed;
-                                                        for (smSpeed in VIDEO_SPEEDS) {
-                                                            document.getElementById("sm-speeds").innerHTML += "<a class='sm-btn sm-btn-speed' data-speed='" + VIDEO_SPEEDS[smSpeed][0] + "' id='sm-btn-speed-" + VIDEO_SPEEDS[smSpeed][0] + "'>" + VIDEO_SPEEDS[smSpeed][1] + "</a><br>";
-                                                        }
-                                                        $("#sm-btn-speed-100").addClass("sm-btn-active");
-                                                        for (smSpeed in VIDEO_SPEEDS) {
-                                                            document.getElementById("sm-btn-speed-" + VIDEO_SPEEDS[smSpeed][0]).addEventListener("click", function() {
-                                                                document.getElementById("sm-popup-video").playbackRate = parseInt($(this).data("speed")) / 100;
-                                                                $(".sm-btn-speed").removeClass("sm-btn-active");
-                                                                $(this).addClass("sm-btn-active");
+
+
+                                                    } else {
+                                                        console.log("[F1TV+] Streaming protocol: HLS");
+                                                        var smHls = new Hls({
+                                                            xhrSetup: xhr => {
+                                                                xhr.withCredentials = true;
+                                                            }
+                                                        });
+                                                        smHls.loadSource(data.resultObj.url);
+                                                        smHls.attachMedia(document.getElementById("sm-popup-video"));
+                                                        smHls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+                                                            smHls.subtitleDisplay = false;
+                                                            document.getElementById("sm-audio-tracks").innerHTML = "<div style='margin-bottom: 8px;'>Audio track</div>";
+                                                            var smAudioTracks = [];
+                                                            var smAudioTrack;
+                                                            data.audioTracks.forEach(function(track) {
+                                                                document.getElementById("sm-audio-tracks").innerHTML += "<a class='sm-btn sm-btn-audiotrack' data-id='" + track.id + "' id='sm-btn-audiotrack-" + track.id + "'>" + track.name + "</a><br>";
+                                                                smAudioTracks[track.id] = track.name;
+                                                                if (track.default == true) {
+                                                                    smAudioTrack = track.id;
+                                                                }
                                                             });
-                                                        }
+                                                            var smForceAudioTrackSwitch = false;
+                                                            if (smAudioTracks[smAudioTrack] !== DEFAULT_AUDIOTRACK && smAudioTracks[smAudioTrack] !== "Team Radio") {
+                                                                for (var id in smAudioTracks) {
+                                                                    if (smAudioTracks[id] == DEFAULT_AUDIOTRACK) {
+                                                                        console.log("[F1TV+] Changing audio track: " + smAudioTracks[smAudioTrack] + " -> " + DEFAULT_AUDIOTRACK);
+                                                                        smForceAudioTrackSwitch = id;
+                                                                    }
+                                                                }
+                                                            }
+                                                            $("#sm-btn-audiotrack-" + smAudioTrack).addClass("sm-btn-active");
+                                                            for (var i in smAudioTracks) {
+                                                                document.getElementById("sm-btn-audiotrack-" + i).addEventListener("click", function() {
+                                                                    smHls.audioTrackController.audioTrack = ($(this).data("id"));
+                                                                    $(".sm-btn-audiotrack").removeClass("sm-btn-active");
+                                                                    $(this).addClass("sm-btn-active");
+                                                                });
+                                                            }
+                                                            if (smForceAudioTrackSwitch !== false) {
+                                                                setTimeout(function() {
+                                                                    document.getElementById("sm-btn-audiotrack-" + smForceAudioTrackSwitch).click();
+                                                                }, 1000);
+                                                            }
+                                                            document.getElementById("sm-levels").innerHTML = "<div style='margin-bottom: 8px;'>Video quality</div>";
+                                                            var smLevels = [];
+                                                            document.getElementById("sm-levels").innerHTML += "<a class='sm-btn sm-btn-level' data-id='-1' id='sm-btn-level--1'>Auto</a><br>";
+                                                            smLevels[-1] = "Auto";
+                                                            for (var level in smHls.levels) {
+                                                                document.getElementById("sm-levels").innerHTML += "<a class='sm-btn sm-btn-level' data-id='" + level + "' id='sm-btn-level-" + level + "'>" + smHls.levels[level].height + "p</a><br>";
+                                                                smLevels[level] = smHls.levels[level].height;
+                                                            }
+                                                            $("#sm-btn-level-" + smHls.currentLevel).addClass("sm-btn-active");
+                                                            for (var smLevel in smLevels) {
+                                                                document.getElementById("sm-btn-level-" + smLevel).addEventListener("click", function() {
+                                                                    smHls.currentLevel = ($(this).data("id"));
+                                                                    $(".sm-btn-level").removeClass("sm-btn-active");
+                                                                    $(this).addClass("sm-btn-active");
+                                                                });
+                                                            }
 
-                                                    });
-                                                    $("#sm-popup-video").attr('data-name', name);
-                                                    $("#sm-popup-video").attr('data-streamid', streamId);
-                                                    document.getElementById("sm-popup-video").currentTime = oldTime;
-                                                    document.getElementById("sm-popup-video").play();
+
+                                                        });
+
+                                                    }
+
 
                                                     $(".sm-feeds-container").hide();
                                                 },
