@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      2.2.1
+// @version      2.2.2
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -14,8 +14,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "2.2.1";
-    //<updateDescription>- Fixed seeking in dash live streams</updateDescription>
+    var smVersion = "2.2.2";
+    //<updateDescription>- Fixed seeking in dash live streams<br>- Fixed dash live streams starting from beginning</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
@@ -856,6 +856,17 @@
                                                             var seekRange = smPlayer.seekRange();
                                                             $("#sm-video-seekbar").data("start", seekRange.start);
                                                             $("#sm-video-seekbar").data("end", seekRange.end);
+
+                                                            if (smPlayer.isLive()) {
+                                                                function waitForVideo() {
+                                                                    if (document.getElementById("sm-popup-video").readyState > 0) {
+                                                                        smPlayer.goToLive();
+                                                                    } else {
+                                                                        setTimeout(waitForVideo, 100);
+                                                                    }
+                                                                }
+                                                                waitForVideo();
+                                                            }
 
                                                             document.getElementById("sm-popup-video").play();
                                                             document.getElementById("sm-audio-tracks").innerHTML = "<div style='margin-bottom: 8px;'>Audio track</div>";
