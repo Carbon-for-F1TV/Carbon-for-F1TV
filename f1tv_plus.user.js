@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      2.2
+// @version      2.2.1
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -14,8 +14,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "2.2";
-    //<updateDescription>- Added support for MPEG-DASH streaming<br>This fixes videos not loading on Chrome</updateDescription>
+    var smVersion = "2.2.1";
+    //<updateDescription>- Fixed seeking in dash live streams</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
@@ -309,6 +309,7 @@
                     "<div id='sm-popup-alt-container' style='user-select: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 999;'>" +
                     "<div id='sm-popup-id' style='display: none;'>0</div>" +
                     "<div id='sm-additional-streams' style='display: none;'>0</div>" +
+                    "<div id='sm-stream-protocol' style='display: none;'>0</div>" +
                     "<div style='position: absolute; top: 50%; width: 100%; text-align: center; transform: translateY(-50%); font-weight: bold; font-size: 90px; color: #ccc;'>F1TV+</div>" +
                     "<video id='sm-popup-video' muted style='position: absolute; top: 0; left: 0; height: 100%; width: 100%;'></video>" +
                     "<div id='sm-audio-tracks-container' style='display: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%; z-index: 2;'>" +
@@ -830,6 +831,7 @@
 
                                                     if (data.resultObj.url.includes("index.mpd")) {
                                                         console.log("[F1TV+] Streaming protocol: DASH");
+                                                        document.getElementById("sm-stream-protocol").innerHTML = "DASH";
                                                         var smPlayer = new shaka.Player(document.getElementById("sm-popup-video"));
                                                         smPlayer.getNetworkingEngine().registerRequestFilter(function(type, request) {
                                                             request.allowCrossSiteCredentials = true;
@@ -851,6 +853,10 @@
                                                         });
                                                         smPlayer.load(data.resultObj.url).then(function() {
                                                             console.log('[F1TV+] Shaka-Player loaded');
+                                                            var seekRange = smPlayer.seekRange();
+                                                            $("#sm-video-seekbar").data("start", seekRange.start);
+                                                            $("#sm-video-seekbar").data("end", seekRange.end);
+
                                                             document.getElementById("sm-popup-video").play();
                                                             document.getElementById("sm-audio-tracks").innerHTML = "<div style='margin-bottom: 8px;'>Audio track</div>";
                                                             document.getElementById("sm-levels").innerHTML = "<div style='margin-bottom: 8px;'>Video quality</div>";
@@ -946,6 +952,7 @@
 
                                                     } else {
                                                         console.log("[F1TV+] Streaming protocol: HLS");
+                                                        document.getElementById("sm-stream-protocol").innerHTML = "HLS";
                                                         var smHls = new Hls({
                                                             xhrSetup: xhr => {
                                                                 xhr.withCredentials = true;
@@ -1099,12 +1106,25 @@
                 });
 
                 document.getElementById("sm-popup-video").ontimeupdate = function() {
-                    $("#sm-video-seekbar-in").css("width", ((document.getElementById("sm-popup-video").currentTime / document.getElementById("sm-popup-video").duration) * 100) + "%");
-                    document.getElementById("sm-video-seekbar-txt").innerHTML = new Date(1000 * document.getElementById("sm-popup-video").currentTime).toISOString().substr(11, 8) + " / " + new Date(1000 * document.getElementById("sm-popup-video").duration).toISOString().substr(11, 8);
+                    if (document.getElementById("sm-stream-protocol").innerHTML == "DASH") {
+                        var timeStart = $("#sm-video-seekbar").data("start");
+                        var timeEnd = $("#sm-video-seekbar").data("end");
+                        $("#sm-video-seekbar-in").css("width", (((document.getElementById("sm-popup-video").currentTime - timeStart) / (timeEnd - timeStart)) * 100) + "%");
+                        document.getElementById("sm-video-seekbar-txt").innerHTML = new Date(1000 * (document.getElementById("sm-popup-video").currentTime - timeStart)).toISOString().substr(11, 8) + " / " + new Date(1000 * (timeEnd - timeStart)).toISOString().substr(11, 8);
+                    } else {
+                        $("#sm-video-seekbar-in").css("width", ((document.getElementById("sm-popup-video").currentTime / document.getElementById("sm-popup-video").duration) * 100) + "%");
+                        document.getElementById("sm-video-seekbar-txt").innerHTML = new Date(1000 * document.getElementById("sm-popup-video").currentTime).toISOString().substr(11, 8) + " / " + new Date(1000 * document.getElementById("sm-popup-video").duration).toISOString().substr(11, 8);
+                    }
                 };
 
                 $("#sm-video-seekbar").on("click", function(e) {
-                    document.getElementById("sm-popup-video").currentTime = document.getElementById("sm-popup-video").duration * ((e.pageX - $(this).offset().left) / $("#sm-video-seekbar").width());
+                    if (document.getElementById("sm-stream-protocol").innerHTML == "DASH") {
+                        var timeStart = $("#sm-video-seekbar").data("start");
+                        var timeEnd = $("#sm-video-seekbar").data("end");
+                        document.getElementById("sm-popup-video").currentTime = timeStart + ((timeEnd - timeStart) * ((e.pageX - $(this).offset().left) / $("#sm-video-seekbar").width()));
+                    } else {
+                        document.getElementById("sm-popup-video").currentTime = document.getElementById("sm-popup-video").duration * ((e.pageX - $(this).offset().left) / $("#sm-video-seekbar").width());
+                    }
                 });
 
                 $("#sm-video-seekbar").on("mousemove", function(e) {
