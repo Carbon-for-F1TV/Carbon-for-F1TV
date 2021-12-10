@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      2.2.2
+// @version      2.2.3
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -14,8 +14,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "2.2.2";
-    //<updateDescription>- Fixed seeking in dash live streams<br>- Fixed dash live streams starting from beginning</updateDescription>
+    var smVersion = "2.2.3";
+    //<updateDescription>- Improved support for DASH live streams (Google Chrome)</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
@@ -309,7 +309,6 @@
                     "<div id='sm-popup-alt-container' style='user-select: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 999;'>" +
                     "<div id='sm-popup-id' style='display: none;'>0</div>" +
                     "<div id='sm-additional-streams' style='display: none;'>0</div>" +
-                    "<div id='sm-stream-protocol' style='display: none;'>0</div>" +
                     "<div style='position: absolute; top: 50%; width: 100%; text-align: center; transform: translateY(-50%); font-weight: bold; font-size: 90px; color: #ccc;'>F1TV+</div>" +
                     "<video id='sm-popup-video' muted style='position: absolute; top: 0; left: 0; height: 100%; width: 100%;'></video>" +
                     "<div id='sm-audio-tracks-container' style='display: none; position: absolute; top: 0; left: 0; height: 100%; width: 100%; z-index: 2;'>" +
@@ -497,10 +496,6 @@
 
 
                     document.getElementById("header-btn-popout").addEventListener("click", function() {
-                        if (document.getElementById("sm-stream-protocol").innerHTML == "DASH-LIVE") {
-                            alert("Multi-view is currently not working on DASH LIVE STREAMS (Google Chrome).\nWorking on a fix.\nIn the meantime, you can use another browser (Edge or Firefox).");
-                        }
-
                         var smPopoutMenuHtml = "<div id='sm-popout-menu' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1001; text-align: center;'>" +
                             "<div id='sm-popout-menu-bg' style='background-color: #0000008f; width: 100%; height: 100%; top: 0; left: 0; position: absolute;'></div>" +
                             "<div style='background-color: #c70000; color: #fff; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; border-radius: 10px; position: absolute;'>" +
@@ -835,7 +830,7 @@
 
                                                     if (data.resultObj.url.includes("index.mpd")) {
                                                         console.log("[F1TV+] Streaming protocol: DASH");
-                                                        document.getElementById("sm-stream-protocol").innerHTML = "DASH";
+                                                        $("#sm-popup-video").attr("data-streamprotocol", "DASH");
                                                         var smPlayer = new shaka.Player(document.getElementById("sm-popup-video"));
                                                         smPlayer.getNetworkingEngine().registerRequestFilter(function(type, request) {
                                                             request.allowCrossSiteCredentials = true;
@@ -858,11 +853,12 @@
                                                         smPlayer.load(data.resultObj.url).then(function() {
                                                             console.log('[F1TV+] Shaka-Player loaded');
                                                             var seekRange = smPlayer.seekRange();
-                                                            $("#sm-video-seekbar").data("start", seekRange.start);
-                                                            $("#sm-video-seekbar").data("end", seekRange.end);
+                                                            $("#sm-popup-video").attr('data-livestart', seekRange.start);
+                                                            $("#sm-popup-video").attr('data-liveend', seekRange.end);
 
                                                             if (smPlayer.isLive()) {
-                                                                document.getElementById("sm-stream-protocol").innerHTML = "DASH-LIVE";
+                                                                $("#sm-popup-video").attr("data-streamprotocol", "DASH-LIVE");
+
                                                                 function waitForVideo() {
                                                                     if (document.getElementById("sm-popup-video").readyState > 1) {
                                                                         smPlayer.goToLive();
@@ -874,10 +870,8 @@
 
                                                                 var liveTimeUpdate = setInterval(function() {
                                                                     var seekRange = smPlayer.seekRange();
-                                                                    //$("#sm-video-seekbar").data("start", seekRange.start);
-                                                                    $("#sm-video-seekbar").data("end", seekRange.end);
+                                                                    $("#sm-popup-video").attr('data-liveend', seekRange.end);
                                                                 }, 1000);
-
                                                             }
 
                                                             document.getElementById("sm-popup-video").play();
@@ -975,7 +969,7 @@
 
                                                     } else {
                                                         console.log("[F1TV+] Streaming protocol: HLS");
-                                                        document.getElementById("sm-stream-protocol").innerHTML = "HLS";
+                                                        $("#sm-popup-video").attr("data-streamprotocol", "HLS");
                                                         var smHls = new Hls({
                                                             xhrSetup: xhr => {
                                                                 xhr.withCredentials = true;
@@ -1129,9 +1123,9 @@
                 });
 
                 document.getElementById("sm-popup-video").ontimeupdate = function() {
-                    if (document.getElementById("sm-stream-protocol").innerHTML == "DASH-LIVE") {
-                        var timeStart = $("#sm-video-seekbar").data("start");
-                        var timeEnd = $("#sm-video-seekbar").data("end");
+                    if (document.getElementById("sm-popup-video").dataset["streamprotocol"] == "DASH-LIVE") {
+                        var timeStart = parseInt(document.getElementById("sm-popup-video").dataset.livestart);
+                        var timeEnd = parseInt(document.getElementById("sm-popup-video").dataset.liveend);
                         $("#sm-video-seekbar-in").css("width", (((document.getElementById("sm-popup-video").currentTime - timeStart) / (timeEnd - timeStart)) * 100) + "%");
                         document.getElementById("sm-video-seekbar-txt").innerHTML = new Date(1000 * (document.getElementById("sm-popup-video").currentTime - timeStart)).toISOString().substr(11, 8) + " / " + new Date(1000 * (timeEnd - timeStart)).toISOString().substr(11, 8);
                     } else {
@@ -1141,9 +1135,9 @@
                 };
 
                 $("#sm-video-seekbar").on("click", function(e) {
-                    if (document.getElementById("sm-stream-protocol").innerHTML == "DASH-LIVE") {
-                        var timeStart = $("#sm-video-seekbar").data("start");
-                        var timeEnd = $("#sm-video-seekbar").data("end");
+                    if (document.getElementById("sm-popup-video").dataset["streamprotocol"] == "DASH-LIVE") {
+                        var timeStart = parseInt(document.getElementById("sm-popup-video").dataset.livestart);
+                        var timeEnd = parseInt(document.getElementById("sm-popup-video").dataset.liveend);
                         document.getElementById("sm-popup-video").currentTime = timeStart + ((timeEnd - timeStart) * ((e.pageX - $(this).offset().left) / $("#sm-video-seekbar").width()));
                     } else {
                         document.getElementById("sm-popup-video").currentTime = document.getElementById("sm-popup-video").duration * ((e.pageX - $(this).offset().left) / $("#sm-video-seekbar").width());
@@ -1155,7 +1149,13 @@
                     $("#sm-video-seekbar-txt").hide();
                     $("#sm-video-seekbar-txt-onhover").show();
                     $("#sm-video-seekbar-pointer-onhover").show();
-                    document.getElementById("sm-video-seekbar-txt-onhover").innerHTML = new Date(1000 * document.getElementById("sm-popup-video").duration * p).toISOString().substr(11, 8);
+                    if (document.getElementById("sm-popup-video").dataset["streamprotocol"] == "DASH-LIVE") {
+                        var timeStart = parseInt(document.getElementById("sm-popup-video").dataset.livestart);
+                        var timeEnd = parseInt(document.getElementById("sm-popup-video").dataset.liveend);
+                        document.getElementById("sm-video-seekbar-txt-onhover").innerHTML = new Date(1000 * (timeEnd - timeStart) * p).toISOString().substr(11, 8);
+                    } else {
+                        document.getElementById("sm-video-seekbar-txt-onhover").innerHTML = new Date(1000 * document.getElementById("sm-popup-video").duration * p).toISOString().substr(11, 8);
+                    }
                     if (p < 0.5) {
                         $("#sm-video-seekbar-txt-onhover").css("left", p * 100 + "%");
                         $("#sm-video-seekbar-txt-onhover").css("right", "auto");
@@ -1434,7 +1434,12 @@
 
                         var maxDesync = parseInt(document.getElementById("sm-maxdesync").value) / 1000 || 0.3;
                         for (let i = 1; i <= smWindowAmount; i++) {
-                            time[i] = smWindow[i].document.getElementById("sm-popup-video").currentTime - offset[i];
+                            if (document.getElementById("sm-popup-video").dataset["streamprotocol"] == "DASH-LIVE") {
+                                var timeStart = parseInt(smWindow[i].document.getElementById("sm-popup-video").dataset["livestart"]);
+                                time[i] = smWindow[i].document.getElementById("sm-popup-video").currentTime - timeStart - offset[i];
+                            } else {
+                                time[i] = smWindow[i].document.getElementById("sm-popup-video").currentTime - offset[i];
+                            }
                         }
 
                         for (let i = 2; i <= smWindowAmount; i++) {
@@ -1446,7 +1451,12 @@
                             timeDiff[i] = Math.abs(time[1] - time[i]);
                             if (timeDiff[i] > maxDesync) {
                                 smPauseAll();
-                                smWindow[i].document.getElementById("sm-popup-video").currentTime = time[1] + offset[i];
+                                if (document.getElementById("sm-popup-video").dataset["streamprotocol"] == "DASH-LIVE") {
+                                    var timeStart = parseInt(smWindow[i].document.getElementById("sm-popup-video").dataset["livestart"]);
+                                    smWindow[i].document.getElementById("sm-popup-video").currentTime = timeStart + time[1] + offset[i];
+                                } else {
+                                    smWindow[i].document.getElementById("sm-popup-video").currentTime = time[1] + offset[i];
+                                }
                                 smSynced += 1;
                             }
                         }
