@@ -864,13 +864,20 @@
                                                             if (smPlayer.isLive()) {
                                                                 document.getElementById("sm-stream-protocol").innerHTML = "DASH-LIVE";
                                                                 function waitForVideo() {
-                                                                    if (document.getElementById("sm-popup-video").readyState > 0) {
+                                                                    if (document.getElementById("sm-popup-video").readyState > 1) {
                                                                         smPlayer.goToLive();
                                                                     } else {
                                                                         setTimeout(waitForVideo, 100);
                                                                     }
                                                                 }
                                                                 waitForVideo();
+
+                                                                var liveTimeUpdate = setInterval(function() {
+                                                                    var seekRange = smPlayer.seekRange();
+                                                                    //$("#sm-video-seekbar").data("start", seekRange.start);
+                                                                    $("#sm-video-seekbar").data("end", seekRange.end);
+                                                                }, 1000);
+
                                                             }
 
                                                             document.getElementById("sm-popup-video").play();
