@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      2.2.3
+// @version      2.2.4
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -14,7 +14,7 @@
 (function() {
     'use strict';
 
-    var smVersion = "2.2.3";
+    var smVersion = "2.2.4";
     //<updateDescription>- Improved support for DASH live streams (Google Chrome)</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
@@ -868,10 +868,15 @@
                                                                 }
                                                                 waitForVideo();
 
-                                                                var liveTimeUpdate = setInterval(function() {
-                                                                    var seekRange = smPlayer.seekRange();
-                                                                    $("#sm-popup-video").attr('data-liveend', seekRange.end);
-                                                                }, 1000);
+                                                                var currentSubstream = document.getElementById("sm-popup-video").dataset.name;
+                                                                function liveTimeUpdate() {
+                                                                    if (document.getElementById("sm-popup-video").dataset.name == currentSubstream) {
+                                                                        var seekRange = smPlayer.seekRange();
+                                                                        $("#sm-popup-video").attr('data-liveend', seekRange.end);
+                                                                        setTimeout(liveTimeUpdate, 1000);
+                                                                    }
+                                                                }
+                                                                liveTimeUpdate();
                                                             }
 
                                                             document.getElementById("sm-popup-video").play();
