@@ -497,6 +497,10 @@
 
 
                     document.getElementById("header-btn-popout").addEventListener("click", function() {
+                        if (document.getElementById("sm-stream-protocol").innerHTML == "DASH-LIVE") {
+                            alert("Multi-view is currently not working on DASH LIVE STREAMS (Google Chrome).\nWorking on a fix.\nIn the meantime, you can use another browser (Edge or Firefox).");
+                        }
+
                         var smPopoutMenuHtml = "<div id='sm-popout-menu' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1001; text-align: center;'>" +
                             "<div id='sm-popout-menu-bg' style='background-color: #0000008f; width: 100%; height: 100%; top: 0; left: 0; position: absolute;'></div>" +
                             "<div style='background-color: #c70000; color: #fff; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; border-radius: 10px; position: absolute;'>" +
@@ -858,6 +862,7 @@
                                                             $("#sm-video-seekbar").data("end", seekRange.end);
 
                                                             if (smPlayer.isLive()) {
+                                                                document.getElementById("sm-stream-protocol").innerHTML = "DASH-LIVE";
                                                                 function waitForVideo() {
                                                                     if (document.getElementById("sm-popup-video").readyState > 0) {
                                                                         smPlayer.goToLive();
@@ -1117,7 +1122,7 @@
                 });
 
                 document.getElementById("sm-popup-video").ontimeupdate = function() {
-                    if (document.getElementById("sm-stream-protocol").innerHTML == "DASH") {
+                    if (document.getElementById("sm-stream-protocol").innerHTML == "DASH-LIVE") {
                         var timeStart = $("#sm-video-seekbar").data("start");
                         var timeEnd = $("#sm-video-seekbar").data("end");
                         $("#sm-video-seekbar-in").css("width", (((document.getElementById("sm-popup-video").currentTime - timeStart) / (timeEnd - timeStart)) * 100) + "%");
@@ -1129,7 +1134,7 @@
                 };
 
                 $("#sm-video-seekbar").on("click", function(e) {
-                    if (document.getElementById("sm-stream-protocol").innerHTML == "DASH") {
+                    if (document.getElementById("sm-stream-protocol").innerHTML == "DASH-LIVE") {
                         var timeStart = $("#sm-video-seekbar").data("start");
                         var timeEnd = $("#sm-video-seekbar").data("end");
                         document.getElementById("sm-popup-video").currentTime = timeStart + ((timeEnd - timeStart) * ((e.pageX - $(this).offset().left) / $("#sm-video-seekbar").width()));
