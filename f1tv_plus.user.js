@@ -1,21 +1,21 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      2.2.4
+// @version      2.2.5
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
 // @grant        GM.xmlHttpRequest
 // @connect      raw.githubusercontent.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
-// @require      https://cdn.jsdelivr.net/npm/hls.js@1.1.1/dist/hls.min.js
-// @require      https://cdn.jsdelivr.net/npm/shaka-player@3.2.1/dist/shaka-player.compiled.min.js
+// @require      https://cdn.jsdelivr.net/npm/hls.js@1.1.5/dist/hls.min.js
+// @require      https://cdn.jsdelivr.net/npm/shaka-player@3.3.2/dist/shaka-player.compiled.min.js
 // ==/UserScript==
 (function() {
     'use strict';
 
-    var smVersion = "2.2.4";
-    //<updateDescription>- Improved support for DASH live streams (Google Chrome)</updateDescription>
+    var smVersion = "2.2.5";
+    //<updateDescription>- Updated player libraries</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
