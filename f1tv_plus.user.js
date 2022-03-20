@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      2.2.6
+// @version      2.2.5
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -14,8 +14,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "2.2.6";
-    //<updateDescription>- Fixed sync mode in live streams (DASH)</updateDescription>
+    var smVersion = "2.2.5";
+    //<updateDescription>- Updated player libraries</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
@@ -1263,7 +1263,7 @@
                         smSettingsFrameHtml += "<tr><td>Window #" + i + "</td><td><input id='sm-offset-" + i + "' type='number' step='250' value='' style='width: 80px;'></td><td><span id='sm-offset-external-" + i + "'></span></td></tr>";
                     }
 
-                    smSettingsFrameHtml += "<tr><td>Max desync [ms]</td><td><input id='sm-maxdesync' type='number' step='10' value='' min='10' max='3000' style='width: 80px;'></td></tr>" +
+                    smSettingsFrameHtml += "<tr><td>Max desync [ms]</td><td><input id='sm-maxdesync' type='number' step='10' value='300' min='10' max='3000' style='width: 80px;'></td></tr>" +
                         "</table>" +
                         "<table style='margin-top: 40px;'>" +
                         "<tr><th colspan='2'>CURRENT SYNC [ms]</th></tr>" +
@@ -1437,16 +1437,11 @@
                             }
                         }
 
-                        var maxDesyncDefault = 0.3;
-                        if (document.getElementById("sm-popup-video").dataset["streamprotocol"] == "DASH-LIVE") {
-                            maxDesyncDefault += 2;
-                        }
-
-                        var maxDesync = parseInt(document.getElementById("sm-maxdesync").value) / 1000 || maxDesyncDefault;
+                        var maxDesync = parseInt(document.getElementById("sm-maxdesync").value) / 1000 || 0.3;
                         for (let i = 1; i <= smWindowAmount; i++) {
                             if (document.getElementById("sm-popup-video").dataset["streamprotocol"] == "DASH-LIVE") {
-                                var timeEnd = parseInt(smWindow[i].document.getElementById("sm-popup-video").dataset["liveend"]);
-                                time[i] = timeEnd - smWindow[i].document.getElementById("sm-popup-video").currentTime + offset[i];
+                                var timeStart = parseInt(smWindow[i].document.getElementById("sm-popup-video").dataset["livestart"]);
+                                time[i] = smWindow[i].document.getElementById("sm-popup-video").currentTime - timeStart - offset[i];
                             } else {
                                 time[i] = smWindow[i].document.getElementById("sm-popup-video").currentTime - offset[i];
                             }
@@ -1462,8 +1457,8 @@
                             if (timeDiff[i] > maxDesync) {
                                 smPauseAll();
                                 if (document.getElementById("sm-popup-video").dataset["streamprotocol"] == "DASH-LIVE") {
-                                    var timeEnd = parseInt(smWindow[i].document.getElementById("sm-popup-video").dataset["liveend"]);
-                                    smWindow[i].document.getElementById("sm-popup-video").currentTime = timeEnd - time[1] + offset[i];
+                                    var timeStart = parseInt(smWindow[i].document.getElementById("sm-popup-video").dataset["livestart"]);
+                                    smWindow[i].document.getElementById("sm-popup-video").currentTime = timeStart + time[1] + offset[i];
                                 } else {
                                     smWindow[i].document.getElementById("sm-popup-video").currentTime = time[1] + offset[i];
                                 }
