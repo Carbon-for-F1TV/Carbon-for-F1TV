@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      2.2.5
+// @version      2.2.7
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -14,8 +14,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "2.2.5";
-    //<updateDescription>- Updated player libraries</updateDescription>
+    var smVersion = "2.2.7";
+    //<updateDescription>multi-view: Added swap-frame functionality</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
@@ -365,13 +365,18 @@
                     ".sm-btn-active { background-color: #b10000; }" +
                     "#sm-video-menu-container:hover #sm-video-menu { display: block !important; }" +
                     "@media screen and (max-width: 900px) { .sm-hide-from-900px { display: none; } }" +
-                    ".sm-autohide {" +
+                    ".sm-autohide:not(.sm-frame-drag-btn) {" +
                     "visibility: hidden; opacity: 0;" +
                     "transition: visibility 0.3s, opacity 0.3s linear;" +
+                    "}" +
+                    ".sm-autohide.sm-frame-drag-btn {" +
+                    "visibility: hidden; opacity: 0;" +
                     "}" +
                     ".sm-autohide.shown {" +
                     "visibility: visible; opacity: 1;" +
                     "}" +
+                    ".sm-frame-helper.active .sm-frame-n { display: block !important; }" +
+                    ".sm-frame-helper.active .sm-frame-drag-btn { opacity: 0 !important; left: 0 !important; top: 0 !important; width: 100% !important; height: 100% !important; }" +
                     "</style>" +
                     "</div>";
 
@@ -1189,17 +1194,17 @@
 
                 var mouseMoveTimeout;
                 var mouseMoveTimeoutState;
-                $("#sm-popup-alt-container").on("mousemove", function(e) {
+                $("body").on("mousemove", function(e) {
                     if (mouseMoveTimeoutState !== 1) {
                         $(".sm-autohide").addClass("shown");
-                        $("#sm-popup-alt-container").css('cursor', '');
+                        $("body").css('cursor', '');
                     }
                     clearTimeout(mouseMoveTimeout);
                     mouseMoveTimeoutState = 1;
                     mouseMoveTimeout = setTimeout(function() {
                         mouseMoveTimeoutState = 0;
                         $(".sm-autohide").removeClass("shown");
-                        $("#sm-popup-alt-container").css('cursor', 'none');
+                        $("body").css('cursor', 'none');
                     }, 3000);
                 });
 
@@ -1323,24 +1328,83 @@
                     smWindow[1] = window;
 
                     if (oneWindow) {
-                        for (let i = 2; i <= smWindowAmount; i++) {
+                        for (let i = 1; i <= smWindowAmount; i++) {
                             var smWindowOffsetX = smPopupPositions[smWindowAmount][i - 1][0];
                             var smWindowOffsetY = smPopupPositions[smWindowAmount][i - 1][1];
                             var smWindowWidth = smPopupPositions[smWindowAmount][i - 1][2];
                             var smWindowHeight = smPopupPositions[smWindowAmount][i - 1][3];
-                            var frameHtml = '<iframe id="sm-frame-' + i + '" style="position: absolute; border: 0; left: ' + smWindowOffsetX + '%; top: ' + smWindowOffsetY + '%; width: ' + smWindowWidth + '%; height: ' + smWindowHeight + '%;" src="' + document.location.href.split("_multipopout")[0] + "_popout=" + window.location.hash.split("_")[1].split("=")[1] + '"></iframe>';
-                            document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", frameHtml);
-                            smWindow[i] = document.getElementById("sm-frame-" + i).contentWindow;
+                            if (i > 1) {
+                                var frameHtml = '<iframe id="sm-frame-' + i + '" style="position: absolute; border: 0; left: ' + smWindowOffsetX + '%; top: ' + smWindowOffsetY + '%; width: ' + smWindowWidth + '%; height: ' + smWindowHeight + '%;" src="' + document.location.href.split("_multipopout")[0] + "_popout=" + window.location.hash.split("_")[1].split("=")[1] + '"></iframe>';
+                                document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", frameHtml);
+                                smWindow[i] = document.getElementById("sm-frame-" + i).contentWindow;
+                                smWindow[i].addEventListener('load', (event) => {
+                                    setTimeout(function() {
+                                        if (i > 1) {
+                                            smWindow[i].document.getElementById("sm-video-primary-controls").style.display = "none";
+                                            smWindow[i].document.getElementById("sm-video-titlebar").style.display = "inline-block";
+                                        }
+                                        smWindow[i].document.title = "(#" + i + ") " + smWindow[i].document.getElementById("sm-video-title").innerHTML;
+                                        smWindow[i].document.getElementById("sm-popup-id").innerHTML = i;
+                                    }, 500);
+                                });
+                            }
+                            var frameHelper = '<div class="sm-frame-helper" id="sm-frame-helper-' + i + '" style="pointer-events: none; position: absolute; border: 0; left: ' + smWindowOffsetX + '%; top: ' + smWindowOffsetY + '%; width: ' + smWindowWidth + '%; height: ' + smWindowHeight + '%; z-index: 1000;">';
+                            frameHelper += '<div class="sm-frame-n" style="display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); font-size: 42px;">' + i + '</div>';
+                            frameHelper += '<div class="sm-frame-drag-btn sm-autohide" id="sm-frame-drag-btn-' + i + '" draggable="true" style="pointer-events: auto; background-color: #333; width: 40px; height: 40px; border-radius: 8px; position: absolute; top: 6px; right: 6px;"><svg class="svg-icon" style="width: 40px;height:40px;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M749.344 425.504l60.288 55.072h-266.08V216.8l55.232 57.856 44.512-44.8L509.472 96 375.36 229.824l44.8 44.8 60.32-57.824v263.776H219.424l54.912-55.04-44.48-44.512L96 514.848l133.824 133.824 44.48-44.48-54.88-60.48h261.024v263.648l-60.288-57.696-44.8 44.48 102.56 102.304v2.816h2.528l29.024 28.736 28.736-28.736h2.816v-2.816l102.272-102.272-44.48-44.48-55.264 57.664v-263.68h266.08l-60.288 60.48 44.8 44.48L928 514.88l-133.824-133.824z" fill="#ffffff" /></svg></div>';
+                            frameHelper += '</div>';
+                            document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", frameHelper);
+                            document.getElementById("sm-frame-drag-btn-" + i).addEventListener("dragstart", function(e) {
+                                $(".sm-frame-helper").addClass("active");
+                                $("#sm-frame-helper-" + $(this)[0].id.split("sm-frame-drag-btn-")[1]).removeClass("active");
+                            });
+                            document.getElementById("sm-frame-drag-btn-" + i).addEventListener("dragend", function(e) {
+                                e.preventDefault();
+                                $(".sm-frame-helper").removeClass("active");
+                            });
+                            document.getElementById("sm-frame-drag-btn-" + i).addEventListener("dragover", function(e) {
+                                e.preventDefault();
+                            });
+                            var draggedFrame;
+                            document.getElementById("sm-frame-drag-btn-" + i).addEventListener("drag", function(e) {
+                                draggedFrame = $(this).attr("id");
+                            });
+                            document.getElementById("sm-frame-drag-btn-" + i).addEventListener("drop", function(e) {
+                                e.preventDefault();
+                                $(".sm-frame-helper").removeClass("active");
 
-                            smWindow[i].addEventListener('load', (event) => {
-                                setTimeout(function() {
-                                    if (i > 1) {
-                                        smWindow[i].document.getElementById("sm-video-primary-controls").style.display = "none";
-                                        smWindow[i].document.getElementById("sm-video-titlebar").style.display = "inline-block";
-                                    }
-                                    smWindow[i].document.title = "(#" + i + ") " + smWindow[i].document.getElementById("sm-video-title").innerHTML;
-                                    smWindow[i].document.getElementById("sm-popup-id").innerHTML = i;
-                                }, 500);
+                                var sourceId = draggedFrame.split("sm-frame-drag-btn-")[1];
+                                if (sourceId == 1) {
+                                    var sourceElement = "sm-popup-alt-container";
+                                } else {
+                                    var sourceElement = "sm-frame-" + sourceId;
+                                }
+                                var sourcePosition = [document.getElementById(sourceElement).style.left, document.getElementById(sourceElement).style.top, document.getElementById(sourceElement).style.width, document.getElementById(sourceElement).style.height];
+
+                                var targetId = e.target.id.split("sm-frame-drag-btn-")[1];
+                                if (targetId == 1) {
+                                    var targetElement = "sm-popup-alt-container";
+                                } else {
+                                    var targetElement = "sm-frame-" + targetId;
+                                }
+                                var targetPosition = [document.getElementById(targetElement).style.left, document.getElementById(targetElement).style.top, document.getElementById(targetElement).style.width, document.getElementById(targetElement).style.height];
+
+                                document.getElementById(sourceElement).style.left = targetPosition[0];
+                                document.getElementById(sourceElement).style.top = targetPosition[1];
+                                document.getElementById(sourceElement).style.width = targetPosition[2];
+                                document.getElementById(sourceElement).style.height = targetPosition[3];
+                                document.getElementById("sm-frame-helper-" + sourceId).style.left = targetPosition[0];
+                                document.getElementById("sm-frame-helper-" + sourceId).style.top = targetPosition[1];
+                                document.getElementById("sm-frame-helper-" + sourceId).style.width = targetPosition[2];
+                                document.getElementById("sm-frame-helper-" + sourceId).style.height = targetPosition[3];
+
+                                document.getElementById(targetElement).style.left = sourcePosition[0];
+                                document.getElementById(targetElement).style.top = sourcePosition[1];
+                                document.getElementById(targetElement).style.width = sourcePosition[2];
+                                document.getElementById(targetElement).style.height = sourcePosition[3];
+                                document.getElementById("sm-frame-helper-" + targetId).style.left = sourcePosition[0];
+                                document.getElementById("sm-frame-helper-" + targetId).style.top = sourcePosition[1];
+                                document.getElementById("sm-frame-helper-" + targetId).style.width = sourcePosition[2];
+                                document.getElementById("sm-frame-helper-" + targetId).style.height = sourcePosition[3];
                             });
                         }
                     } else {
