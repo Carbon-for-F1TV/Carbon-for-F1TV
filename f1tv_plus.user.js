@@ -447,6 +447,7 @@
                                     var smMainFeeds = [
                                         "international",
                                         "f1_live",
+                                        "pit_lane",
                                         "data",
                                         "tracker"
                                     ];
@@ -767,6 +768,7 @@
                                 var smMainFeeds = [
                                     "international",
                                     "f1_live",
+                                    "pit_lane",
                                     "data",
                                     "tracker"
                                 ];
