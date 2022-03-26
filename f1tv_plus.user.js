@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      2.2.7
+// @version      2.2.8
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -14,8 +14,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "2.2.7";
-    //<updateDescription>multi-view: Added swap-frame functionality</updateDescription>
+    var smVersion = "2.2.8";
+    //<updateDescription>- Updated API to 3.0, fixes missing F1-Live channel</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
@@ -417,10 +417,10 @@
                             var smUrlTeam_array = [];
                             var smAdditionalStreams = true;
                             smUrlTeam_array["-"] = [];
-                            smUrlTeam_array["-"]["main_feed"] = "MAIN FEED";
-                            smUrl_array["main_feed"] = "https://" + smURL_DOMAIN + "/1.0/R/ENG/WEB_HLS/ALL/CONTENT/PLAY?contentId=" + smUrl_contentId;
+                            smUrlTeam_array["-"]["international"] = "INTERNATIONAL";
+                            smUrl_array["international"] = "https://" + smURL_DOMAIN + "/1.0/R/ENG/WEB_HLS/ALL/CONTENT/PLAY?contentId=" + smUrl_contentId;
                             $.ajax({
-                                url: "https://" + smURL_DOMAIN + "/2.0/R/ENG/WEB_DASH/ALL/CONTENT/VIDEO/" + smUrl_contentId + "/F1_TV_Pro_Annual/2",
+                                url: "https://" + smURL_DOMAIN + "/3.0/R/ENG/WEB_DASH/ALL/CONTENT/VIDEO/" + smUrl_contentId + "/F1_TV_Pro_Annual/2",
                                 type: 'get',
                                 dataType: 'json',
                                 async: true,
@@ -445,9 +445,9 @@
                                         smAdditionalStreams = false;
                                     }
                                     var smMainFeeds = [
-                                        "main_feed",
+                                        "international",
+                                        "f1_live",
                                         "data",
-                                        "pit_lane",
                                         "tracker"
                                     ];
                                     for (var t in smUrlTeam_array) {
@@ -489,7 +489,7 @@
                                         }
                                     }
                                     if (smAdditionalStreams == false) {
-                                        document.getElementById("btn-url-main_feed").click();
+                                        document.getElementById("btn-url-international").click();
                                     }
                                 },
                                 error: function() {
@@ -730,11 +730,11 @@
                         var smUrlColor_array = [];
                         var smUrlTeam_array = [];
                         var smAdditionalStreams = true;
-                        smUrl_array["main_feed"] = "https://" + smURL_DOMAIN + "/1.0/R/ENG/WEB_HLS/ALL/CONTENT/PLAY?contentId=" + smUrl_contentId;
                         smUrlTeam_array["-"] = [];
-                        smUrlTeam_array["-"]["main_feed"] = "MAIN FEED";
+                        smUrlTeam_array["-"]["international"] = "INTERNATIONAL";
+                        smUrl_array["international"] = "https://" + smURL_DOMAIN + "/1.0/R/ENG/WEB_HLS/ALL/CONTENT/PLAY?contentId=" + smUrl_contentId;
                         $.ajax({
-                            url: "https://" + smURL_DOMAIN + "/2.0/R/ENG/WEB_DASH/ALL/CONTENT/VIDEO/" + smUrl_contentId + "/F1_TV_Pro_Annual/2",
+                            url: "https://" + smURL_DOMAIN + "/3.0/R/ENG/WEB_DASH/ALL/CONTENT/VIDEO/" + smUrl_contentId + "/F1_TV_Pro_Annual/2",
                             type: 'get',
                             dataType: 'json',
                             async: true,
@@ -765,9 +765,9 @@
                                 }
 
                                 var smMainFeeds = [
-                                    "main_feed",
+                                    "international",
+                                    "f1_live",
                                     "data",
-                                    "pit_lane",
                                     "tracker"
                                 ];
                                 for (var t in smUrlTeam_array) {
@@ -1062,7 +1062,7 @@
                                 if (window.location.hash.split("_")[1].split("=")[0] == "play" ||
                                     window.location.hash.split("_")[1].split("=")[0].split(":")[0] == "multipopout" ||
                                     smAdditionalStreams == false) {
-                                    document.getElementById("sm-btn-feeds-main_feed").click();
+                                    document.getElementById("sm-btn-feeds-international").click();
                                 }
                                 if (smAdditionalStreams == false) {
                                     document.getElementById("sm-btn-feeds").style = "display: none !important;";
@@ -1223,7 +1223,11 @@
                             document.getElementById("sm-popup-video").currentTime += -5 * document.getElementById("sm-popup-video").playbackRate;
                             break;
                         case "ArrowRight":
-                            document.getElementById("sm-popup-video").currentTime += 5 * document.getElementById("sm-popup-video").playbackRate;
+                            if ((document.getElementById("sm-popup-video").dataset["streamprotocol"] == "DASH-LIVE") && ((document.getElementById("sm-popup-video").currentTime += 5 * document.getElementById("sm-popup-video").playbackRate) > parseInt(document.getElementById("sm-popup-video").dataset.liveend))) {
+                                document.getElementById("sm-popup-video").currentTime = parseInt(document.getElementById("sm-popup-video").dataset.liveend);
+                            } else {
+                                document.getElementById("sm-popup-video").currentTime += 5 * document.getElementById("sm-popup-video").playbackRate;
+                            }
                             break;
                         case " ": //space
                             document.getElementById("sm-pause-toggle").click();
