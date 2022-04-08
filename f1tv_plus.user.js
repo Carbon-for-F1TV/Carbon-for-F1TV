@@ -14,7 +14,7 @@
     'use strict';
 
     var smVersion = "1.3a";
-    //<updateDescription>Update details:<br>Fixed streams not loading in popout modes</updateDescription>
+    //<updateDescription></updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/v1/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/v1/sync_offsets.json";
