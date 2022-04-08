@@ -282,7 +282,7 @@
         if (window.location.hash.split("_")[1].split("=")[0] == "popout" ||
             window.location.hash.split("_")[1].split("=")[0].split(":")[0] == "multipopout") {
             var smHtml = "<div id='sm-popup-id' style='display: none;'>0</div>" +
-                "<div style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 999;'>" +
+                "<div class='sm-bg' style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 999;'>" +
                 "<img style='display: block; margin: 50vh auto auto auto; transform: translateY(-50%);' src='https://f1tv.formula1.com/static/3adbb5b25a6603f282796363a74f8cf3.png'>" +
                 "</div>" +
                 "<style>" +
@@ -321,7 +321,7 @@
 
                 document.getElementById("sm-popup-id").innerHTML = 1;
                 document.title = "(#1)";
-                var smSettingsFrameHtml = "<div id='sm-offset-settings-btn' class='sm-autohide' style='background-color: #000000aa; color: #fff; font-size: 12px; padding: 8px 16px; border-radius: 0px 0px 20px 20px; position: fixed; top: 0; left: 5%; cursor: pointer; z-index: 1004;'>SYNC MENU</div>" +
+                var smSettingsFrameHtml = "<div id='sm-offset-settings-btn' class='sm-autohide' style='background-color: #000000aa; color: #fff; font-size: 12px; padding: 8px 16px; border-radius: 0px 0px 20px 20px; position: fixed; top: 0; left: 5%; cursor: pointer; z-index: 1004; display: none;'>SYNC MENU</div>" +
                     "<div id='sm-offset-settings' style='padding: 10px; position: fixed; top: 0; left: 0; background-color: #000; border-radius: 0px 0px 20px; display: none; z-index: 1005;'>" +
                     "<div id='sm-offset-settings-close-btn' style='text-align: right; font-size: 20px; cursor: pointer;'>[x]</div>" +
                     "<div id='sm-offset-settings-msg-top' style='margin: 10px 0px;'></div>" +
@@ -349,6 +349,7 @@
                     "body { background-color: #000; color: #fff; font-family: Arial; margin: 0; }" +
                     "td,th { padding: 4px 20px; }" +
                     "#sm-offset-settings-msg-top p { padding: 10px; border-radius: 10px; font-size: 14px; background-color: #ffef5b; color: #000; }" +
+                    "#app:hover ~ #sm-offset-settings-btn, .sm-bg:hover ~ #sm-offset-settings-btn, #sm-offset-settings-btn:hover { display: block !important; }" +
                     "</style>";
 
                 var smWindow = [];
@@ -533,7 +534,6 @@
                     var timeDiff = [];
                     var smSynced = 0;
 
-                    console.log("sync l");
                     for (let i = 1; i <= smWindowAmount; i++) {
                         if (typeof smWindow[i].document.getElementsByTagName("video")[0] == 'undefined') {
                             return;
