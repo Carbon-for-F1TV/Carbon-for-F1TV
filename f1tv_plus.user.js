@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      3.0.0
+// @version      3.0.1
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -12,8 +12,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "3.0.0";
-    //<updateDescription>Update details:<br>Switched to default F1TV player everywhere.<br>This is a workaround for latest DRM changes that broke all third-party apps.<br><br>This update removes some features, and probably introduces many bugs.</updateDescription>
+    var smVersion = "3.0.1";
+    //<updateDescription>Update details:<br>multi-popout improvements:<br>- fixed videos buffering too long when syncing,<br>- hidden video controls in secondary windows.</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
@@ -382,6 +382,18 @@
                     }
                 });
 
+                var smAllWindowExtraHtml =  "<style>" +
+                    ".bmpui-ui-piptogglebutton, .bmpui-ui-airplaytogglebutton, .bmpui-ui-casttogglebutton, .bmpui-ui-vrtogglebutton { display: none; }" +
+                    "</style>";
+
+                var smMainWindowExtraHtml = "";
+
+                var smSecondaryWindowExtraHtml = "<style>" +
+                    ".bmpui-ui-rewindbutton, .bmpui-ui-playbacktogglebutton, .bmpui-ui-forwardbutton, .bmpui-controlbar-top, .bmpui-ui-hugeplaybacktogglebutton { display: none; }" +
+                    "</style>";
+
+                document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", smAllWindowExtraHtml + smMainWindowExtraHtml);
+
                 if (oneWindow) {
                     $(".inset-video-item-image-container").css("left", smPopupPositions[smWindowAmount][0][0] + "%");
                     $(".inset-video-item-image-container").css("top", smPopupPositions[smWindowAmount][0][1] + "%");
@@ -406,16 +418,17 @@
                             document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", frameHtml);
                             smWindow[i] = document.getElementById("sm-frame-" + i).contentWindow;
                             smWindow[i].addEventListener('load', (event) => {
-                                setTimeout(function() {
-                                    if (i > 1) {
-                                        /*
-                                        smWindow[i].document.getElementById("sm-video-primary-controls").style.display = "none";
-                                        smWindow[i].document.getElementById("sm-video-titlebar").style.display = "inline-block";
-                                        */
+                                (function onWindowLoad() {
+                                    if (smWindow[i].document.getElementsByTagName("video")[0]) {
+                                        console.log("video found!");
+                                        smWindow[i].document.getElementsByTagName("video")[0].muted = true;
+                                        smWindow[i].document.title = "(#" + i + ")"; // + smWindow[i].document.getElementById("sm-video-title").innerHTML;
+                                        smWindow[i].document.getElementById("sm-popup-id").innerHTML = i;
+                                        smWindow[i].document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", smAllWindowExtraHtml + smSecondaryWindowExtraHtml);
+                                    } else {
+                                        setTimeout(onWindowLoad, 100);
                                     }
-                                    smWindow[i].document.title = "(#" + i + ")"; // + smWindow[i].document.getElementById("sm-video-title").innerHTML;
-                                    smWindow[i].document.getElementById("sm-popup-id").innerHTML = i;
-                                }, 500);
+                                })();
                             });
                         }
 
@@ -490,14 +503,19 @@
                             smWindow[i] = window.open(document.location.href.split("_multipopout")[0] + "_popout=" + window.location.hash.split("_")[1].split("=")[1], Date.now(), "left=" + smWindowOffsetX + ",top=" + smWindowOffsetY + ",width=" + smWindowWidth + ",height=" + smWindowHeight);
                         }
                         smWindow[i].addEventListener('load', (event) => {
-                            setTimeout(function() {
-                                if (i > 1) {
-                                    smWindow[i].document.getElementByTagName("video")[0].muted = true;
+                            (function onWindowLoad() {
+                                if (smWindow[i].document.getElementsByTagName("video")[0]) {
+                                    console.log("video found!");
+                                    if (i > 1) {
+                                        smWindow[i].document.getElementsByTagName("video")[0].muted = true;
+                                        smWindow[i].document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", smAllWindowExtraHtml + smSecondaryWindowExtraHtml);
+                                    }
+                                    smWindow[i].document.title = "(#" + i + ")";// + smWindow[i].document.getElementById("sm-video-title").innerHTML;
+                                    smWindow[i].document.getElementById("sm-popup-id").innerHTML = i;
+                                } else {
+                                    setTimeout(onWindowLoad, 100);
                                 }
-                                smWindow[i].document.title = "(#" + i + ")";// + smWindow[i].document.getElementById("sm-video-title").innerHTML;
-                                smWindow[i].document.getElementById("sm-popup-id").innerHTML = i;
-                            }, 2000);
-
+                            })();
 
                         });
                     }
@@ -510,6 +528,7 @@
                 }
 
                 function smResumeAllWhenReady() {
+                    var smResumeRetryCount = 0;
                     var smReadyCheck = setInterval(function() {
                         var smNotReady = 0;
 
@@ -525,6 +544,20 @@
                             document.getElementById("sm-sync-status-text").innerHTML = "";
                             clearInterval(smReadyCheck);
                         }
+
+                        // DIRTY FIX:
+                        // Simulates click on seek-backward button if syncing takes longer than 2 seconds.
+                        // This fixes Bitmovin player sometimes not buffering video after setting it's currentTime value.
+                        // Might cause issues on slow internet connections.
+                        smResumeRetryCount += 1;
+                        if (smResumeRetryCount == 20) {
+                            for (let i = 2; i <= smWindowAmount; i++) {
+                                var savedTime = smWindow[i].document.getElementsByTagName("video")[0].currentTime;
+                                smWindow[i].document.getElementsByClassName("bmpui-ui-rewindbutton")[0].click();
+                                smWindow[i].document.getElementsByTagName("video")[0].currentTime = savedTime;
+                            }
+                        }
+
                     }, 100);
                 }
 
