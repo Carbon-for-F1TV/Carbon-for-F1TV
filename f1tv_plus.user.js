@@ -8,7 +8,6 @@
 // @grant        GM.xmlHttpRequest
 // @connect      raw.githubusercontent.com
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
-// @require      https://cdn.jsdelivr.net/npm/hls.js@0.14.17/dist/hls.min.js
 // ==/UserScript==
 (function() {
     'use strict';
