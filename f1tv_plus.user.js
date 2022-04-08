@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      1.3
+// @version      1.3a
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -13,11 +13,11 @@
 (function() {
     'use strict';
 
-    var smVersion = "1.3";
+    var smVersion = "1.3a";
     //<updateDescription>Update details:<br>Fixed streams not loading in popout modes</updateDescription>
 
-    var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
-    var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
+    var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/v1/f1tv_plus.user.js";
+    var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/v1/sync_offsets.json";
 
     //// SETTINGS FOR MULTI-POPOUT MODE ////
     var BROWSER_USED_HEIGHT = 70; // height [px] of window that is used by browser/system (title bar, url bar, etc) | Default value: 70
@@ -729,14 +729,8 @@
 
         function smLoad() {
             var smBtnHtml = "<div id='sm-menu' style='display: none;'>" +
-                "<a id='sm-btn-url' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Get stream URL'>" +
-                "<span style='display: inline-block; font-size: 12px;'>URL</span></a>" +
                 "<a id='sm-btn-popup' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Open popout'>" +
                 "<span style='display: inline-block; font-size: 12px;'>POPOUT</span></a>" +
-                "<a id='sm-btn-popup-alt' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Open popout (alternative mode)'>" +
-                "<span style='display: inline-block; font-size: 12px;'>POPOUT (ALT)</span></a>" +
-                "<a id='sm-btn-popups-alt' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Open multiple synchronized popout videos'>" +
-                "<span style='display: inline-block; font-size: 12px;'>MULTI-POPOUT</span></a>" +
                 "<a id='sm-btn-theater' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Toggle theater mode'>" +
                 "<span style='display: inline-block; font-size: 12px;'>THEATER</span></a>" +
                 "</div>" +
