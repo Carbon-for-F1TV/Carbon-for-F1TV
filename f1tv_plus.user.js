@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         F1TV+
 // @namespace    https://najdek.github.io/f1tv_plus/
-// @version      3.0.1
+// @version      3.0.2
 // @description  A few improvements to F1TV
 // @author       Mateusz Najdek
 // @match        https://f1tv.formula1.com/*
@@ -12,8 +12,8 @@
 (function() {
     'use strict';
 
-    var smVersion = "3.0.1";
-    //<updateDescription>Update details:<br>multi-popout improvements:<br>- fixed videos buffering too long when syncing,<br>- hidden video controls in secondary windows.</updateDescription>
+    var smVersion = "3.0.2";
+    //<updateDescription>Update details:<br>multi-view: fix offsets not loading from database</updateDescription>
 
     var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
     var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
@@ -595,7 +595,7 @@
                         offset[i] = parseInt(document.getElementById("sm-offset-" + i).value) / 1000 || 0;
                         var streamId = smWindow[i].window.location.href.split("/")[4];
                         //var name = smWindow[i].document.getElementById("bitmovinplayer-video-slave-embeddedPlayer").dataset.name;
-                        var name = smWindow[i].document.getElementsByClassName("bmpui-label-metadata-title")[0].innerHTML;
+                        var name = smWindow[i].document.getElementsByClassName("bmpui-label-metadata-title")[0].innerHTML.toLowerCase().replace(" ", "_");
                         if (smSyncData.videos[streamId]) {
                             if ((document.getElementById("sm-offset-" + i).value == "") && (smSyncData.videos[streamId].values[name])) {
                                 var smSyncValue = smSyncData.videos[streamId].values[name];
@@ -663,7 +663,7 @@
                 "<a id='sm-btn-popup' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Open popout'>" +
                 "<span style='display: inline-block; font-size: 12px;'>POPOUT</span></a>" +
                 "<a id='sm-btn-popups' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Open multiple synchronized popout videos'>" +
-                "<span style='display: inline-block; font-size: 12px;'>MULTI-POPOUT</span></a>" +
+                "<span style='display: inline-block; font-size: 12px;'>MULTI-VIEW</span></a>" +
                 "<a id='sm-btn-theater' role='button' class='btn btn--transparent' style='color: #000; margin: 6px;' title='Toggle theater mode'>" +
                 "<span style='display: inline-block; font-size: 12px;'>THEATER</span></a>" +
                 "</div>" +
@@ -793,7 +793,7 @@
                 });
                 // popout list
                 for (var i in smPopupPositions) {
-                    if (i == 0) {
+                    if (i < 2) {
                         continue;
                     }
                     var btnWidth = 112;
@@ -805,15 +805,11 @@
                         "</div>";
                     document.getElementById("sm-popout-options-list").insertAdjacentHTML("beforeend", btnHtml);
                     document.getElementById("sm-popout-menu-option-" + i).addEventListener("click", function() {
-                        if ($(this).data("i") == 1) {
-                            window.open(window.location.href.split("#")[0] + "#f1tvplus_popout", Date.now(), "width=1280,height=720");
-                        } else {
-                            var smWindowOffsetX = Math.round(smPopupPositions[$(this).data("i")][0][0] * screen.availWidth / 100);
-                            var smWindowOffsetY = Math.round(smPopupPositions[$(this).data("i")][0][1] * screen.availHeight / 100);
-                            var smWindowWidth = Math.round(smPopupPositions[$(this).data("i")][0][2] * screen.availWidth / 100) - BROWSER_USED_WIDTH;
-                            var smWindowHeight = Math.round(smPopupPositions[$(this).data("i")][0][3] * screen.availHeight / 100) - BROWSER_USED_HEIGHT;
-                            window.open(window.location.href.split("#")[0] + "#f1tvplus_multipopout:" + $(this).data("i") + "=" + $(this).data("contentid"), Date.now(), "left=" + smWindowOffsetX + ",top=" + smWindowOffsetY + ",width=" + smWindowWidth + ",height=" + smWindowHeight);
-                        }
+                        var smWindowOffsetX = Math.round(smPopupPositions[$(this).data("i")][0][0] * screen.availWidth / 100);
+                        var smWindowOffsetY = Math.round(smPopupPositions[$(this).data("i")][0][1] * screen.availHeight / 100);
+                        var smWindowWidth = Math.round(smPopupPositions[$(this).data("i")][0][2] * screen.availWidth / 100) - BROWSER_USED_WIDTH;
+                        var smWindowHeight = Math.round(smPopupPositions[$(this).data("i")][0][3] * screen.availHeight / 100) - BROWSER_USED_HEIGHT;
+                        window.open(window.location.href.split("#")[0] + "#f1tvplus_multipopout:" + $(this).data("i") + "=" + $(this).data("contentid"), Date.now(), "left=" + smWindowOffsetX + ",top=" + smWindowOffsetY + ",width=" + smWindowWidth + ",height=" + smWindowHeight);
                         $("video").trigger("pause");
                         var smHtml = "<div style='position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; text-align: center; background-color: #000; font-family: Arial;'>" +
                             "<div style='color: #ccc; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 20px; border-radius: 10px; position: absolute;'>" +
