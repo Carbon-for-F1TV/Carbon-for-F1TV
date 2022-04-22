@@ -17,8 +17,8 @@
     var smVersion = "2.2.8";
     //<updateDescription>- Updated API to 3.0, fixes missing F1-Live channel</updateDescription>
 
-    var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/f1tv_plus.user.js";
-    var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/master/sync_offsets.json";
+    var smUpdateUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/v2/f1tv_plus.user.js";
+    var smSyncDataUrl = "https://raw.githubusercontent.com/najdek/f1tv_plus/v2/sync_offsets.json";
 
     //// SETTINGS FOR MULTI-POPOUT MODE ////
     var BROWSER_USED_HEIGHT = 70; // height [px] of window that is used by browser/system (title bar, url bar, etc) | Default value: 70
