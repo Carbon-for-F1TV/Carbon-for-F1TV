@@ -167,6 +167,13 @@
         "lat": 1200,
         "rus": 2000
       }
-    }
+    },
+    "1000003967": {
+      "title": "2021 Italian Grand Prix Formula 1 Race",
+      "values": {
+        "data": -1500,
+        "pit_lane": -1750,
+        "ric": -2000
+      }
   }
 }
