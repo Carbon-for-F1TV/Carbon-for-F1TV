@@ -3,7 +3,7 @@
 // @namespace   https://najdek.github.io/f1tv_plus/
 // @match       https://f1tv.formula1.com/*
 // @grant       none
-// @version     4.0.0
+// @version     4.0.1
 // @author      Mateusz Najdek
 // @description  A few improvements to F1TV
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
@@ -39,7 +39,7 @@ function toggleTheaterMode() {
     var theaterModeStyleHtml = "<div class='f1tvplus-theatermode-style'>" +
         "<style>" +
         "body {overflow: hidden;}" +
-        ".inset-video-item-image-container {position: fixed !important; z-index: 1000; top: 0; left: 0; height: 100%; width: 100%; background-color: #000;}" +
+        ".inset-video-item-image-container {position: fixed !important; z-index: 1000; top: 0; left: 0; height: 100%; width: 100%; margin: 0 !important; background-color: #000;}" +
         ".inset-video-item-image {margin-top: 50vh; transform: translateY(-50%);}" +
         ".inset-video-item-play-action-container {width: 100%;}" +
         "</style>" +
