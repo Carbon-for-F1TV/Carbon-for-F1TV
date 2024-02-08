@@ -3,7 +3,7 @@
 // @namespace   https://najdek.github.io/f1tv_plus/
 // @match       https://f1tv.formula1.com/*
 // @grant       none
-// @version     4.0.1
+// @version     4.0.2
 // @author      Mateusz Najdek
 // @description  A few improvements to F1TV
 // @require      https://code.jquery.com/jquery-3.6.0.min.js
@@ -29,12 +29,14 @@ function isTheaterMode() {
   }
 }
 
-function toggleTheaterMode() {
+function toggleTheaterMode(temporary) {
   log("Theater mode toggle");
   if (isTheaterMode()) {
     //disabling theater mode
     $("#f1tvplus-helper .f1tvplus-theatermode-style").remove();
-    theatermode_active = false;
+    if (temporary !== true) {
+      theatermode_active = false;
+    }
   } else {
     var theaterModeStyleHtml = "<div class='f1tvplus-theatermode-style'>" +
         "<style>" +
@@ -117,6 +119,9 @@ function pageChanged() {
     playerInjectLoop = setInterval(waitForPlayer, 50);
   } else {
     log("Page changed (not video)");
+    if (isTheaterMode()) {
+      toggleTheaterMode(true);
+    }
   }
 }
 
