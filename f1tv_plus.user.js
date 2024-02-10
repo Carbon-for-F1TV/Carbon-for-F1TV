@@ -2,7 +2,7 @@
 // @name           F1TV+
 // @namespace      https://najdek.github.io/f1tv_plus/
 // @match          https://f1tv.formula1.com/*
-// @version        4.0.4
+// @version        4.0.5
 // @author         Mateusz Najdek
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
@@ -105,11 +105,11 @@ if (f1tvplus_mode !== "popout") {
           delete popouts[p];
           log("popout closed [id: " + id + "]");
       } else {
-        popouts[p].document.getElementById("main-progress").innerHTML = $(".f1tvplus-player video")[0].currentTime;
+        popouts[p].$("#main-progress").text($(".f1tvplus-player video")[0].currentTime);
 
-        popouts[p].document.getElementById("this-progress").innerHTML = popouts[p].document.querySelector(".f1tvplus-player video").currentTime;
+        popouts[p].$("#this-progress").text(popouts[p].document.querySelector(".f1tvplus-player video").currentTime);
 
-        popouts[p].document.getElementById("progress-sync-time").innerHTML = Date.now();
+        popouts[p].$("#progress-sync-time").text(Date.now());
 
         let mainState;
         if ($(".f1tvplus-player video")[0].paused) {
@@ -117,7 +117,7 @@ if (f1tvplus_mode !== "popout") {
         } else {
           mainState = "playing";
         }
-        popouts[p].document.getElementById("main-state").innerHTML = mainState;
+        popouts[p].$("#main-state").text(mainState);
 
         let thisState;
         if (popouts[p].document.querySelector(".f1tvplus-player video").paused) {
@@ -125,8 +125,8 @@ if (f1tvplus_mode !== "popout") {
         } else {
           thisState = "playing";
         }
-        popouts[p].document.getElementById("this-state").innerHTML = thisState;
-        popouts[p].document.getElementById("main-playbackrate").innerHTML = $(".f1tvplus-player video")[0].playbackRate;
+        popouts[p].$("#this-state").text(thisState);
+        popouts[p].$("#main-playbackrate").text($(".f1tvplus-player video")[0].playbackRate);
 
 
       }
@@ -137,28 +137,28 @@ if (f1tvplus_mode !== "popout") {
 if (f1tvplus_mode == "popout") {
   var syncData = setInterval(function() {
     let thisProgressRealtime = $(".f1tvplus-player video")[0].currentTime;
-    document.getElementById("this-progress-realtime").innerHTML = thisProgressRealtime;
+    $("#this-progress-realtime").text(thisProgressRealtime);
 
     let estimatedMainProgress;
     if (document.getElementById("main-state").innerHTML == "paused") {
-      document.getElementById("main-progress-realtime").innerHTML = document.getElementById("main-progress").innerHTML;
+      $("#main-progress-realtime").text(document.getElementById("main-progress").innerHTML);
     } else {
       let timeDifference = (Date.now() - parseInt(document.getElementById("progress-sync-time").innerHTML))/1000;
       let mainPlaybackrate = parseFloat(document.getElementById("main-playbackrate").innerHTML);
       estimatedMainProgress = parseInt(document.getElementById("main-progress").innerHTML) + (timeDifference * mainPlaybackrate);
-      document.getElementById("main-progress-realtime").innerHTML = estimatedMainProgress;
+      $("#main-progress-realtime").text(estimatedMainProgress);
     }
 
     let thisPlaybackrate = $(".f1tvplus-player video")[0].playbackRate;
-    document.getElementById("this-playbackrate").innerHTML = thisPlaybackrate;
+    $("#this-playbackrate").text(thisPlaybackrate);
 
     let targetProgress = estimatedMainProgress;
     let syncOffset = parseInt(document.getElementById("sync-offset").value) / 1000 || 0;
     targetProgress += syncOffset;
-    document.getElementById("this-progress-target").innerHTML = targetProgress;
+    $("#this-progress-target").text(targetProgress);
 
     let diffToTarget = targetProgress - thisProgressRealtime;
-    document.getElementById("diff-to-target").innerHTML = diffToTarget;
+    $("#diff-to-target").text(diffToTarget);
 
 
   }, 100);
