@@ -2,7 +2,7 @@
 Your donation motivates my ongoing efforts to enhance your F1 viewing experience!
 
 # Donate via Buy Me a Cofee
-[Donate with Credit Card, Apple Pay, Google Pay](https://www.buymeacoffee.com/mateusznajdek)
+[Donate with Credit Card, Apple Pay, Google Pay](https://www.buymeacoffee.com/f1tvplus)
 
 
 
