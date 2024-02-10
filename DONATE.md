@@ -4,7 +4,8 @@ Your donation motivates my ongoing efforts to enhance your F1 viewing experience
 # Donate via Buy Me a Cofee
 [Donate with Credit Card, Apple Pay, Google Pay](https://www.buymeacoffee.com/f1tvplus)
 
-
+# Donate via PayPal
+[Click here](https://www.paypal.com/donate/?hosted_button_id=WUHBFD3P4VSBA)
 
 # Donate via Crypto
 - **BTC:** `bc1qumjflpu6w6ydk37xepslfy75ul63qmwe32qem2`
