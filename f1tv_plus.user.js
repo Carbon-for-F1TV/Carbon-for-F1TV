@@ -2,7 +2,7 @@
 // @name           F1TV+
 // @namespace      https://najdek.github.io/f1tv_plus/
 // @match          https://f1tv.formula1.com/*
-// @version        4.0.5a
+// @version        4.0.6
 // @author         Mateusz Najdek
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
