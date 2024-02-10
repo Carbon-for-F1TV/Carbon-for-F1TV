@@ -2,7 +2,7 @@
 // @name           F1TV+
 // @namespace      https://najdek.github.io/f1tv_plus/
 // @match          https://f1tv.formula1.com/*
-// @version        4.0.5
+// @version        4.0.5a
 // @author         Mateusz Najdek
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
@@ -30,8 +30,8 @@ if (window.location.hash.split("_")[0] == "#f1tvplus") {
 }
 
 function log(msg) {
-  var d = new Date();
-  var dt = d.toISOString().split('T')[0] + " " + d.toTimeString().split(' ')[0];
+  let d = new Date();
+  let dt = d.toISOString().split('T')[0] + " " + d.toTimeString().split(' ')[0];
   console.log("[F1TV+] [" + dt + "]: " + msg);
 }
 
@@ -52,7 +52,7 @@ function toggleTheaterMode(temporary) {
       theatermode_active = false;
     }
   } else {
-    var theaterModeStyleHtml = "<div class='f1tvplus-theatermode-style'>" +
+    let theaterModeStyleHtml = "<div class='f1tvplus-theatermode-style'>" +
         "<style>" +
         "body {overflow: hidden;}" +
         ".inset-video-item-image-container {position: fixed !important; z-index: 1000; top: 0; left: 0; height: 100%; width: 100%; margin: 0 !important; background-color: #000;}" +
@@ -67,17 +67,17 @@ function toggleTheaterMode(temporary) {
 
 var popouts = [];
 function addPopout() {
-  var popoutId;
+  let popoutId;
   if ($("#f1tvplus-helper .f1tvplus-popout").length > 0) {
     popoutId = parseInt($("#f1tvplus-helper .f1tvplus-popout").last()[0].id.split("f1tvplus-popout-")[1]) + 1;
   } else {
     popoutId = 0;
   }
   log("creating popout [id: " + popoutId + "]");
-  var popoutHtml = "<div class='f1tvplus-popout' id='f1tvplus-popout-" + popoutId + "' style='position: fixed; z-index: 1001; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;'>" +
+  let popoutHtml = "<div class='f1tvplus-popout' id='f1tvplus-popout-" + popoutId + "' style='position: fixed; z-index: 1001; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;'>" +
       "</div>";
   $("#f1tvplus-helper")[0].insertAdjacentHTML("beforeEnd", popoutHtml);
-  var popoutUrl = document.location.href.split("#")[0];
+  let popoutUrl = document.location.href.split("#")[0];
   if (popoutUrl.includes("?action=play")) {
     popoutUrl += "#f1tvplus_popout";
   } else {
@@ -98,7 +98,7 @@ function addPopout() {
 
 if (f1tvplus_mode !== "popout") {
   var pushProgressToPopouts = setInterval(function() {
-    for (var p in popouts) {
+    for (let p in popouts) {
       if (popouts[p].closed) {
         let id = parseInt(p.split("-")[1]);
           $("#f1tvplus-popout-" + id).remove();
@@ -106,8 +106,6 @@ if (f1tvplus_mode !== "popout") {
           log("popout closed [id: " + id + "]");
       } else {
         popouts[p].$("#main-progress").text($(".f1tvplus-player video")[0].currentTime);
-
-        popouts[p].$("#this-progress").text(popouts[p].document.querySelector(".f1tvplus-player video").currentTime);
 
         popouts[p].$("#progress-sync-time").text(Date.now());
 
@@ -140,12 +138,12 @@ if (f1tvplus_mode == "popout") {
     $("#this-progress-realtime").text(thisProgressRealtime);
 
     let estimatedMainProgress;
-    if (document.getElementById("main-state").innerHTML == "paused") {
-      $("#main-progress-realtime").text(document.getElementById("main-progress").innerHTML);
+    if ($("#main-state").text() == "paused") {
+      $("#main-progress-realtime").text($("#main-progress").text());
     } else {
-      let timeDifference = (Date.now() - parseInt(document.getElementById("progress-sync-time").innerHTML))/1000;
-      let mainPlaybackrate = parseFloat(document.getElementById("main-playbackrate").innerHTML);
-      estimatedMainProgress = parseInt(document.getElementById("main-progress").innerHTML) + (timeDifference * mainPlaybackrate);
+      let timeDifference = (Date.now() - parseInt($("#progress-sync-time").text()))/1000;
+      let mainPlaybackrate = parseFloat($("#main-playbackrate").text());
+      estimatedMainProgress = parseInt($("#main-progress").text()) + (timeDifference * mainPlaybackrate);
       $("#main-progress-realtime").text(estimatedMainProgress);
     }
 
@@ -163,13 +161,13 @@ if (f1tvplus_mode == "popout") {
 
   }, 100);
 
-  var syncNow = setInterval(function() {
+  let syncNow = setInterval(function() {
     let syncMode = parseInt(document.getElementById("sync-mode").value);
     if (syncMode == 1) {
-      let thisProgressRealtime = parseFloat(document.getElementById("this-progress-realtime").innerHTML);
-      let targetProgress = parseFloat(document.getElementById("this-progress-target").innerHTML);
-      let mainPlaybackrate = parseFloat(document.getElementById("main-playbackrate").innerHTML);
-      let thisPlaybackrate = parseFloat(document.getElementById("this-playbackrate").innerHTML);
+      let thisProgressRealtime = parseFloat($("#this-progress-realtime").text());
+      let targetProgress = parseFloat($("#this-progress-target").text());
+      let mainPlaybackrate = parseFloat($("#main-playbackrate").text());
+      let thisPlaybackrate = parseFloat($("#this-playbackrate").text());
       let diffToTarget = targetProgress - thisProgressRealtime;
       let diffToTargetAbs = Math.abs(diffToTarget);
 
@@ -242,7 +240,7 @@ function injectPlayerFeatures() {
 
   // add theater mode button
   if (f1tvplus_mode !== "popout") {
-    var theaterBtnHtml = "<button aria-label='Theater mode' class='f1tvplus-btn-theatermode bmpui-off' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + theatermode_btn_image + ")' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Theater mode</span></button>";
+    let theaterBtnHtml = "<button aria-label='Theater mode' class='f1tvplus-btn-theatermode bmpui-off' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + theatermode_btn_image + ")' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Theater mode</span></button>";
     $(".f1tvplus-player .bmpui-container-wrapper .bmpui-ui-piptogglebutton")[0].insertAdjacentHTML("beforebegin", theaterBtnHtml);
     $(".f1tvplus-player .f1tvplus-btn-theatermode").on("click", function() {
       toggleTheaterMode();
@@ -255,7 +253,7 @@ function injectPlayerFeatures() {
   }
 
   if ((multi_channels == true) && (f1tvplus_mode !== "popout")) {
-    var popoutBtnHtml = "<button aria-label='New Popout' class='f1tvplus-btn-popout bmpui-ui-piptogglebutton bmpui-off' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label'>New Popout</span></button>";
+    let popoutBtnHtml = "<button aria-label='New Popout' class='f1tvplus-btn-popout bmpui-ui-piptogglebutton bmpui-off' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label'>New Popout</span></button>";
     $(".f1tvplus-player .bmpui-container-wrapper .f1tvplus-btn-theatermode")[0].insertAdjacentHTML("beforebegin", popoutBtnHtml);
     $(".f1tvplus-player .f1tvplus-btn-popout").on("click", function() {
       addPopout();
@@ -267,7 +265,7 @@ function injectPlayerFeatures() {
     //$(".f1tvplus-player .bmpui-ui-forwardbutton").addClass("bmpui-hidden");
     //$(".f1tvplus-player .bmpui-ui-rewindbutton").addClass("bmpui-hidden");
 
-    var syncToggleHtml = "<span class='f1tvplus-btn-synctoggle bmpui-ui-playbacktimelabel' style='cursor: pointer; min-width: 80px; position: relative; padding-left: 18px;'><span class='f1tvplus-btn-synctoggle-label'>SYNC ON</span><div class='f1tvplus-btn-synctoggle-dot' style='background-color: #56ff63; width: 8px; height: 8px; border-radius: 8px; position: absolute; left: 0; top: 5px;'></div></span>";
+    let syncToggleHtml = "<span class='f1tvplus-btn-synctoggle bmpui-ui-playbacktimelabel' style='cursor: pointer; min-width: 80px; position: relative; padding-left: 18px;'><span class='f1tvplus-btn-synctoggle-label'>SYNC ON</span><div class='f1tvplus-btn-synctoggle-dot' style='background-color: #56ff63; width: 8px; height: 8px; border-radius: 8px; position: absolute; left: 0; top: 5px;'></div></span>";
     $(".f1tvplus-player .bmpui-controlbar-top .bmpui-container-wrapper")[0].insertAdjacentHTML("afterbegin", syncToggleHtml);
     $(".f1tvplus-btn-synctoggle")[0].addEventListener("click", function() {
       toggleSyncMode();
@@ -288,13 +286,13 @@ function injectPlayerFeatures() {
     })
 
 
-    var syncDebugToggleHtml = "<div class='f1tvplus-sync-debug-toggle bmpui-ui-settings-panel-item' style='cursor: pointer;' role='menuitem'><div class='bmpui-container-wrapper' style='cursor: pointer;'><label class='bmpui-ui-label' style='cursor: pointer;'>SYNC MODE DEBUG</label></div></div>";
+    let syncDebugToggleHtml = "<div class='f1tvplus-sync-debug-toggle bmpui-ui-settings-panel-item' style='cursor: pointer;' role='menuitem'><div class='bmpui-container-wrapper' style='cursor: pointer;'><label class='bmpui-ui-label' style='cursor: pointer;'>SYNC MODE DEBUG</label></div></div>";
     $(".bmpui-ui-settings-panel-page .bmpui-container-wrapper")[0].insertAdjacentHTML("afterbegin", syncDebugToggleHtml);
     $(".f1tvplus-sync-debug-toggle")[0].addEventListener("click", function() {
       toggleSyncDebug();
     })
 
-    var syncOffsetSwitcherHtml = "<span class='bmpui-ui-playbacktimelabel f1tvplus-syncoffset-menu' style='font-size: 13px; line-height: 28px; padding-left: 14px; padding-right: 4px;'>Sync Offset:</span>" +
+    let syncOffsetSwitcherHtml = "<span class='bmpui-ui-playbacktimelabel f1tvplus-syncoffset-menu' style='font-size: 13px; line-height: 28px; padding-left: 14px; padding-right: 4px;'>Sync Offset:</span>" +
         "<button class='f1tvplus-btn-syncoffset-back bmpui-off f1tvplus-syncoffset-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_image + ");' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Sync Offset (-)</span></button>" +
         "<span class='bmpui-ui-playbacktimelabel f1tvplus-syncoffset-view f1tvplus-syncoffset-menu' style='font-size: 18px; line-height: 28px; padding: 0px 10px; min-width: 52px; text-align: center;'></span>" +
         "<button class='f1tvplus-btn-syncoffset-forward bmpui-off f1tvplus-syncoffset-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_image + "); transform: rotate(180deg);' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Sync Offset (+)</span></button>";
@@ -309,7 +307,7 @@ function injectPlayerFeatures() {
 
   }
 
-  var donateHtml = "<div class='f1tvplus-sync-debug-toggle bmpui-ui-settings-panel-item' role='menuitem'><a style='color: #ff6643; text-align: center; display: block;' href='https://github.com/najdek/f1tv_plus/blob/master/DONATE.md' target='_blank'>❤ Donate to support F1TV+</a></div>";
+  let donateHtml = "<div class='f1tvplus-sync-debug-toggle bmpui-ui-settings-panel-item' role='menuitem'><a style='color: #ff6643; text-align: center; display: block;' href='https://github.com/najdek/f1tv_plus/blob/master/DONATE.md' target='_blank'>❤ Donate to support F1TV+</a></div>";
   $(".bmpui-ui-settings-panel-page .bmpui-container-wrapper")[0].insertAdjacentHTML("beforeEnd", donateHtml);
 
 
@@ -378,14 +376,14 @@ function waitForPageLoad() {
     clearInterval(waitForPageLoad);
     $("#app")[0].insertAdjacentHTML("beforeEnd", "<div id='f1tvplus-helper'></div>");
     if (f1tvplus_mode == "popout") {
-      var syncDataHtml = "<div class='sync-data'>" +
+      let syncDataHtml = "<div class='sync-data'>" +
           "<div>main window progress: <span id='main-progress'></span>, estimated realtime: <span class='thiswindow' id='main-progress-realtime'></span></div>" +
-          "<div>this window progress: <span id='this-progress'></span>, realtime: <span class='thiswindow' id='this-progress-realtime'></span></div>" +
+          "<div>this window progress: <span class='thiswindow' id='this-progress-realtime'></span></div>" +
           "<div>sync offset: <input id='sync-offset' type='number' step='250' value='' style='width: 80px;'>, target progress: <span class='thiswindow' id='this-progress-target'></span></div>" +
           "<div>progress sync time: <span id='progress-sync-time'></span></div>" +
           "<div>diff to target: <span class='thiswindow' id='diff-to-target'></span></div><br>" +
           "<div>main window state: <span id='main-state'></span></div>" +
-          "<div>this window state: <span id='this-state'></span>, realtime: <span class='thiswindow' id='this-state-realtime'></span></div>" +
+          "<div>this window state: <span id='this-state'></span></div>" +
 
 
           "<div>sync mode: <input id='sync-mode' type='number' step='1' value='1' style='width: 40px;'></div>" +
@@ -418,8 +416,8 @@ function pageChanged() {
   }
 }
 
-var oldHref = document.location.href;
-var observer = new MutationObserver(function(mutations) {
+let oldHref = document.location.href;
+let observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
         if (oldHref != document.location.href) {
             oldHref = document.location.href;
