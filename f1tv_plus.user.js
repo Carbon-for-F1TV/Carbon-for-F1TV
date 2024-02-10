@@ -198,14 +198,11 @@ function videoSpeed(speed) {
 }
 
 function videoJumpToProgress(progress) {
-    $(".f1tvplus-player video")[0].currentTime = progress;
+    $(".f1tvplus-player video")[0].currentTime = progress + 10;
     // DIRTY FIX:
-    // Simulates click on seek-backward button if syncing takes longer than 2 seconds.
+    // Simulates click on seek-backward button.
     // This fixes Bitmovin player sometimes not buffering video after setting it's currentTime value.
     $(".f1tvplus-player .bmpui-ui-rewindbutton")[0].click();
-    setTimeout(function() {
-      $(".f1tvplus-player video")[0].currentTime = progress + 0.5;
-    }, 500);
 }
 
 
