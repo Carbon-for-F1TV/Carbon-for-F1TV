@@ -2,7 +2,7 @@
 // @name           F1TV+
 // @namespace      https://najdek.github.io/f1tv_plus/
 // @match          https://f1tv.formula1.com/*
-// @version        4.0.3
+// @version        4.0.4
 // @author         Mateusz Najdek
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
@@ -11,7 +11,18 @@
 var DEFAULT_THEATERMODE = true;
 
 
-var theatermode_btn_image = "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPScxLjEnIGlkPSdMYXllcl8xJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB4PScwcHgnIHk9JzBweCcgdmlld0JveD0nMCAwIDI4My41IDQyNS4yJyBzdHlsZT0nZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCAyODMuNSA0MjUuMjsnIHhtbDpzcGFjZT0ncHJlc2VydmUnPjxnPjxwYXRoIHN0eWxlPSdmaWxsOiNEMEQwRDI7JyBkPSdNMjM5LjMsMTI0LjlINDQuMmMtMTAuNywwLTE5LjQsOC43LTE5LjQsMTkuNHYxMzYuNmMwLDEwLjcsOC43LDE5LjQsMTkuNCwxOS40aDE5NS4xICBjMTAuNywwLDE5LjQtOC43LDE5LjQtMTkuNFYxNDQuM0MyNTguNywxMzMuNiwyNTAsMTI0LjksMjM5LjMsMTI0Ljl6IE04Ni43LDI4Ny40SDM4di00OC43aDE5LjV2MjkuMmgyOS4yVjI4Ny40eiBNODYuNywxNTYuMiBINTcuNXYyOS4ySDM4di00OC43aDQ4LjdWMTU2LjJ6IE0yNDUuNSwyODcuNGgtNDguN3YtMTkuNUgyMjZ2LTI5LjJoMTkuNVYyODcuNHogTTI0NS41LDE4NS40SDIyNnYtMjkuMmgtMjkuMnYtMTkuNWg0OC43VjE4NS40eicvPjwvZz48L3N2Zz4NCg==";
+
+var theatermode_btn_image = "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPScxLjEnIGlkPSdMYXllcl8xJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB4PScwcHgnIHk9JzBweCcgdmlld0JveD0nMCAwIDI4My41IDQyNS4yJyBzdHlsZT0nZW5hYmxlLWJhY2tncm91bm" +
+    "Q6bmV3IDAgMCAyODMuNSA0MjUuMjsnIHhtbDpzcGFjZT0ncHJlc2VydmUnPjxnPjxwYXRoIHN0eWxlPSdmaWxsOiNEMEQwRDI7JyBkPSdNMjM5LjMsMTI0LjlINDQuMmMtMTAuNywwLTE5LjQsOC43LTE5LjQsMTkuNHYxMzYuNmMwLDEwLjcsOC43LDE5LjQsMTkuNCwxOS40aDE5NS4xICBjMTAuNywwLDE5LjQtOC43LDE5LjQtMTkuNFYxNDQuM0MyNTguNywxMzMuNiwyNTAsMT" +
+    "I0LjksMjM5LjMsMTI0Ljl6IE04Ni43LDI4Ny40SDM4di00OC43aDE5LjV2MjkuMmgyOS4yVjI4Ny40eiBNODYuNywxNTYuMiBINTcuNXYyOS4ySDM4di00OC43aDQ4LjdWMTU2LjJ6IE0yNDUuNSwyODcuNGgtNDguN3YtMTkuNUgyMjZ2LTI5LjJoMTkuNVYyODcuNHogTTI0NS41LDE4NS40SDIyNnYtMjkuMmgtMjkuMnYtMTkuNWg0OC43VjE4NS40eicvPjwvZz48L3N2Zz4NCg==";
+
+var syncoffset_btn_image = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyOC4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh" +
+    "0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAyODMuNSA0MjUuMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjgzLjUgNDI1LjI7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnIHN0eWxlPSJkaXNwbGF5Om5vbmU7Ij4NCgk" +
+    "8cGF0aCBzdHlsZT0iZGlzcGxheTppbmxpbmU7ZmlsbDojRDBEMEQyOyIgZD0iTTIzOS4zLDEyNC45SDQ0LjJjLTEwLjcsMC0xOS40LDguNy0xOS40LDE5LjR2MTM2LjZjMCwxMC43LDguNywxOS40LDE5LjQsMTkuNA0KCQloMTk1LjFjMTAuNywwLDE5LjQtOC43LDE5LjQtMTkuNFYxNDQuM0MyNTguNywxMzMuNiwyNTAsMTI0LjksMjM5LjMsMTI0Ljl6IE04Ni43LDI4Ny40SDM" +
+    "4di00OC43aDE5LjV2MjkuMmgyOS4yVjI4Ny40eg0KCQkgTTg2LjcsMTU2LjJINTcuNXYyOS4ySDM4di00OC43aDQ4LjdWMTU2LjJ6IE0yNDUuNSwyODcuNGgtNDguN3YtMTkuNUgyMjZ2LTI5LjJoMTkuNVYyODcuNHogTTI0NS41LDE4NS40SDIyNnYtMjkuMmgtMjkuMnYtMTkuNQ0KCQloNDguN1YxODUuNHoiLz4NCjwvZz4NCjxwYXRoIHN0eWxlPSJmaWxsOiNEMEQwRDI7IiB" +
+    "kPSJNMjkuNywyMDMuNWwxMDkuNy03Ny44YzIuOS0yLDcuMi0wLjIsNy4yLDN2MTY3LjZjMCwzLjMtNC4zLDUuMS03LjIsM0wyOS43LDIyMS43DQoJQzIzLjIsMjE3LDIzLjIsMjA4LjIsMjkuNywyMDMuNXoiLz4NCjxwYXRoIHN0eWxlPSJmaWxsOiNEMEQwRDI7IiBkPSJNMTQxLjgsMjAzLjVsMTA5LjctNzcuOGMyLjktMiw3LjItMC4yLDcuMiwzdjE2Ny42YzAsMy4zLTQuMyw" +
+    "1LjEtNy4yLDNsLTEwOS43LTc3LjgNCglDMTM1LjIsMjE3LDEzNS4yLDIwOC4yLDE0MS44LDIwMy41eiIvPg0KPC9zdmc+DQo=";
+
 var theatermode_active = DEFAULT_THEATERMODE;
 var f1tvplus_mode = "default";
 if (window.location.hash.split("_")[0] == "#f1tvplus") {
@@ -191,9 +202,10 @@ function videoJumpToProgress(progress) {
     // DIRTY FIX:
     // Simulates click on seek-backward button if syncing takes longer than 2 seconds.
     // This fixes Bitmovin player sometimes not buffering video after setting it's currentTime value.
-    let savedTime = $(".f1tvplus-player video")[0].currentTime;
     $(".f1tvplus-player .bmpui-ui-rewindbutton")[0].click();
-    $(".f1tvplus-player video")[0].currentTime = savedTime;
+    setTimeout(function() {
+      $(".f1tvplus-player video")[0].currentTime = progress + 0.5;
+    }, 500);
 }
 
 
@@ -285,6 +297,19 @@ function injectPlayerFeatures() {
       toggleSyncDebug();
     })
 
+    var syncOffsetSwitcherHtml = "<span class='bmpui-ui-playbacktimelabel f1tvplus-syncoffset-menu' style='font-size: 13px; line-height: 28px; padding-left: 14px; padding-right: 4px;'>Sync Offset:</span>" +
+        "<button class='f1tvplus-btn-syncoffset-back bmpui-off f1tvplus-syncoffset-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_image + ");' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Sync Offset (-)</span></button>" +
+        "<span class='bmpui-ui-playbacktimelabel f1tvplus-syncoffset-view f1tvplus-syncoffset-menu' style='font-size: 18px; line-height: 28px; padding: 0px 10px; min-width: 52px; text-align: center;'></span>" +
+        "<button class='f1tvplus-btn-syncoffset-forward bmpui-off f1tvplus-syncoffset-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_image + "); transform: rotate(180deg);' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Sync Offset (+)</span></button>";
+    $(".f1tvplus-player .bmpui-container-wrapper .bmpui-ui-volumeslider")[0].insertAdjacentHTML("afterEnd", syncOffsetSwitcherHtml);
+    updateSyncOffsetView();
+    $(".f1tvplus-player .f1tvplus-btn-syncoffset-back").on("click", function() {
+      setSyncOffset(-100);
+    })
+    $(".f1tvplus-player .f1tvplus-btn-syncoffset-forward").on("click", function() {
+      setSyncOffset(+100);
+    })
+
   }
 
   var donateHtml = "<div class='f1tvplus-sync-debug-toggle bmpui-ui-settings-panel-item' role='menuitem'><a style='color: #ff6643; text-align: center; display: block;' href='https://github.com/najdek/f1tv_plus/blob/master/DONATE.md' target='_blank'>❤ Donate to support F1TV+</a></div>";
@@ -292,6 +317,21 @@ function injectPlayerFeatures() {
 
 
 }
+
+
+function updateSyncOffsetView() {
+  let syncOffset = $("#sync-offset")[0].value || 0;
+  syncOffset = (Math.round(syncOffset) / 1000).toFixed(1);
+  $(".f1tvplus-player .f1tvplus-syncoffset-view").text(syncOffset);
+}
+
+function setSyncOffset(diff) {
+  let syncOffset = $("#sync-offset")[0].value || 0;
+  let newSyncOffset = parseInt(syncOffset) + diff;
+  $("#sync-offset")[0].value = newSyncOffset;
+  updateSyncOffsetView();
+}
+
 
 function toggleSyncDebug() {
   if ($("#f1tvplus-helper .sync-data").is(":visible")) {
@@ -308,12 +348,14 @@ function toggleSyncMode(mode) {
     document.getElementById("sync-mode").value = 0;
     $(".f1tvplus-btn-synctoggle-label").text("SYNC OFF");
     $(".f1tvplus-btn-synctoggle-dot").css("background-color", "#999");
+    $(".f1tvplus-syncoffset-menu").hide();
     videoSpeed(1);
   } else {
     log("sync mode enabled");
     document.getElementById("sync-mode").value = 1;
     $(".f1tvplus-btn-synctoggle-label").text("SYNC ON");
     $(".f1tvplus-btn-synctoggle-dot").css("background-color", "#56ff63");
+    $(".f1tvplus-syncoffset-menu").show();
   }
 }
 
