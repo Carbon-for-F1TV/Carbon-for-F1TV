@@ -117,13 +117,6 @@ if (f1tvplus_mode !== "popout") {
         }
         popouts[p].$("#main-state").text(mainState);
 
-        let thisState;
-        if (popouts[p].document.querySelector(".f1tvplus-player video").paused) {
-          thisState = "paused";
-        } else {
-          thisState = "playing";
-        }
-        popouts[p].$("#this-state").text(thisState);
         popouts[p].$("#main-playbackrate").text($(".f1tvplus-player video")[0].playbackRate);
 
 
@@ -383,8 +376,6 @@ function waitForPageLoad() {
           "<div>progress sync time: <span id='progress-sync-time'></span></div>" +
           "<div>diff to target: <span class='thiswindow' id='diff-to-target'></span></div><br>" +
           "<div>main window state: <span id='main-state'></span></div>" +
-          "<div>this window state: <span id='this-state'></span></div>" +
-
 
           "<div>sync mode: <input id='sync-mode' type='number' step='1' value='1' style='width: 40px;'></div>" +
           "<div>main window playback rate: <span id='main-playbackrate'></span></div>" +
