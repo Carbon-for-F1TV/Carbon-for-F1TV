@@ -2,7 +2,7 @@
 // @name           F1TV+
 // @namespace      https://najdek.github.io/f1tv_plus/
 // @match          https://f1tv.formula1.com/*
-// @version        4.0.6
+// @version        4.0.7
 // @author         Mateusz Najdek
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
@@ -67,13 +67,15 @@ function toggleTheaterMode(temporary) {
 var popouts = [];
 function addPopout() {
   let popoutId;
+  let createTime = Date.now();
   if ($("#f1tvplus-helper .f1tvplus-popout").length > 0) {
     popoutId = parseInt($("#f1tvplus-helper .f1tvplus-popout").last()[0].id.split("f1tvplus-popout-")[1]) + 1;
   } else {
     popoutId = 0;
   }
   log("creating popout [id: " + popoutId + "]");
-  let popoutHtml = "<div class='f1tvplus-popout' id='f1tvplus-popout-" + popoutId + "' style='position: fixed; z-index: 1001; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;'>" +
+  let popoutHtml = "<div class='f1tvplus-popout' id='f1tvplus-popout-" + popoutId + "' style='display: none;'>" +
+      "<div id='f1tvplus-popout-" + popoutId + "-create-time'>" + createTime + "</div>" +
       "</div>";
   $("#f1tvplus-helper")[0].insertAdjacentHTML("beforeEnd", popoutHtml);
   let popoutUrl = document.location.href.split("#")[0];
@@ -82,10 +84,28 @@ function addPopout() {
   } else {
     popoutUrl += "?action=play#f1tvplus_popout";
   }
-  popouts["popout-" + popoutId] = window.open(popoutUrl, Date.now(), "width=1280,height=720");
+  popouts["popout-" + popoutId] = window.open(popoutUrl, createTime, "width=1280,height=720");
   console.log(popouts["popout-" + popoutId]);
 
 }
+
+
+function deletePopout(p) {
+  let id = parseInt(p.split("-")[1]);
+  let createTime = $("#f1tvplus-popout-" + id + "-create-time").text();
+  let currentTime = Date.now();
+  let timeDiff = Math.round((currentTime - createTime)/1000);
+  let deleteAfterSeconds = 20;
+
+  if (timeDiff > deleteAfterSeconds) {
+    $("#f1tvplus-popout-" + id).remove();
+    delete popouts[p];
+    log("popout closed [id: " + id + "]");
+  } else {
+    log("popout [id: " + id + "] not responding [" + timeDiff + "/" + deleteAfterSeconds + "s]");
+  }
+}
+
 
 if (f1tvplus_mode !== "popout") {
   var pushProgressToPopouts = setInterval(function() {
@@ -95,66 +115,67 @@ if (f1tvplus_mode !== "popout") {
       try {
         if (popouts[p].document.location) {
         } else {
-          let id = parseInt(p.split("-")[1]);
-          $("#f1tvplus-popout-" + id).remove();
-          delete popouts[p];
-          log("popout closed [id: " + id + "]");
+          deletePopout(p);
         }
       } catch (e) {
-        let id = parseInt(p.split("-")[1]);
-        $("#f1tvplus-popout-" + id).remove();
-        delete popouts[p];
-        log("popout closed [id: " + id + "]");
+        deletePopout(p);
       }
     }
 
-    
+
     for (let p in popouts) {
-      popouts[p].document.getElementById("main-progress").textContent = $(".f1tvplus-player video")[0].currentTime;
+      try {
+        popouts[p].document.getElementById("main-progress").textContent = $(".f1tvplus-player video")[0].currentTime;
 
-      popouts[p].document.getElementById("progress-sync-time").textContent = Date.now();
+        popouts[p].document.getElementById("progress-sync-time").textContent = Date.now();
 
-      let mainState;
-      if ($(".f1tvplus-player video")[0].paused) {
-        mainState = "paused";
-      } else {
-        mainState = "playing";
+        let mainState;
+        if ($(".f1tvplus-player video")[0].paused) {
+          mainState = "paused";
+        } else {
+          mainState = "playing";
+        }
+        popouts[p].document.getElementById("main-state").textContent = mainState;
+
+        popouts[p].document.getElementById("main-playbackrate").textContent = $(".f1tvplus-player video")[0].playbackRate;
+      } catch (e) {
+        let id = parseInt(p.split("-")[1]);
+        log("popout not loaded [id: " + id + "]");
       }
-      popouts[p].document.getElementById("main-state").textContent = mainState;
-
-      popouts[p].document.getElementById("main-playbackrate").textContent = $(".f1tvplus-player video")[0].playbackRate;
     }
   }, 2000);
 }
 
 if (f1tvplus_mode == "popout") {
   var syncData = setInterval(function() {
-    let thisProgressRealtime = $(".f1tvplus-player video")[0].currentTime;
-    $("#this-progress-realtime").text(thisProgressRealtime);
+    if ($(".player-container.shown .bitmovinplayer-container.f1tvplus-player").length > 0) {
+      let thisProgressRealtime = $(".f1tvplus-player video")[0].currentTime;
+      $("#this-progress-realtime").text(thisProgressRealtime);
 
-    let estimatedMainProgress;
-    if ($("#main-state").text() == "paused") {
-      $("#main-progress-realtime").text($("#main-progress").text());
+      let estimatedMainProgress;
+      if ($("#main-state").text() == "paused") {
+        $("#main-progress-realtime").text($("#main-progress").text());
+      } else {
+        let timeDifference = (Date.now() - parseInt($("#progress-sync-time").text()))/1000;
+        let mainPlaybackrate = parseFloat($("#main-playbackrate").text());
+        estimatedMainProgress = parseInt($("#main-progress").text()) + (timeDifference * mainPlaybackrate);
+        $("#main-progress-realtime").text(estimatedMainProgress);
+      }
+
+      let thisPlaybackrate = $(".f1tvplus-player video")[0].playbackRate;
+      $("#this-playbackrate").text(thisPlaybackrate);
+
+      let targetProgress = estimatedMainProgress;
+      let syncOffset = parseInt(document.getElementById("sync-offset").value) / 1000 || 0;
+      targetProgress += syncOffset;
+      $("#this-progress-target").text(targetProgress);
+
+      let diffToTarget = targetProgress - thisProgressRealtime;
+      $("#diff-to-target").text(diffToTarget);
     } else {
-      let timeDifference = (Date.now() - parseInt($("#progress-sync-time").text()))/1000;
-      let mainPlaybackrate = parseFloat($("#main-playbackrate").text());
-      estimatedMainProgress = parseInt($("#main-progress").text()) + (timeDifference * mainPlaybackrate);
-      $("#main-progress-realtime").text(estimatedMainProgress);
+      log("can't sync, player not loaded");
     }
-
-    let thisPlaybackrate = $(".f1tvplus-player video")[0].playbackRate;
-    $("#this-playbackrate").text(thisPlaybackrate);
-
-    let targetProgress = estimatedMainProgress;
-    let syncOffset = parseInt(document.getElementById("sync-offset").value) / 1000 || 0;
-    targetProgress += syncOffset;
-    $("#this-progress-target").text(targetProgress);
-
-    let diffToTarget = targetProgress - thisProgressRealtime;
-    $("#diff-to-target").text(diffToTarget);
-
-
-  }, 100);
+  }, 500);
 
   let syncNow = setInterval(function() {
     let syncMode = parseInt(document.getElementById("sync-mode").value);
@@ -187,7 +208,11 @@ if (f1tvplus_mode == "popout") {
 
 
 function videoSpeed(speed) {
-  $(".f1tvplus-player video")[0].playbackRate = speed;
+  if ($(".player-container.shown .bitmovinplayer-container.f1tvplus-player").length > 0) {
+     $(".f1tvplus-player video")[0].playbackRate = speed;
+  } else {
+    log("can't set speed, player not loaded");
+  }
 }
 
 function videoJumpToProgress(progress) {
@@ -269,7 +294,6 @@ function injectPlayerFeatures() {
     $(".f1tvplus-player .bmpui-seekbar")[0].addEventListener("click", function() {
       toggleSyncMode(0);
     });
-
     $(".f1tvplus-player .bmpui-ui-rewindbutton")[0].addEventListener("mouseup", function() { //can't be listening to "click" event on rewind button, as we're simulating it elsewhere to fix sync mode
       toggleSyncMode(0);
     })
@@ -279,7 +303,9 @@ function injectPlayerFeatures() {
     $(".f1tvplus-player .bmpui-ui-playbacktogglebutton")[0].addEventListener("mouseup", function() {
       toggleSyncMode(0);
     })
-
+    $(".f1tvplus-player .bmpui-ui-hugeplaybacktogglebutton")[0].addEventListener("mouseup", function() {
+      toggleSyncMode(0);
+    })
 
     let syncDebugToggleHtml = "<div class='f1tvplus-sync-debug-toggle bmpui-ui-settings-panel-item' style='cursor: pointer;' role='menuitem'><div class='bmpui-container-wrapper' style='cursor: pointer;'><label class='bmpui-ui-label' style='cursor: pointer;'>SYNC MODE DEBUG</label></div></div>";
     $(".bmpui-ui-settings-panel-page .bmpui-container-wrapper")[0].insertAdjacentHTML("afterbegin", syncDebugToggleHtml);
