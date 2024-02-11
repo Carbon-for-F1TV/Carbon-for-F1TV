@@ -89,29 +89,40 @@ function addPopout() {
 
 if (f1tvplus_mode !== "popout") {
   var pushProgressToPopouts = setInterval(function() {
+
+    // delete closed popouts
     for (let p in popouts) {
-      if (popouts[p].document.location == null) {
-        let id = parseInt(p.split("-")[1]);
+      try {
+        if (popouts[p].document.location) {
+        } else {
+          let id = parseInt(p.split("-")[1]);
           $("#f1tvplus-popout-" + id).remove();
           delete popouts[p];
           log("popout closed [id: " + id + "]");
-      } else {
-        popouts[p].document.getElementById("main-progress").textContent = $(".f1tvplus-player video")[0].currentTime;
-
-        popouts[p].document.getElementById("progress-sync-time").textContent = Date.now();
-
-        let mainState;
-        if ($(".f1tvplus-player video")[0].paused) {
-          mainState = "paused";
-        } else {
-          mainState = "playing";
         }
-        popouts[p].document.getElementById("main-state").textContent = mainState;
-
-        popouts[p].document.getElementById("main-playbackrate").textContent = $(".f1tvplus-player video")[0].playbackRate;
-
-
+      } catch (e) {
+        let id = parseInt(p.split("-")[1]);
+        $("#f1tvplus-popout-" + id).remove();
+        delete popouts[p];
+        log("popout closed [id: " + id + "]");
       }
+    }
+
+    
+    for (let p in popouts) {
+      popouts[p].document.getElementById("main-progress").textContent = $(".f1tvplus-player video")[0].currentTime;
+
+      popouts[p].document.getElementById("progress-sync-time").textContent = Date.now();
+
+      let mainState;
+      if ($(".f1tvplus-player video")[0].paused) {
+        mainState = "paused";
+      } else {
+        mainState = "playing";
+      }
+      popouts[p].document.getElementById("main-state").textContent = mainState;
+
+      popouts[p].document.getElementById("main-playbackrate").textContent = $(".f1tvplus-player video")[0].playbackRate;
     }
   }, 2000);
 }
