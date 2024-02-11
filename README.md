@@ -3,6 +3,12 @@
 
 Enhance your F1TV experience with this extension! Enjoy theater mode for full-screen viewing and sync mode for simultaneous playback of multiple streams.
 
+## Screenshots
+
+![Theater Mode](description/screenshot_01.png)
+
+![Sync Mode](description/screenshot_02.png)
+
 
 ## Installation
 
