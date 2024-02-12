@@ -8,7 +8,7 @@ Enhance your F1TV experience with this extension! Enjoy theater mode for full-sc
 ### Browser Extension (recommended)
 Install Carbon for F1TV as an extension for your browser:
 * Google Chrome / Microsoft Edge: [[Install Extension]](https://chromewebstore.google.com/detail/carbon-for-f1tv/kbnlmjibehhjlncfbolkigkiihhlfmbd)
-* Mozilla Firefox: coming soon
+* Mozilla Firefox: [[Install Extension]](https://addons.mozilla.org/firefox/addon/carbon-for-f1tv/)
 
 ### Userscript (alternative method)
 * Install extension for loading userscripts in your browser:
