@@ -1,0 +1,130 @@
+<html>
+
+<head>
+    <title>Carbon for F1TV</title>
+    <script src="lib/jquery-3.7.1.min.js"></script>
+    <style>
+        body {
+            background-color: #3d0000;
+            color: #eee;
+            font-size: 18px;
+            font-family: sans-serif;
+            width: 385px;
+            height: 580px;
+            margin: 0;
+        }
+
+        .carbon-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #3d0000;
+            padding: 6px 0px;
+        }
+
+        .carbon-header .logo {
+            background-image: url("icon/icon.svg");
+            background-repeat: no-repeat;
+            width: 32px;
+            height: 32px;
+        }
+
+        .carbon-header .title {
+            font-size: 22px;
+            margin-left: 12px;
+        }
+
+        .content {
+            font-size: 18px;
+        }
+
+        .carbon-video {
+            display: block;
+            background-color: #00000085;
+            border-radius: 18px;
+            overflow: hidden;
+            margin: 8px 4px;
+            cursor: pointer;
+        }
+
+        .carbon-video:hover {
+            background-color: #0000004c;
+        }
+
+        .carbon-video .video-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-content .video-img {
+            width: 167px;
+            height: 83.5px;
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: block;
+            position: relative;
+        }
+
+        .video-content .video-img .video-duration {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: #0000009e;
+            color: #eee;
+            padding: 4px;
+            font-size: 13px;
+        }
+
+        .video-content .video-title {
+            word-break: break-word;
+            display: block;
+            font-size: 15px;
+            color: #eee;
+            width: 190px;
+            padding: 4px 8px;
+        }
+
+        a:link {
+            text-decoration: none;
+        }
+
+        a:visited {
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        a:active {
+            text-decoration: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background-color: #00000029;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgb(118, 15, 15);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="carbon-header">
+        <div class="logo"></div>
+        <div class="title">Carbon for F1TV</div>
+    </div>
+    <div class="content">
+        <div id="video-list"></div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>

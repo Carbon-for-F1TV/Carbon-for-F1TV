@@ -1,0 +1,37 @@
+{
+    "manifest_version": 2,
+    "name": "Carbon for F1TV",
+    "description": "Enhance your F1TV experience.",
+    "version": "1.0.1",
+    "icons": {
+        "16": "icon/16.png",
+        "48": "icon/48.png",
+        "128": "icon/128.png",
+        "512": "icon/512.png"
+      },
+    "permissions": [
+      "https://f1tv.formula1.com/*"
+    ],
+    "content_scripts":[
+        {
+          "matches":[
+            "https://f1tv.formula1.com/*"
+          ],
+          "js": ["lib/jquery-3.7.1.min.js", "carbon-for-f1tv.js"]
+        }
+      ],
+      "browser_action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "icon/16.png",
+            "48": "icon/48.png",
+            "128": "icon/128.png",
+            "512": "icon/512.png"
+        }
+      },
+      "browser_specific_settings": {
+        "gecko": {
+          "id": "carbon-for-f1tv@carbon-for-f1tv"
+        }
+      }
+    }
