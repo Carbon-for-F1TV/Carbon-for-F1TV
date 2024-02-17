@@ -16,7 +16,7 @@
       ],
       "js": [
         "lib/jquery-3.7.1.min.js",
-        "carbon-for-f1tv.js"
+        "carbon-for-f1tv.user.js"
       ]
     }
   ],

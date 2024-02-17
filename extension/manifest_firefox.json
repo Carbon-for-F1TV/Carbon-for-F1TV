@@ -17,7 +17,7 @@
           "matches":[
             "https://f1tv.formula1.com/*"
           ],
-          "js": ["lib/jquery-3.7.1.min.js", "carbon-for-f1tv.js"]
+          "js": ["lib/jquery-3.7.1.min.js", "carbon-for-f1tv.user.js"]
         }
       ],
       "browser_action": {
