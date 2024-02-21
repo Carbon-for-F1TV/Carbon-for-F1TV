@@ -2,7 +2,7 @@
 // @name           Carbon for F1TV
 // @namespace      https://Carbon-for-F1TV.github.io/Carbon-for-F1TV/
 // @match          https://f1tv.formula1.com/*
-// @version        1.0.2
+// @version        1.0.3
 // @author         Carbon-for-F1TV
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
@@ -215,13 +215,34 @@ function videoSpeed(speed) {
   }
 }
 
+
 function videoJumpToProgress(progress) {
-  $(".carbon-player video")[0].currentTime = progress + 10;
-  // DIRTY FIX:
-  // Simulates click on seek-backward button.
-  // This fixes Bitmovin player sometimes not buffering video after setting it's currentTime value.
-  $(".carbon-player .bmpui-ui-rewindbutton")[0].click();
+  let oldTime = $(".carbon-player video")[0].currentTime;
+  let newTime = progress - 10;
+  $(".carbon-player video")[0].currentTime = newTime;
+  let checkTime = $(".carbon-player video")[0].currentTime;
+  log("Jumped from: " + oldTime + ", to: " + newTime + ". Current time:" + checkTime);
+  if (Math.abs(checkTime - newTime) > 15) {
+    log("problem with sync, disabling");
+    toggleSyncMode(0);
+    $(".carbon-player video")[0].pause();
+    if ($(".bmpui-ui-playbacktimelabel-live").length > 0) {
+      log("attempting to fix sync on live stream");
+      // for some reason, on live streams we can't jump forward by much,
+      // this simulates clicking "live" button and enables sync again to jump backward
+      $(".bmpui-ui-playbacktimelabel-live")[0].click();
+      setTimeout(function() {
+        toggleSyncMode(1);
+      }, 250);
+    }
+  } else {
+    // Simulates click on seek-forward button.
+    // This fixes Bitmovin player sometimes not buffering video after setting it's currentTime value.
+    $(".carbon-player video")[0].currentTime = newTime;
+    $(".carbon-player .bmpui-ui-forwardbutton")[0].click();
+  }
 }
+
 
 
 function injectPlayerFeatures() {
@@ -245,6 +266,7 @@ function injectPlayerFeatures() {
     log("player is not live");
     is_live = false;
   }
+
 
   // show player speed toggle
   $(".carbon-player .bmpui-ui-playbackspeedselectbox").parent().parent().removeClass("bmpui-hidden");
@@ -281,7 +303,7 @@ function injectPlayerFeatures() {
     toggleTheaterMode();
   }
 
-  if ((multi_channels == true) && (carbon_mode !== "popout") && (is_live == false)) {
+  if ((multi_channels == true) && (carbon_mode !== "popout")) {
     let popoutBtnHtml = "<button aria-label='New Popout' class='carbon-btn-popout bmpui-ui-piptogglebutton bmpui-off' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label'>New Popout</span></button>";
     $(".carbon-player .bmpui-container-wrapper .carbon-btn-theatermode")[0].insertAdjacentHTML("beforebegin", popoutBtnHtml);
     $(".carbon-player .carbon-btn-popout").on("click", function () {
@@ -337,8 +359,8 @@ function injectPlayerFeatures() {
 
   }
 
-  //let donateHtml = "<div class='carbon-sync-debug-toggle bmpui-ui-settings-panel-item' role='menuitem'><a style='color: #ff6643; font-size: 12px; text-decoration: none; text-align: center; display: block;' href='https://github.com/Carbon-for-F1TV/Carbon-for-F1TV/blob/master/DONATE.md' target='_blank'>❤ Donate to support Carbon for F1TV</a></div>";
-  //$(".bmpui-ui-settings-panel-page .bmpui-container-wrapper")[0].insertAdjacentHTML("beforeEnd", donateHtml);
+  let donateHtml = "<div class='carbon-sync-debug-toggle bmpui-ui-settings-panel-item' role='menuitem'><a style='color: #ff6643; font-size: 12px; text-decoration: none; text-align: center; display: block;' href='https://github.com/Carbon-for-F1TV/Carbon-for-F1TV/blob/master/DONATE.md' target='_blank'>❤ Donate to support Carbon for F1TV</a></div>";
+  $(".bmpui-ui-settings-panel-page .bmpui-container-wrapper")[0].insertAdjacentHTML("beforeEnd", donateHtml);
 
 
 }
@@ -400,7 +422,11 @@ function waitForPlayer() {
       }
     }
   } else {
-    //no player found
+    // no player found
+    // check for watch live popup
+    if ($("button.btn-main:contains('WATCH LIVE')").length > 0) {
+      $("button.btn-main:contains('WATCH LIVE')")[0].click();
+    }
   }
 }
 
