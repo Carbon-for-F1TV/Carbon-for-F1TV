@@ -2,7 +2,7 @@
 // @name           Carbon for F1TV
 // @namespace      https://Carbon-for-F1TV.github.io/Carbon-for-F1TV/
 // @match          https://f1tv.formula1.com/*
-// @version        1.0.1
+// @version        1.0.2
 // @author         Carbon-for-F1TV
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
@@ -237,6 +237,15 @@ function injectPlayerFeatures() {
     multi_channels = false;
   }
 
+  var is_live;
+  if ($(".bmpui-ui-playbacktimelabel-live").length > 0) {
+    log("player is live");
+    is_live = true;
+  } else {
+    log("player is not live");
+    is_live = false;
+  }
+
   // show player speed toggle
   $(".carbon-player .bmpui-ui-playbackspeedselectbox").parent().parent().removeClass("bmpui-hidden");
 
@@ -272,7 +281,7 @@ function injectPlayerFeatures() {
     toggleTheaterMode();
   }
 
-  if ((multi_channels == true) && (carbon_mode !== "popout")) {
+  if ((multi_channels == true) && (carbon_mode !== "popout") && (is_live == false)) {
     let popoutBtnHtml = "<button aria-label='New Popout' class='carbon-btn-popout bmpui-ui-piptogglebutton bmpui-off' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label'>New Popout</span></button>";
     $(".carbon-player .bmpui-container-wrapper .carbon-btn-theatermode")[0].insertAdjacentHTML("beforebegin", popoutBtnHtml);
     $(".carbon-player .carbon-btn-popout").on("click", function () {
@@ -328,8 +337,8 @@ function injectPlayerFeatures() {
 
   }
 
-  let donateHtml = "<div class='carbon-sync-debug-toggle bmpui-ui-settings-panel-item' role='menuitem'><a style='color: #ff6643; text-align: center; display: block;' href='https://github.com/Carbon-for-F1TV/Carbon-for-F1TV/blob/master/DONATE.md' target='_blank'>❤ Donate to support Carbon for F1TV</a></div>";
-  $(".bmpui-ui-settings-panel-page .bmpui-container-wrapper")[0].insertAdjacentHTML("beforeEnd", donateHtml);
+  //let donateHtml = "<div class='carbon-sync-debug-toggle bmpui-ui-settings-panel-item' role='menuitem'><a style='color: #ff6643; font-size: 12px; text-decoration: none; text-align: center; display: block;' href='https://github.com/Carbon-for-F1TV/Carbon-for-F1TV/blob/master/DONATE.md' target='_blank'>❤ Donate to support Carbon for F1TV</a></div>";
+  //$(".bmpui-ui-settings-panel-page .bmpui-container-wrapper")[0].insertAdjacentHTML("beforeEnd", donateHtml);
 
 
 }
