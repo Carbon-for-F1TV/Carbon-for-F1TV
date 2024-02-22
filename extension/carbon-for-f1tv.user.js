@@ -218,7 +218,7 @@ function videoSpeed(speed) {
 
 function videoJumpToProgress(progress) {
   let oldTime = $(".carbon-player video")[0].currentTime;
-  let newTime = progress - 10;
+  let newTime = progress + 10;
   $(".carbon-player video")[0].currentTime = newTime;
   let checkTime = $(".carbon-player video")[0].currentTime;
   log("Jumped from: " + oldTime + ", to: " + newTime + ". Current time:" + checkTime);
@@ -233,13 +233,13 @@ function videoJumpToProgress(progress) {
       $(".bmpui-ui-playbacktimelabel-live")[0].click();
       setTimeout(function() {
         toggleSyncMode(1);
-      }, 250);
+      }, 1000);
     }
   } else {
-    // Simulates click on seek-forward button.
+    // Simulates click on seek-backward button.
     // This fixes Bitmovin player sometimes not buffering video after setting it's currentTime value.
     $(".carbon-player video")[0].currentTime = newTime;
-    $(".carbon-player .bmpui-ui-forwardbutton")[0].click();
+    $(".carbon-player .bmpui-ui-rewindbutton")[0].click();
   }
 }
 
