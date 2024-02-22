@@ -396,7 +396,9 @@ function toggleSyncMode(mode) {
     $(".carbon-btn-synctoggle-label").text("SYNC OFF");
     $(".carbon-btn-synctoggle-dot").css("background-color", "#999");
     $(".carbon-syncoffset-menu").hide();
-    videoSpeed(1);
+    setTimeout(function() {
+          videoSpeed(1);
+    }, 1000);
   } else {
     log("sync mode enabled");
     document.getElementById("sync-mode").value = 1;
