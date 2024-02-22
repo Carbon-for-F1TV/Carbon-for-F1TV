@@ -12,26 +12,35 @@
             width: 385px;
             height: 580px;
             margin: 0;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         .carbon-header {
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #3d0000;
+            background-color: #180000;
             padding: 6px 0px;
+            margin-bottom: 8px;
         }
 
         .carbon-header .logo {
             background-image: url("icon/icon.svg");
             background-repeat: no-repeat;
-            width: 32px;
-            height: 32px;
+            width: 18px;
+            height: 18px;
         }
 
         .carbon-header .title {
-            font-size: 22px;
+            font-size: 14px;
             margin-left: 12px;
+        }
+
+        .carbon-header .version {
+            position: absolute;
+            right: 6px;
+            font-size: 14px;
         }
 
         .content {
@@ -41,7 +50,7 @@
         .carbon-video {
             display: block;
             background-color: #00000085;
-            border-radius: 18px;
+            border-radius: 10px;
             overflow: hidden;
             margin: 8px 4px;
             cursor: pointer;
@@ -49,6 +58,13 @@
 
         .carbon-video:hover {
             background-color: #0000004c;
+            transition: all .4s;
+        }
+
+        .carbon-video:hover .video-img {
+            background-size: 107%;
+            background-position: center center;
+            transition: all .4s;
         }
 
         .carbon-video .video-content {
@@ -58,10 +74,12 @@
         }
 
         .video-content .video-img {
+            background-position: center center;
             width: 167px;
             height: 83.5px;
+            border-radius: 10px;
             background-repeat: no-repeat;
-            background-size: cover;
+            background-size: 100%;
             display: block;
             position: relative;
         }
@@ -80,9 +98,74 @@
             word-break: break-word;
             display: block;
             font-size: 15px;
+            font-weight: bold;
             color: #eee;
             width: 190px;
             padding: 4px 8px;
+        }
+
+        #featured-list-switchers {
+            text-align: center;
+        }
+
+        .featured-switcher {
+            display: inline-block;
+            text-align: center;
+            margin: auto;
+            background-color: #666;
+            margin: 2px 4px;
+            padding: 4px 8px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .featured-switcher.enabled {
+            background-color: #cc0000;
+        }
+
+        #featured-list-title {
+            text-align: center;
+        }
+
+        #video-list-title {
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .featured-upcoming .video-duration {
+            background-color: #000000cc !important;
+            font-size: 14px;
+            font-weight: bold;
+            width: 100%;
+            text-align: center;
+            padding: 8px 0px !important;
+        }
+
+        .featured-live .video-duration {
+            display: none;
+        }
+
+        .video-subtype {
+            background-color: #000;
+            font-size: 14px;
+            position: absolute;
+            padding: 2px 6px;
+            border-radius: 0 0 10px 0;
+        }
+
+        .video-subtype-live {
+            background-color: #cc0000;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .video-subtype-replay {
+            display: none;
+        }
+
+        .video-subtype-upcoming {
+            background-color: #286395;
         }
 
         a:link {
@@ -102,7 +185,7 @@
         }
 
         ::-webkit-scrollbar {
-            width: 10px;
+            width: 5px;
         }
 
         ::-webkit-scrollbar-track {
@@ -120,9 +203,16 @@
     <div class="carbon-header">
         <div class="logo"></div>
         <div class="title">Carbon for F1TV</div>
+        <div class="version">v0.1000.1000</div>
     </div>
     <div class="content">
-        <div id="video-list"></div>
+        <div id="featured-list">
+            <div id="featured-list-title"></div>
+            <div id="featured-list-switchers"></div>
+        </div>
+        <div id="video-list">
+            <div id="video-list-title">VIDEOS</div>
+        </div>
     </div>
     <script src="popup.js"></script>
 </body>
