@@ -13,6 +13,11 @@ var DEFAULT_THEATERMODE = true;
 var DEFAULT_LATENCY = 30;
 
 
+var popup_btn_image = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyOC4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6" +
+  "Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAyODMuNSA0MjUuMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjgzLjUgNDI1LjI7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtk" +
+  "aXNwbGF5Om5vbmU7fQ0KCS5zdDF7Zm9udC1mYW1pbHk6J0NhbGlicmktQm9sZCc7fQ0KCS5zdDJ7Zm9udC1zaXplOjIwOS41MzAycHg7fQ0KCS5zdDN7ZmlsbDojRDBEMEQyO30NCjwvc3R5bGU+DQo8dGV4dCB0cmFuc2Zvcm09Im1hdHJpeCgxIDAgMCAxIDQ1LjIzMzcgMjcxLjExMDcpIiBjbGFzcz0ic3QwIHN0MSBzdDIiPisxPC90ZXh0Pg0KPGc+DQoJPHBhdGggY2xhc3M9" +
+  "InN0MyIgZD0iTTIzOS4zLDEyNC45SDQ0LjJjLTEwLjcsMC0xOS40LDguNy0xOS40LDE5LjR2MTM2LjZjMCwxMC43LDguNywxOS40LDE5LjQsMTkuNGgxOTUuMQ0KCQljMTAuNywwLDE5LjQtOC43LDE5LjQtMTkuNFYxNDQuM0MyNTguNywxMzMuNiwyNTAsMTI0LjksMjM5LjMsMTI0Ljl6IE0xMzYuNSwyMjEuOEg5NS45djQwLjZINzcuNXYtNDAuNkgzNi45di0xOC40aDQwLjZ2" +
+  "LTQwLjYNCgkJaDE4LjR2NDAuNmg0MC42VjIyMS44eiBNMjQ2LjIsMjc4LjdoLTgxLjF2LTIwLjJoMzAuOHYtODYuOGwtMzQuMiwyMi42bC0xMS42LTE3LjZsNDUuOC0zMC4zbDAsMHYwaDI0LjR2MTEyaDI1LjhWMjc4Ljd6Ii8+DQo8L2c+DQo8L3N2Zz4NCg==";
 
 var theatermode_btn_image = "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPScxLjEnIGlkPSdMYXllcl8xJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB4PScwcHgnIHk9JzBweCcgdmlld0JveD0nMCAwIDI4My41IDQyNS4yJyBzdHlsZT0nZW5hYmxlLWJhY2tncm91bm" +
   "Q6bmV3IDAgMCAyODMuNSA0MjUuMjsnIHhtbDpzcGFjZT0ncHJlc2VydmUnPjxnPjxwYXRoIHN0eWxlPSdmaWxsOiNEMEQwRDI7JyBkPSdNMjM5LjMsMTI0LjlINDQuMmMtMTAuNywwLTE5LjQsOC43LTE5LjQsMTkuNHYxMzYuNmMwLDEwLjcsOC43LDE5LjQsMTkuNCwxOS40aDE5NS4xICBjMTAuNywwLDE5LjQtOC43LDE5LjQtMTkuNFYxNDQuM0MyNTguNywxMzMuNiwyNTAsMT" +
@@ -384,14 +389,11 @@ function injectPlayerFeatures() {
     is_live = false;
   }
 
-
   // show player speed toggle
   $(".carbon-player .bmpui-ui-playbackspeedselectbox").parent().parent().removeClass("bmpui-hidden");
 
-  // PIP BUTTON
-  /*
-  if ((window.navigator.userAgent.indexOf("Firefox") == -1) // not on Firefox
-    && (carbon_mode !== "popout")) { // not in popout mode
+  // PIP BUTTON in chrome/edge
+  if ((window.navigator.userAgent.indexOf("Chrome") > -1) || (window.navigator.userAgent.indexOf("Edg/") > -1)) {
     // show pip button
     $(".carbon-player .bmpui-ui-piptogglebutton").removeClass("bmpui-hidden");
     // fix pip button
@@ -399,12 +401,11 @@ function injectPlayerFeatures() {
     $(pipBtn).addClass("carbon-btn-piptoggle");
     pipBtn.replaceWith(pipBtn.cloneNode(true));
 
-    $(".carbon-player .carbon-btn-piptoggle").on("click", function() {
+    $(".carbon-player .carbon-btn-piptoggle").on("click", function () {
       log("Requesting PictureInPicture");
       $(".carbon-player video")[0].requestPictureInPicture();
     })
   }
-  */
 
   // add theater mode button
   if (carbon_mode !== "popout") {
@@ -421,7 +422,7 @@ function injectPlayerFeatures() {
   }
 
   if ((multi_channels == true) && (carbon_mode !== "popout")) {
-    let popoutBtnHtml = "<button aria-label='New Popout' class='carbon-btn-popout bmpui-ui-piptogglebutton bmpui-off' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label'>New Popout</span></button>";
+    let popoutBtnHtml = "<button aria-label='New Popout' class='carbon-btn-popout bmpui-ui-piptogglebutton bmpui-off' style='background-image: url(" + popup_btn_image + ");' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label'>New Popout</span></button>";
     $(".carbon-player .bmpui-container-wrapper .carbon-btn-theatermode")[0].insertAdjacentHTML("beforebegin", popoutBtnHtml);
     $(".carbon-player .carbon-btn-popout").on("click", function () {
       addPopout();
