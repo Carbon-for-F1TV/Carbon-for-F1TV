@@ -10,6 +10,8 @@
 
 var DEFAULT_THEATERMODE = true;
 
+var DEFAULT_LATENCY = 30;
+
 
 
 var theatermode_btn_image = "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPScxLjEnIGlkPSdMYXllcl8xJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB4PScwcHgnIHk9JzBweCcgdmlld0JveD0nMCAwIDI4My41IDQyNS4yJyBzdHlsZT0nZW5hYmxlLWJhY2tncm91bm" +
@@ -188,7 +190,7 @@ if (carbon_mode == "popout") {
       let diffToTargetAbs = Math.abs(diffToTarget);
 
       if (diffToTargetAbs > 15) {
-        videoJumpToProgress(targetProgress);
+        videoSyncJumpToProgress(targetProgress);
       } else if (diffToTargetAbs > 10) {
         if (diffToTarget > 0) { videoSpeed(3); } else { videoSpeed(0.333); }
       } else if (diffToTargetAbs > 5) {
@@ -202,9 +204,92 @@ if (carbon_mode == "popout") {
       } else {
         videoSpeed(1);
       }
+
+      if (diffToTargetAbs > 0.2) {
+        $(".sync-toppopup").show();
+        $(".sync-toppopup-diff").text(diffToTarget.toFixed(2) + "s");
+        $(".sync-toppopup-speed").text(thisPlaybackrate.toFixed(2) + "x");
+      } else {
+        $(".sync-toppopup").hide();
+      }
     }
   }, 500);
+} else {
+
+  var latencyModeData = setInterval(function () {
+    if ($(".player-container.shown .bitmovinplayer-container.carbon-player").length > 0) {
+      let thisProgress = $(".carbon-player video")[0].currentTime;
+      $("#this-progress").text(thisProgress);
+
+      let thisPlaybackrate = $(".carbon-player video")[0].playbackRate;
+      $("#this-playbackrate").text(thisPlaybackrate);
+
+      let latencyTarget = parseInt(document.getElementById("latencymode-latency").value) / 1000 || DEFAULT_LATENCY;
+      let targetProgress = (Date.now() / 1000) - latencyTarget;
+      $("#this-targetprogress").text(targetProgress);
+
+      let diffToTarget = targetProgress - thisProgress;
+      let diffToTargetAbs = Math.abs(diffToTarget);
+      $("#diff-to-target").text(diffToTarget);
+
+      let state;
+      if ($(".carbon-player video")[0].paused) {
+        state = "paused";
+      } else {
+        state = "playing";
+      }
+
+      $("#this-state").text(state);
+
+
+
+      //let diffToTarget = targetProgress - thisProgressRealtime;
+      //$("#diff-to-target").text(diffToTarget);
+    } else {
+      log("can't sync to latency, player not loaded");
+    }
+  }, 500);
+
+
+  let syncNow = setInterval(function () {
+    let latencyMode = parseInt(document.getElementById("latency-mode").value);
+    if (latencyMode == 1) {
+      let thisProgress = parseFloat($("#this-progress").text());
+      let targetProgress = parseFloat($("#this-targetprogress").text());
+      let thisPlaybackrate = parseFloat($("#this-playbackrate").text());
+      let diffToTarget = targetProgress - thisProgress;
+      let diffToTargetAbs = Math.abs(diffToTarget);
+
+      if (diffToTargetAbs > 15) {
+        videoLatencyJumpToProgress(targetProgress);
+      } else if (diffToTargetAbs > 10) {
+        if (diffToTarget > 0) { videoSpeed(3); } else { videoSpeed(0.333); }
+      } else if (diffToTargetAbs > 5) {
+        if (diffToTarget > 0) { videoSpeed(2); } else { videoSpeed(0.5); }
+      } else if (diffToTargetAbs > 1) {
+        if (diffToTarget > 0) { videoSpeed(1.5); } else { videoSpeed(0.666); }
+      } else if (diffToTargetAbs > 0.5) {
+        if (diffToTarget > 0) { videoSpeed(1.25); } else { videoSpeed(0.8); }
+      } else if (diffToTargetAbs > 0.2) {
+        if (diffToTarget > 0) { videoSpeed(1.11); } else { videoSpeed(0.9); }
+      } else {
+        videoSpeed(1);
+      }
+
+      if (diffToTargetAbs > 0.2) {
+        $(".sync-toppopup").show();
+        $(".sync-toppopup-diff").text(diffToTarget.toFixed(2) + "s");
+        $(".sync-toppopup-speed").text(thisPlaybackrate.toFixed(2) + "x");
+      } else {
+        $(".sync-toppopup").hide();
+      }
+    }
+  }, 500);
+
+
 }
+
+
 
 
 function videoSpeed(speed) {
@@ -216,7 +301,7 @@ function videoSpeed(speed) {
 }
 
 
-function videoJumpToProgress(progress) {
+function videoSyncJumpToProgress(progress) {
   let oldTime = $(".carbon-player video")[0].currentTime;
   let newTime = progress + 10;
   $(".carbon-player video")[0].currentTime = newTime;
@@ -231,8 +316,40 @@ function videoJumpToProgress(progress) {
       // for some reason, on live streams we can't jump forward by much,
       // this simulates clicking "live" button and enables sync again to jump backward
       $(".bmpui-ui-playbacktimelabel-live")[0].click();
-      setTimeout(function() {
+      setTimeout(function () {
         toggleSyncMode(1);
+      }, 1000);
+    }
+  } else {
+    // Simulates click on seek-backward button.
+    // This fixes Bitmovin player sometimes not buffering video after setting it's currentTime value.
+    $(".carbon-player video")[0].currentTime = newTime;
+    $(".carbon-player .bmpui-ui-rewindbutton")[0].click();
+  }
+}
+
+
+function videoLatencyJumpToProgress(progress) {
+  let oldTime = $(".carbon-player video")[0].currentTime;
+  if (oldTime < 1700000000) {
+    log("not live, or something is wrong. Disabling latency mode");
+    toggleLatencyMode(0);
+  }
+  let newTime = progress + 10;
+  $(".carbon-player video")[0].currentTime = newTime;
+  let checkTime = $(".carbon-player video")[0].currentTime;
+  log("Jumped from: " + oldTime + ", to: " + newTime + ". Current time:" + checkTime);
+  if (Math.abs(checkTime - newTime) > 15) {
+    log("problem with sync, disabling");
+    toggleLatencyMode(0);
+    $(".carbon-player video")[0].pause();
+    if ($(".bmpui-ui-playbacktimelabel-live").length > 0) {
+      log("attempting to fix latency mode sync on live stream");
+      // for some reason, on live streams we can't jump forward by much,
+      // this simulates clicking "live" button and enables sync again to jump backward
+      $(".bmpui-ui-playbacktimelabel-live")[0].click();
+      setTimeout(function () {
+        toggleLatencyMode(1);
       }, 1000);
     }
   } else {
@@ -311,6 +428,74 @@ function injectPlayerFeatures() {
     })
   }
 
+  if ((carbon_mode !== "popout") && (is_live == true)) {
+
+
+    let latencyDebugToggleHtml = "<div class='carbon-latency-debug-toggle bmpui-ui-settings-panel-item' style='cursor: pointer;' role='menuitem'><div class='bmpui-container-wrapper' style='cursor: pointer;'><label class='bmpui-ui-label' style='cursor: pointer;'>LATENCY MODE DEBUG</label></div></div>";
+    $(".bmpui-ui-settings-panel-page .bmpui-container-wrapper")[0].insertAdjacentHTML("afterbegin", latencyDebugToggleHtml);
+    $(".carbon-latency-debug-toggle")[0].addEventListener("click", function () {
+      toggleLatencyModeDebug();
+    })
+
+
+    $(".carbon-player .bmpui-seekbar")[0].addEventListener("click", function () {
+      toggleLatencyMode(0);
+    });
+    $(".carbon-player .bmpui-ui-rewindbutton")[0].addEventListener("mouseup", function () { //can't be listening to "click" event on rewind button, as we're simulating it elsewhere to fix sync mode
+      toggleLatencyMode(0);
+    });
+    $(".carbon-player .bmpui-ui-forwardbutton")[0].addEventListener("mouseup", function () {
+      toggleLatencyMode(0);
+    });
+    $(".carbon-player .bmpui-ui-playbacktogglebutton")[0].addEventListener("mouseup", function () {
+      toggleLatencyMode(0);
+    });
+    $(".carbon-player .bmpui-ui-hugeplaybacktogglebutton")[0].addEventListener("mouseup", function () {
+      toggleLatencyMode(0);
+    });
+
+
+
+    function setLatency(latency) {
+      let oldLatency = parseInt($("#latencymode-latency")[0].value) || DEFAULT_LATENCY * 1000;
+      let newLatency = oldLatency + latency;
+      $("#latencymode-latency")[0].value = newLatency;
+      $(".carbon-targetlatency-view").text((newLatency / 1000).toFixed(1));
+      log("Setting live latency by: " + latency + ". New latency: " + newLatency);
+    }
+
+
+    let targetLatencyMenuHtml = "<div class='carbon-targetlatency-menu-disable' style='position: relative; cursor: pointer;'><div class='carbon-btn-latencytoggle-dot' style='background-color: #56ff63; width: 8px; height: 8px; border-radius: 8px; position: absolute; left: 7px; top: 11px; cursor: pointer;'></div><span class='bmpui-ui-playbacktimelabel carbon-targetlatency-menu' style='display: none; color: #eee; font-size: 13px; line-height: 28px; padding-left: 20px; padding-right: 4px; cursor: pointer;'>Latency:</span></div>" +
+      "<button class='carbon-btn-latency-forward-10 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>+1.0</button>" +
+      "<button class='carbon-btn-latency-forward-01 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>+0.1</button>" +
+      "<span class='bmpui-ui-playbacktimelabel carbon-targetlatency-view carbon-targetlatency-menu' style='display: none; font-size: 18px; line-height: 28px; padding: 0px 10px; min-width: 52px; text-align: center;'>" + DEFAULT_LATENCY.toFixed(1) + "</span>" +
+      "<button class='carbon-btn-latency-back-01 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>-0.1</button>" +
+      "<button class='carbon-btn-latency-back-10 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>-1.0</button>" +
+      "<div class='carbon-targetlatency-menu-enable' style='position: relative; cursor: pointer;'><div class='carbon-btn-latencytoggle-dot' style='background-color: #999; width: 8px; height: 8px; border-radius: 8px; position: absolute; left: 7px; top: 11px;'></div><button class='bmpui-off' style='border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 12px; line-height: 22px; padding: 4px 8px; padding-left: 22px; color: #fff; background-color: #333333cc;' type='button' aria-pressed='false' tabindex='0' role='button'>ENABLE TARGET LATENCY</button></div>";
+
+
+    $(".carbon-player .bmpui-container-wrapper .bmpui-ui-volumeslider")[0].insertAdjacentHTML("afterEnd", targetLatencyMenuHtml);
+
+    $(".carbon-player .carbon-btn-latency-back-10").on("click", function () {
+      setLatency(-1000);
+    });
+    $(".carbon-player .carbon-btn-latency-back-01").on("click", function () {
+      setLatency(-100);
+    });
+    $(".carbon-player .carbon-btn-latency-forward-01").on("click", function () {
+      setLatency(+100);
+    });
+    $(".carbon-player .carbon-btn-latency-forward-10").on("click", function () {
+      setLatency(+1000);
+    });
+    $(".carbon-player .carbon-targetlatency-menu-disable").on("click", function () {
+      toggleLatencyMode(0);
+    });
+    $(".carbon-player .carbon-targetlatency-menu-enable").on("click", function () {
+      toggleLatencyMode(1);
+    });
+  }
+
   if (carbon_mode == "popout") {
     $(".carbon-player .bmpui-ui-casttogglebutton").addClass("bmpui-hidden");
     //$(".carbon-player .bmpui-ui-forwardbutton").addClass("bmpui-hidden");
@@ -327,22 +512,22 @@ function injectPlayerFeatures() {
     });
     $(".carbon-player .bmpui-ui-rewindbutton")[0].addEventListener("mouseup", function () { //can't be listening to "click" event on rewind button, as we're simulating it elsewhere to fix sync mode
       toggleSyncMode(0);
-    })
+    });
     $(".carbon-player .bmpui-ui-forwardbutton")[0].addEventListener("mouseup", function () {
       toggleSyncMode(0);
-    })
+    });
     $(".carbon-player .bmpui-ui-playbacktogglebutton")[0].addEventListener("mouseup", function () {
       toggleSyncMode(0);
-    })
+    });
     $(".carbon-player .bmpui-ui-hugeplaybacktogglebutton")[0].addEventListener("mouseup", function () {
       toggleSyncMode(0);
-    })
+    });
 
     let syncDebugToggleHtml = "<div class='carbon-sync-debug-toggle bmpui-ui-settings-panel-item' style='cursor: pointer;' role='menuitem'><div class='bmpui-container-wrapper' style='cursor: pointer;'><label class='bmpui-ui-label' style='cursor: pointer;'>SYNC MODE DEBUG</label></div></div>";
     $(".bmpui-ui-settings-panel-page .bmpui-container-wrapper")[0].insertAdjacentHTML("afterbegin", syncDebugToggleHtml);
     $(".carbon-sync-debug-toggle")[0].addEventListener("click", function () {
       toggleSyncDebug();
-    })
+    });
 
     let syncOffsetSwitcherHtml = "<span class='bmpui-ui-playbacktimelabel carbon-syncoffset-menu' style='font-size: 13px; line-height: 28px; padding-left: 14px; padding-right: 4px;'>Sync Offset:</span>" +
       "<button class='carbon-btn-syncoffset-back bmpui-off carbon-syncoffset-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_image + ");' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Sync Offset (-)</span></button>" +
@@ -352,14 +537,16 @@ function injectPlayerFeatures() {
     updateSyncOffsetView();
     $(".carbon-player .carbon-btn-syncoffset-back").on("click", function () {
       setSyncOffset(-200);
-    })
+    });
     $(".carbon-player .carbon-btn-syncoffset-forward").on("click", function () {
       setSyncOffset(+200);
-    })
+    });
 
   }
 
-  let donateHtml = "<div class='carbon-sync-debug-toggle bmpui-ui-settings-panel-item' role='menuitem'><a style='color: #ff6643; font-size: 12px; text-decoration: none; text-align: center; display: block;' href='https://github.com/Carbon-for-F1TV/Carbon-for-F1TV/blob/master/DONATE.md' target='_blank'>❤ Donate to support Carbon for F1TV</a></div>";
+
+
+  let donateHtml = "<div class='carbon-sync-debug-toggle bmpui-ui-settings-panel-item' role='menuitem'><a style='color: #ff6643; font-size: 12px; text-decoration: none; text-align: center; display: block;' href='https://github.com/Carbon-for-F1TVTV/Carbon-for-F1TV/blob/master/DONATE.md' target='_blank'>❤ Donate to support Carbon for F1TV</a></div>";
   $(".bmpui-ui-settings-panel-page .bmpui-container-wrapper")[0].insertAdjacentHTML("beforeEnd", donateHtml);
 
 
@@ -390,14 +577,18 @@ function toggleSyncDebug() {
 
 function toggleSyncMode(mode) {
   let syncMode = parseInt(document.getElementById("sync-mode").value);
+  if (syncMode == mode) {
+    return;
+  }
   if (syncMode == 1 || mode == 0) {
     log("sync mode disabled");
     document.getElementById("sync-mode").value = 0;
     $(".carbon-btn-synctoggle-label").text("SYNC OFF");
     $(".carbon-btn-synctoggle-dot").css("background-color", "#999");
     $(".carbon-syncoffset-menu").hide();
-    setTimeout(function() {
-          videoSpeed(1);
+    $(".sync-toppopup").hide();
+    setTimeout(function () {
+      videoSpeed(1);
     }, 1000);
   } else {
     log("sync mode enabled");
@@ -405,6 +596,41 @@ function toggleSyncMode(mode) {
     $(".carbon-btn-synctoggle-label").text("SYNC ON");
     $(".carbon-btn-synctoggle-dot").css("background-color", "#56ff63");
     $(".carbon-syncoffset-menu").show();
+    if ($(".carbon-player video")[0].paused) {
+      $(".carbon-player video")[0].play();
+    }
+  }
+}
+
+function toggleLatencyModeDebug() {
+  if ($("#carbon-helper .latencymode-data").is(":visible")) {
+    $("#carbon-helper .latencymode-data").hide();
+  } else {
+    $("#carbon-helper .latencymode-data").show();
+  }
+}
+
+function toggleLatencyMode(mode) {
+  let latencyMode = parseInt(document.getElementById("latency-mode").value);
+  if (latencyMode == mode) {
+    return;
+  }
+  if (latencyMode == 1 || mode == 0) {
+    log("latency mode disabled");
+    document.getElementById("latency-mode").value = 0;
+    $(".carbon-targetlatency-menu").hide();
+    $(".carbon-targetlatency-menu-enable").show();
+    $(".sync-toppopup").hide();
+    setTimeout(function () {
+      videoSpeed(1);
+    }, 1000);
+  } else if (parseInt($("#this-progress").text) < 1700000000) {
+    log("can't enable latency mode. video isn't live?");
+  } else {
+    log("latency mode enabled");
+    document.getElementById("latency-mode").value = 1;
+    $(".carbon-targetlatency-menu").show();
+    $(".carbon-targetlatency-menu-enable").hide();
     if ($(".carbon-player video")[0].paused) {
       $(".carbon-player video")[0].play();
     }
@@ -455,7 +681,29 @@ function waitForPageLoad() {
         ".sync-data span.thiswindow {font-weight: bold; color: #ffff00;}" +
         "</style>";
       $("#carbon-helper")[0].insertAdjacentHTML("beforeEnd", syncDataHtml);
+    } else {
+      let latencyModeDataHtml = "<div class='latencymode-data'>" +
+        "<div>video progress: <span id='this-progress'></span></div>" +
+        "<div>latency: <input id='latencymode-latency' type='number' step='500' value='' style='width: 80px;'>, target progress: <span id='this-targetprogress'></span></div>" +
+        "<div>diff to target: <span id='diff-to-target'></span></div><br>" +
+        "<div>state: <span id='this-state'></span></div>" +
+
+        "<div>latency mode: <input id='latency-mode' type='number' step='1' value='0' style='width: 40px;'></div>" +
+        "<div>playback rate: <span id='this-playbackrate'></span></div>" +
+        "</div>" +
+        "<style>" +
+        ".latencymode-data {position: fixed; top: 0; left: 0; background-color: #000000bb; color: #aaa; padding: 6px; z-index: 1001; font-family: monospace; display: none;}" +
+        ".latencymode-data span {font-weight: bold; color: #fff;}" +
+        "</style>";
+      $("#carbon-helper")[0].insertAdjacentHTML("beforeEnd", latencyModeDataHtml);
     }
+    let syncTopPopupHtml = "<div class='sync-toppopup' style='position: fixed; z-index: 1003; top: 0; right: 0; padding: 2px 6px; background-color: #00000055; border-radius: 0px 0px 0px 16px; text-align: center; display: none;'>" +
+      "<div style='font-size: 12px; font-weight: bold;'>SYNCING</div>" +
+      "<div style='font-size: 14px'><span class='sync-toppopup-speed' style='font-weight: bold; color: #c4c4ff;'></span></div>" +
+      "<div style='font-size: 14px;'><span class='sync-toppopup-diff' style='font-weight: bold; color: #ffff78;'></span></div>" +
+      "</div>";
+    $("#carbon-helper")[0].insertAdjacentHTML("beforeEnd", syncTopPopupHtml);
+
   }
 }
 
