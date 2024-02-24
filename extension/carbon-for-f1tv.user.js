@@ -245,13 +245,6 @@ if (carbon_mode == "popout") {
       }
 
       $("#this-state").text(state);
-
-
-
-      //let diffToTarget = targetProgress - thisProgressRealtime;
-      //$("#diff-to-target").text(diffToTarget);
-    } else {
-      log("can't sync to latency, player not loaded");
     }
   }, 500);
 
