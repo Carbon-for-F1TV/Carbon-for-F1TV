@@ -540,7 +540,7 @@ function injectPlayerFeatures() {
 
 
 
-  let donateHtml = "<div class='carbon-sync-debug-toggle bmpui-ui-settings-panel-item' role='menuitem'><a style='color: #ff6643; font-size: 12px; text-decoration: none; text-align: center; display: block;' href='https://github.com/Carbon-for-F1TVTV/Carbon-for-F1TV/blob/master/DONATE.md' target='_blank'>❤ Donate to support Carbon for F1TV</a></div>";
+  let donateHtml = "<div class='carbon-sync-debug-toggle bmpui-ui-settings-panel-item' role='menuitem'><a style='color: #ff6643; font-size: 12px; text-decoration: none; text-align: center; display: block;' href='https://github.com/Carbon-for-F1TV/Carbon-for-F1TV/blob/master/DONATE.md' target='_blank'>❤ Donate to support Carbon for F1TV</a></div>";
   $(".bmpui-ui-settings-panel-page .bmpui-container-wrapper")[0].insertAdjacentHTML("beforeEnd", donateHtml);
 
 
