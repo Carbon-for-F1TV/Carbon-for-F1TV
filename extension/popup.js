@@ -53,7 +53,8 @@ var f1tvFeatured = $.getJSON(f1tvDomain + f1tvFeaturedUrl, function (data) {
         let containers = data.resultObj.containers;
         for (let i = 0; i < containers.length; i++) {
             if (containers[i].layout == "interactive_schedule") {
-                listFeatured(containers[i].retrieveItems.resultObj.containers, containers[i].title);
+                let title = containers[i].meeting.metadata.shortDescription;
+                listFeatured(containers[i].retrieveItems.resultObj.containers, title);
                 break;
             }
         }
@@ -61,6 +62,19 @@ var f1tvFeatured = $.getJSON(f1tvDomain + f1tvFeaturedUrl, function (data) {
 }).fail(function () {
     $("#featured-list").text("Error: Can't load featured list from F1TV");
 });
+
+
+function timesCompare(a, b) {
+    let timeA = parseInt(a.metadata.emfAttributes.sessionStartDate);
+    let timeB = parseInt(b.metadata.emfAttributes.sessionStartDate);
+    let c = 0;
+    if (timeA > timeB) {
+        c = 1;
+    } else if (timeA < timeB) {
+        c = -1;
+    }
+    return c;
+}
 
 function listFeatured(data, title) {
     console.log(title);
@@ -74,6 +88,9 @@ function listFeatured(data, title) {
         let eventName = data[i].eventShortName || data[i].eventName;
         let events = data[i].events;
 
+        let sortedEvents = events.sort(timesCompare);
+
+        console.log(sortedEvents);
         let eventBtnHtml = "<div id='featured-switcher-" + dataI + "' class='featured-switcher'>" + eventName + "</div>";
         $("#featured-list-switchers")[0].insertAdjacentHTML("beforeend", eventBtnHtml);
         $("#featured-switcher-" + dataI)[0].addEventListener("click", function() {
@@ -81,12 +98,17 @@ function listFeatured(data, title) {
             $(".carbon-video.featured-" + dataI).show();
             $(".featured-switcher").removeClass("enabled");
             $("#featured-switcher-" + dataI).addClass("enabled");
-        })
+        });
 
         for (let i = 0; i < events.length; i++) {
             let subtype = events[i]["metadata"]["contentSubtype"];
-            if (subtype == "LIVE_EVENT") {
+            if ((subtype == "LIVE_EVENT") || (subtype == "SHOW")) {
                 subtype = "UPCOMING";
+            }
+            let title = events[i]["metadata"]["titleBrief"] || events[i]["metadata"]["title"];
+            let titleHeader = events[i]["metadata"]["uiSeries"];
+            if (/^[A-Za-z0-9]*$/.test(titleHeader) == false) {
+                titleHeader = "";
             }
             let videoHtml = "<div class='carbon-video featured featured-" + subtype.toLowerCase() + " featured-" + dataI + "' id='featured-" + dataI + "-" + i + "'>" +
                 "<div class='video-content'>" +
@@ -94,12 +116,13 @@ function listFeatured(data, title) {
                 "<div class='video-subtype video-subtype-" + subtype.toLowerCase() + "'>" + subtype + "</div>" +
                 "<div class='video-duration'></div>" +
                 "</div>" +
+                "<div class='video-title-header video-title-header-" + titleHeader.toLowerCase() + "'></div>" +
                 "<div class='video-title'></div>" +
                 "</div>" +
                 "</div>";
             $("#featured-list")[0].insertAdjacentHTML("beforeend", videoHtml);
             $("#featured-" + dataI + "-" + i + " .video-img").css("background-image", "url(" + f1tvVideoImageUrl[0] + events[i]["metadata"]["pictureUrl"] + f1tvVideoImageUrl[1] + ")");
-            let title = events[i]["metadata"]["titleBrief"] || events[i]["metadata"]["title"];
+            $("#featured-" + dataI + "-" + i + " .video-title-header").text(titleHeader);
             $("#featured-" + dataI + "-" + i + " .video-title").text(title);
             let duration = events[i]["metadata"]["uiDuration"];
             let durationH = parseInt(duration.split(":")[0]);
