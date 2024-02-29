@@ -2,7 +2,7 @@
 // @name           Carbon for F1TV
 // @namespace      https://Carbon-for-F1TV.github.io/Carbon-for-F1TV/
 // @match          https://f1tv.formula1.com/*
-// @version        1.0.5.3
+// @version        1.0.6
 // @author         Carbon-for-F1TV
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
@@ -453,6 +453,9 @@ function injectPlayerFeatures() {
     function setLatency(latency) {
       let oldLatency = parseInt($("#latencymode-latency")[0].value) || DEFAULT_LATENCY * 1000;
       let newLatency = oldLatency + latency;
+      if (newLatency < 200) {
+        newLatency = 200;
+      }
       $("#latencymode-latency")[0].value = newLatency;
       $(".carbon-targetlatency-view").text((newLatency / 1000).toFixed(1));
       log("Setting live latency by: " + latency + ". New latency: " + newLatency);
@@ -461,9 +464,9 @@ function injectPlayerFeatures() {
 
     let targetLatencyMenuHtml = "<div class='carbon-targetlatency-menu-disable' style='position: relative; cursor: pointer;'><div class='carbon-btn-latencytoggle-dot' style='background-color: #56ff63; width: 8px; height: 8px; border-radius: 8px; position: absolute; left: 7px; top: 11px; cursor: pointer;'></div><span class='bmpui-ui-playbacktimelabel carbon-targetlatency-menu' style='display: none; color: #eee; font-size: 13px; line-height: 28px; padding-left: 20px; padding-right: 4px; cursor: pointer;'>Latency:</span></div>" +
       "<button class='carbon-btn-latency-forward-10 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>+1.0</button>" +
-      "<button class='carbon-btn-latency-forward-01 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>+0.1</button>" +
+      "<button class='carbon-btn-latency-forward-02 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>+0.2</button>" +
       "<span class='bmpui-ui-playbacktimelabel carbon-targetlatency-view carbon-targetlatency-menu' style='display: none; font-size: 18px; line-height: 28px; padding: 0px 10px; min-width: 52px; text-align: center;'>" + DEFAULT_LATENCY.toFixed(1) + "</span>" +
-      "<button class='carbon-btn-latency-back-01 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>-0.1</button>" +
+      "<button class='carbon-btn-latency-back-02 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>-0.2</button>" +
       "<button class='carbon-btn-latency-back-10 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>-1.0</button>" +
       "<div class='carbon-targetlatency-menu-enable' style='position: relative; cursor: pointer;'><div class='carbon-btn-latencytoggle-dot' style='background-color: #999; width: 8px; height: 8px; border-radius: 8px; position: absolute; left: 7px; top: 11px;'></div><button class='bmpui-off' style='border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 12px; line-height: 22px; padding: 4px 8px; padding-left: 22px; color: #fff; background-color: #333333cc;' type='button' aria-pressed='false' tabindex='0' role='button'>ENABLE TARGET LATENCY</button></div>";
 
@@ -473,11 +476,11 @@ function injectPlayerFeatures() {
     $(".carbon-player .carbon-btn-latency-back-10").on("click", function () {
       setLatency(-1000);
     });
-    $(".carbon-player .carbon-btn-latency-back-01").on("click", function () {
-      setLatency(-100);
+    $(".carbon-player .carbon-btn-latency-back-02").on("click", function () {
+      setLatency(-200);
     });
-    $(".carbon-player .carbon-btn-latency-forward-01").on("click", function () {
-      setLatency(+100);
+    $(".carbon-player .carbon-btn-latency-forward-02").on("click", function () {
+      setLatency(+200);
     });
     $(".carbon-player .carbon-btn-latency-forward-10").on("click", function () {
       setLatency(+1000);
@@ -488,6 +491,10 @@ function injectPlayerFeatures() {
     $(".carbon-player .carbon-targetlatency-menu-enable").on("click", function () {
       toggleLatencyMode(1);
     });
+
+    toggleLatencyMode(-1);
+    setLatency(0);
+
   }
 
   if (carbon_mode == "popout") {
@@ -536,6 +543,8 @@ function injectPlayerFeatures() {
       setSyncOffset(+200);
     });
 
+    toggleSyncMode(-1);
+
   }
 
 
@@ -574,6 +583,18 @@ function toggleSyncMode(mode) {
   if (syncMode == mode) {
     return;
   }
+
+  if (mode == -1) { // set sync mode to last state, after channel switching
+    if (syncMode == 1) {
+      syncMode = 0;
+      mode = 1;
+    } else {
+      syncMode = 1;
+      mode = 0;
+    }
+  }
+
+
   if (syncMode == 1 || mode == 0) {
     log("sync mode disabled");
     document.getElementById("sync-mode").value = 0;
@@ -609,6 +630,15 @@ function toggleLatencyMode(mode) {
   if (latencyMode == mode) {
     return;
   }
+  if (mode == -1) { // set latency mode to last state, after channel switching
+    if (latencyMode == 1) {
+      latencyMode = 0;
+      mode = 1;
+    } else {
+      latencyMode = 1;
+      mode = 0;
+    }
+  }
   if (latencyMode == 1 || mode == 0) {
     log("latency mode disabled");
     document.getElementById("latency-mode").value = 0;
@@ -631,6 +661,12 @@ function toggleLatencyMode(mode) {
   }
 }
 
+function injectHomepageFeatures() {
+  $(".home-page").addClass("carbon-home");
+  log("injecting home page features");
+  //
+}
+
 function waitForPlayer() {
   if ($(".player-container.shown .bitmovinplayer-container").length > 0) {
     if ($(".player-container.shown .bitmovinplayer-container.carbon-player").length > 0) {
@@ -649,6 +685,20 @@ function waitForPlayer() {
     if ($("button.btn-main:contains('WATCH LIVE')").length > 0) {
       $("button.btn-main:contains('WATCH LIVE')")[0].click();
     }
+  }
+}
+
+function waitForHomepage() {
+  if ($(".home-page").length > 0) {
+    if ($(".home-page.carbon-player").length > 0) {
+    } else {
+      log("home page loaded");
+      injectHomepageFeatures();
+      // clear loop
+      clearInterval(homepageInjectLoop);
+    }
+  } else {
+    // no homepage loaded
   }
 }
 
@@ -678,7 +728,7 @@ function waitForPageLoad() {
     } else {
       let latencyModeDataHtml = "<div class='latencymode-data'>" +
         "<div>video progress: <span id='this-progress'></span></div>" +
-        "<div>latency: <input id='latencymode-latency' type='number' step='500' value='' style='width: 80px;'>, target progress: <span id='this-targetprogress'></span></div>" +
+        "<div>latency: <input id='latencymode-latency' type='number' step='500' value='" + DEFAULT_LATENCY * 1000 + "' style='width: 80px;'>, target progress: <span id='this-targetprogress'></span></div>" +
         "<div>diff to target: <span id='diff-to-target'></span></div><br>" +
         "<div>state: <span id='this-state'></span></div>" +
 
@@ -703,12 +753,17 @@ function waitForPageLoad() {
 
 var waitForPageLoad = setInterval(waitForPageLoad, 50);
 var playerInjectLoop;
+var homepageInjectLoop;
 
 function pageChanged() {
   clearInterval(playerInjectLoop);
+  clearInterval(waitForHomepage);
   if (document.location.href.split("formula1.com/")[1].split("/")[0] == "detail") {
     log("Page changed (video)");
     playerInjectLoop = setInterval(waitForPlayer, 50);
+  } else if (document.location.href == "https://f1tv.formula1.com/") {
+    log("Page changed (homepage)");
+    //homepageInjectLoop = setInterval(waitForHomepage, 50);
   } else {
     log("Page changed (not video)");
     if (isTheaterMode()) {
