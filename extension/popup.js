@@ -179,7 +179,7 @@ function listFeatured(data, title) {
             }
         }
 
-        for (let i = 0; i < events.length; i++) {
+        for (let i = events.length - 1; i >= 0; i--) {
             let subtype = events[i]["metadata"]["contentSubtype"];
             if ((subtype == "LIVE_EVENT") || (subtype == "SHOW")) {
                 subtype = "UPCOMING";
@@ -187,7 +187,6 @@ function listFeatured(data, title) {
             if (subtype == "LIVE" || subtype == "UPCOMING") {
                 continue;
             } else {
-
                 drawFeaturedVideo(events[i], i, dataI, eventName);
             }
         }
