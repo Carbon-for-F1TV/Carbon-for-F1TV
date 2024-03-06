@@ -2,7 +2,7 @@
 // @name           Carbon for F1TV
 // @namespace      https://Carbon-for-F1TV.github.io/Carbon-for-F1TV/
 // @match          https://f1tv.formula1.com/*
-// @version        1.0.6
+// @version        1.0.7
 // @author         Carbon-for-F1TV
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
@@ -22,6 +22,12 @@ var popup_btn_image = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmN
 var theatermode_btn_image = "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPScxLjEnIGlkPSdMYXllcl8xJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB4PScwcHgnIHk9JzBweCcgdmlld0JveD0nMCAwIDI4My41IDQyNS4yJyBzdHlsZT0nZW5hYmxlLWJhY2tncm91bm" +
   "Q6bmV3IDAgMCAyODMuNSA0MjUuMjsnIHhtbDpzcGFjZT0ncHJlc2VydmUnPjxnPjxwYXRoIHN0eWxlPSdmaWxsOiNEMEQwRDI7JyBkPSdNMjM5LjMsMTI0LjlINDQuMmMtMTAuNywwLTE5LjQsOC43LTE5LjQsMTkuNHYxMzYuNmMwLDEwLjcsOC43LDE5LjQsMTkuNCwxOS40aDE5NS4xICBjMTAuNywwLDE5LjQtOC43LDE5LjQtMTkuNFYxNDQuM0MyNTguNywxMzMuNiwyNTAsMT" +
   "I0LjksMjM5LjMsMTI0Ljl6IE04Ni43LDI4Ny40SDM4di00OC43aDE5LjV2MjkuMmgyOS4yVjI4Ny40eiBNODYuNywxNTYuMiBINTcuNXYyOS4ySDM4di00OC43aDQ4LjdWMTU2LjJ6IE0yNDUuNSwyODcuNGgtNDguN3YtMTkuNUgyMjZ2LTI5LjJoMTkuNVYyODcuNHogTTI0NS41LDE4NS40SDIyNnYtMjkuMmgtMjkuMnYtMTkuNWg0OC43VjE4NS40eicvPjwvZz48L3N2Zz4NCg==";
+
+var syncoffset_btn_a_image = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdC" +
+  "b3g9IjAgMCAyODMuNSA0MjUuMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjgzLjUgNDI1LjI7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtkaXNwbGF5Om5vbmU7fQ0KCS5zdDF7ZGlzcGxheTppbmxpbmU7ZmlsbDojRDBEMEQyO30NCgkuc3Qye2ZpbGw6I0QwRDBEMjt9DQo8L3N0eWxlPg0KPGcgY2xhc" +
+  "3M9InN0MCI+DQoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTIzOS4zLDEyNC45SDQ0LjJjLTEwLjcsMC0xOS40LDguNy0xOS40LDE5LjR2MTM2LjZjMCwxMC43LDguNywxOS40LDE5LjQsMTkuNGgxOTUuMQ0KCQljMTAuNywwLDE5LjQtOC43LDE5LjQtMTkuNFYxNDQuM0MyNTguNywxMzMuNiwyNTAsMTI0LjksMjM5LjMsMTI0Ljl6IE04Ni43LDI4Ny40SDM4di00OC43aDE5LjV2Mj" +
+  "kuMmgyOS4yVjI4Ny40eiBNODYuNywxNTYuMg0KCQlINTcuNXYyOS4ySDM4di00OC43aDQ4LjdWMTU2LjJ6IE0yNDUuNSwyODcuNGgtNDguN3YtMTkuNUgyMjZ2LTI5LjJoMTkuNVYyODcuNHogTTI0NS41LDE4NS40SDIyNnYtMjkuMmgtMjkuMnYtMTkuNWg0OC43VjE4NS40eiINCgkJLz4NCjwvZz4NCjxwYXRoIGNsYXNzPSJzdDIiIGQ9Ik04NS43LDIwMy41bDEwOS43LTc3Ljh" +
+  "jMi45LTIsNy4yLTAuMiw3LjIsM3YxNjcuNmMwLDMuMy00LjMsNS4xLTcuMiwzTDg1LjcsMjIxLjcNCglDNzkuMiwyMTcsNzkuMiwyMDguMiw4NS43LDIwMy41eiIvPg0KPC9zdmc+DQo=";
 
 var syncoffset_btn_image = "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDI4My41IDQyNS4yIiBzdHlsZT0iZW5hYmxlLWJhY2tncm9" +
   "1bmQ6bmV3IDAgMCAyODMuNSA0MjUuMjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGcgc3R5bGU9ImRpc3BsYXk6bm9uZTsiPg0KCTxwYXRoIHN0eWxlPSJkaXNwbGF5OmlubGluZTtmaWxsOiNEMEQwRDI7IiBkPSJNMjM5LjMsMTI0LjlINDQuMmMtMTAuNywwLTE5LjQsOC43LTE5LjQsMTkuNHYxMzYuNmMwLDEwLjcsOC43LDE5LjQsMTkuNCwxOS40DQoJCWgxOTUuMWMxMC4" +
@@ -332,6 +338,7 @@ function videoLatencyJumpToProgress(progress) {
   if (oldTime < 1700000000) {
     log("not live, or something is wrong. Disabling latency mode");
     toggleLatencyMode(0);
+    //return;
   }
   let newTime = progress + 10;
   $(".carbon-player video")[0].currentTime = newTime;
@@ -463,11 +470,16 @@ function injectPlayerFeatures() {
 
 
     let targetLatencyMenuHtml = "<div class='carbon-targetlatency-menu-disable' style='position: relative; cursor: pointer;'><div class='carbon-btn-latencytoggle-dot' style='background-color: #56ff63; width: 8px; height: 8px; border-radius: 8px; position: absolute; left: 7px; top: 11px; cursor: pointer;'></div><span class='bmpui-ui-playbacktimelabel carbon-targetlatency-menu' style='display: none; color: #eee; font-size: 13px; line-height: 28px; padding-left: 20px; padding-right: 4px; cursor: pointer;'>Latency:</span></div>" +
-      "<button class='carbon-btn-latency-forward-10 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>+1.0</button>" +
-      "<button class='carbon-btn-latency-forward-02 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>+0.2</button>" +
-      "<span class='bmpui-ui-playbacktimelabel carbon-targetlatency-view carbon-targetlatency-menu' style='display: none; font-size: 18px; line-height: 28px; padding: 0px 10px; min-width: 52px; text-align: center;'>" + DEFAULT_LATENCY.toFixed(1) + "</span>" +
-      "<button class='carbon-btn-latency-back-02 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>-0.2</button>" +
-      "<button class='carbon-btn-latency-back-10 carbon-targetlatency-menu bmpui-off' style='display: none; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; padding: 0.25em; color: #fff; background-color: #33333377; margin: 0px 3px; border-radius: 8px;' type='button' aria-pressed='false' tabindex='0' role='button'>-1.0</button>" +
+    "<button class='carbon-btn-latency-forward-10 bmpui-off carbon-targetlatency-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_image + ");' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Latency Offset (-)</span></button>" +
+    "<button class='carbon-btn-latency-forward-02 bmpui-off carbon-targetlatency-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_a_image + ");' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Latency Offset (-)</span></button>" +
+
+      "<span class='bmpui-ui-playbacktimelabel carbon-targetlatency-view carbon-targetlatency-menu' style='display: none; font-size: 18px; line-height: 28px; padding: 0px 10px; min-width: 56px; text-align: center;'>" + DEFAULT_LATENCY.toFixed(1) + "</span>" +
+
+
+      "<button class='carbon-btn-latency-back-02 bmpui-off carbon-targetlatency-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_a_image + "); transform: rotate(180deg);' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Latency Offset (+)</span></button>" +
+      "<button class='carbon-btn-latency-back-10 bmpui-off carbon-targetlatency-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_image + "); transform: rotate(180deg);' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Latency Offset (+)</span></button>" +
+  
+
       "<div class='carbon-targetlatency-menu-enable' style='position: relative; cursor: pointer;'><div class='carbon-btn-latencytoggle-dot' style='background-color: #999; width: 8px; height: 8px; border-radius: 8px; position: absolute; left: 7px; top: 11px;'></div><button class='bmpui-off' style='border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 12px; line-height: 22px; padding: 4px 8px; padding-left: 22px; color: #fff; background-color: #333333cc;' type='button' aria-pressed='false' tabindex='0' role='button'>ENABLE TARGET LATENCY</button></div>";
 
 
@@ -531,16 +543,24 @@ function injectPlayerFeatures() {
     });
 
     let syncOffsetSwitcherHtml = "<span class='bmpui-ui-playbacktimelabel carbon-syncoffset-menu' style='font-size: 13px; line-height: 28px; padding-left: 14px; padding-right: 4px;'>Sync Offset:</span>" +
-      "<button class='carbon-btn-syncoffset-back bmpui-off carbon-syncoffset-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_image + ");' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Sync Offset (-)</span></button>" +
+      "<button class='carbon-btn-syncoffset-back-10 bmpui-off carbon-syncoffset-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_image + ");' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Sync Offset (-)</span></button>" +
+      "<button class='carbon-btn-syncoffset-back-02 bmpui-off carbon-syncoffset-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_a_image + ");' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Sync Offset (-)</span></button>" +
       "<span class='bmpui-ui-playbacktimelabel carbon-syncoffset-view carbon-syncoffset-menu' style='font-size: 18px; line-height: 28px; padding: 0px 10px; min-width: 52px; text-align: center;'></span>" +
-      "<button class='carbon-btn-syncoffset-forward bmpui-off carbon-syncoffset-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_image + "); transform: rotate(180deg);' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Sync Offset (+)</span></button>";
+      "<button class='carbon-btn-syncoffset-forward-02 bmpui-off carbon-syncoffset-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_a_image + "); transform: rotate(180deg);' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Sync Offset (+)</span></button>" +
+      "<button class='carbon-btn-syncoffset-forward-10 bmpui-off carbon-syncoffset-menu' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + syncoffset_btn_image + "); transform: rotate(180deg);' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Sync Offset (+)</span></button>";
     $(".carbon-player .bmpui-container-wrapper .bmpui-ui-volumeslider")[0].insertAdjacentHTML("afterEnd", syncOffsetSwitcherHtml);
     updateSyncOffsetView();
-    $(".carbon-player .carbon-btn-syncoffset-back").on("click", function () {
+    $(".carbon-player .carbon-btn-syncoffset-back-10").on("click", function () {
+      setSyncOffset(-1000);
+    });
+    $(".carbon-player .carbon-btn-syncoffset-back-02").on("click", function () {
       setSyncOffset(-200);
     });
-    $(".carbon-player .carbon-btn-syncoffset-forward").on("click", function () {
+    $(".carbon-player .carbon-btn-syncoffset-forward-02").on("click", function () {
       setSyncOffset(+200);
+    });
+    $(".carbon-player .carbon-btn-syncoffset-forward-10").on("click", function () {
+      setSyncOffset(+1000);
     });
 
     toggleSyncMode(-1);
@@ -601,9 +621,9 @@ function toggleSyncMode(mode) {
     $(".carbon-btn-synctoggle-label").text("SYNC OFF");
     $(".carbon-btn-synctoggle-dot").css("background-color", "#999");
     $(".carbon-syncoffset-menu").hide();
-    $(".sync-toppopup").hide();
     setTimeout(function () {
       videoSpeed(1);
+      $(".sync-toppopup").hide();
     }, 1000);
   } else {
     log("sync mode enabled");
@@ -644,9 +664,9 @@ function toggleLatencyMode(mode) {
     document.getElementById("latency-mode").value = 0;
     $(".carbon-targetlatency-menu").hide();
     $(".carbon-targetlatency-menu-enable").show();
-    $(".sync-toppopup").hide();
     setTimeout(function () {
       videoSpeed(1);
+      $(".sync-toppopup").hide();
     }, 1000);
   } else if (parseInt($("#this-progress").text) < 1700000000) {
     log("can't enable latency mode. video isn't live?");
