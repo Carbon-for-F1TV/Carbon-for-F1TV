@@ -438,7 +438,6 @@ function injectPlayerFeatures() {
       toggleLatencyModeDebug();
     })
 
-
     $(".carbon-player .bmpui-seekbar")[0].addEventListener("click", function () {
       toggleLatencyMode(0);
     });
@@ -452,7 +451,15 @@ function injectPlayerFeatures() {
       toggleLatencyMode(0);
     });
     $(".carbon-player .bmpui-ui-hugeplaybacktogglebutton")[0].addEventListener("mouseup", function () {
+      let latencyMode = parseInt(document.getElementById("latency-mode").value);
       toggleLatencyMode(0);
+      if (latencyMode == 1) {
+        setTimeout(function() {
+          if (($(".carbon-player video")[0].paused) == false) {
+            toggleLatencyMode(1);
+          }
+        }, 1000);
+      }
     });
 
 
@@ -533,7 +540,15 @@ function injectPlayerFeatures() {
       toggleSyncMode(0);
     });
     $(".carbon-player .bmpui-ui-hugeplaybacktogglebutton")[0].addEventListener("mouseup", function () {
+      let syncMode = parseInt(document.getElementById("sync-mode").value);
       toggleSyncMode(0);
+      if (syncMode == 1) {
+        setTimeout(function() {
+          if (($(".carbon-player video")[0].paused) == false) {
+            toggleSyncMode(1);
+          }
+        }, 1000);
+      }
     });
 
     let syncDebugToggleHtml = "<div class='carbon-sync-debug-toggle bmpui-ui-settings-panel-item' style='cursor: pointer;' role='menuitem'><div class='bmpui-container-wrapper' style='cursor: pointer;'><label class='bmpui-ui-label' style='cursor: pointer;'>SYNC MODE DEBUG</label></div></div>";
