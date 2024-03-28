@@ -1,5 +1,9 @@
-# Carbon for F1TV
-(Formerly F1TV+)
+<p align="center">
+ <img src="./description/logo_128.png" width="64" />
+</p>
+<h1 align="center">Carbon for F1TV</h1>
+<p align="center">(Formerly F1TV+)</p>
+
 
 Enhance your F1TV experience with this extension! Enjoy theater mode for full-screen viewing and sync mode for simultaneous playback of multiple streams.
 
