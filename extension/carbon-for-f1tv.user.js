@@ -2,41 +2,41 @@
 // @name           Carbon for F1TV
 // @namespace      https://Carbon-for-F1TV.github.io/Carbon-for-F1TV/
 // @match          https://f1tv.formula1.com/*
-// @version        1.0.7
+// @version        1.0.8
 // @author         Carbon-for-F1TV
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
 // ==/UserScript==
 
-var DEFAULT_THEATERMODE = true;
+const DEFAULT_THEATERMODE = true;
 
-var DEFAULT_LATENCY = 30;
+const DEFAULT_LATENCY = 20;
 
 
-var popup_btn_image = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyOC4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6" +
+const popup_btn_image = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyOC4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6" +
   "Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAyODMuNSA0MjUuMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjgzLjUgNDI1LjI7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtk" +
   "aXNwbGF5Om5vbmU7fQ0KCS5zdDF7Zm9udC1mYW1pbHk6J0NhbGlicmktQm9sZCc7fQ0KCS5zdDJ7Zm9udC1zaXplOjIwOS41MzAycHg7fQ0KCS5zdDN7ZmlsbDojRDBEMEQyO30NCjwvc3R5bGU+DQo8dGV4dCB0cmFuc2Zvcm09Im1hdHJpeCgxIDAgMCAxIDQ1LjIzMzcgMjcxLjExMDcpIiBjbGFzcz0ic3QwIHN0MSBzdDIiPisxPC90ZXh0Pg0KPGc+DQoJPHBhdGggY2xhc3M9" +
   "InN0MyIgZD0iTTIzOS4zLDEyNC45SDQ0LjJjLTEwLjcsMC0xOS40LDguNy0xOS40LDE5LjR2MTM2LjZjMCwxMC43LDguNywxOS40LDE5LjQsMTkuNGgxOTUuMQ0KCQljMTAuNywwLDE5LjQtOC43LDE5LjQtMTkuNFYxNDQuM0MyNTguNywxMzMuNiwyNTAsMTI0LjksMjM5LjMsMTI0Ljl6IE0xMzYuNSwyMjEuOEg5NS45djQwLjZINzcuNXYtNDAuNkgzNi45di0xOC40aDQwLjZ2" +
   "LTQwLjYNCgkJaDE4LjR2NDAuNmg0MC42VjIyMS44eiBNMjQ2LjIsMjc4LjdoLTgxLjF2LTIwLjJoMzAuOHYtODYuOGwtMzQuMiwyMi42bC0xMS42LTE3LjZsNDUuOC0zMC4zbDAsMHYwaDI0LjR2MTEyaDI1LjhWMjc4Ljd6Ii8+DQo8L2c+DQo8L3N2Zz4NCg==";
 
-var theatermode_btn_image = "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPScxLjEnIGlkPSdMYXllcl8xJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB4PScwcHgnIHk9JzBweCcgdmlld0JveD0nMCAwIDI4My41IDQyNS4yJyBzdHlsZT0nZW5hYmxlLWJhY2tncm91bm" +
+  const theatermode_btn_image = "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPScxLjEnIGlkPSdMYXllcl8xJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB4PScwcHgnIHk9JzBweCcgdmlld0JveD0nMCAwIDI4My41IDQyNS4yJyBzdHlsZT0nZW5hYmxlLWJhY2tncm91bm" +
   "Q6bmV3IDAgMCAyODMuNSA0MjUuMjsnIHhtbDpzcGFjZT0ncHJlc2VydmUnPjxnPjxwYXRoIHN0eWxlPSdmaWxsOiNEMEQwRDI7JyBkPSdNMjM5LjMsMTI0LjlINDQuMmMtMTAuNywwLTE5LjQsOC43LTE5LjQsMTkuNHYxMzYuNmMwLDEwLjcsOC43LDE5LjQsMTkuNCwxOS40aDE5NS4xICBjMTAuNywwLDE5LjQtOC43LDE5LjQtMTkuNFYxNDQuM0MyNTguNywxMzMuNiwyNTAsMT" +
   "I0LjksMjM5LjMsMTI0Ljl6IE04Ni43LDI4Ny40SDM4di00OC43aDE5LjV2MjkuMmgyOS4yVjI4Ny40eiBNODYuNywxNTYuMiBINTcuNXYyOS4ySDM4di00OC43aDQ4LjdWMTU2LjJ6IE0yNDUuNSwyODcuNGgtNDguN3YtMTkuNUgyMjZ2LTI5LjJoMTkuNVYyODcuNHogTTI0NS41LDE4NS40SDIyNnYtMjkuMmgtMjkuMnYtMTkuNWg0OC43VjE4NS40eicvPjwvZz48L3N2Zz4NCg==";
 
-var syncoffset_btn_a_image = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdC" +
+  const syncoffset_btn_a_image = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdC" +
   "b3g9IjAgMCAyODMuNSA0MjUuMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjgzLjUgNDI1LjI7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtkaXNwbGF5Om5vbmU7fQ0KCS5zdDF7ZGlzcGxheTppbmxpbmU7ZmlsbDojRDBEMEQyO30NCgkuc3Qye2ZpbGw6I0QwRDBEMjt9DQo8L3N0eWxlPg0KPGcgY2xhc" +
   "3M9InN0MCI+DQoJPHBhdGggY2xhc3M9InN0MSIgZD0iTTIzOS4zLDEyNC45SDQ0LjJjLTEwLjcsMC0xOS40LDguNy0xOS40LDE5LjR2MTM2LjZjMCwxMC43LDguNywxOS40LDE5LjQsMTkuNGgxOTUuMQ0KCQljMTAuNywwLDE5LjQtOC43LDE5LjQtMTkuNFYxNDQuM0MyNTguNywxMzMuNiwyNTAsMTI0LjksMjM5LjMsMTI0Ljl6IE04Ni43LDI4Ny40SDM4di00OC43aDE5LjV2Mj" +
   "kuMmgyOS4yVjI4Ny40eiBNODYuNywxNTYuMg0KCQlINTcuNXYyOS4ySDM4di00OC43aDQ4LjdWMTU2LjJ6IE0yNDUuNSwyODcuNGgtNDguN3YtMTkuNUgyMjZ2LTI5LjJoMTkuNVYyODcuNHogTTI0NS41LDE4NS40SDIyNnYtMjkuMmgtMjkuMnYtMTkuNWg0OC43VjE4NS40eiINCgkJLz4NCjwvZz4NCjxwYXRoIGNsYXNzPSJzdDIiIGQ9Ik04NS43LDIwMy41bDEwOS43LTc3Ljh" +
   "jMi45LTIsNy4yLTAuMiw3LjIsM3YxNjcuNmMwLDMuMy00LjMsNS4xLTcuMiwzTDg1LjcsMjIxLjcNCglDNzkuMiwyMTcsNzkuMiwyMDguMiw4NS43LDIwMy41eiIvPg0KPC9zdmc+DQo=";
 
-var syncoffset_btn_image = "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDI4My41IDQyNS4yIiBzdHlsZT0iZW5hYmxlLWJhY2tncm9" +
+  const syncoffset_btn_image = "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCINCgkgdmlld0JveD0iMCAwIDI4My41IDQyNS4yIiBzdHlsZT0iZW5hYmxlLWJhY2tncm9" +
   "1bmQ6bmV3IDAgMCAyODMuNSA0MjUuMjsiIHhtbDpzcGFjZT0icHJlc2VydmUiPg0KPGcgc3R5bGU9ImRpc3BsYXk6bm9uZTsiPg0KCTxwYXRoIHN0eWxlPSJkaXNwbGF5OmlubGluZTtmaWxsOiNEMEQwRDI7IiBkPSJNMjM5LjMsMTI0LjlINDQuMmMtMTAuNywwLTE5LjQsOC43LTE5LjQsMTkuNHYxMzYuNmMwLDEwLjcsOC43LDE5LjQsMTkuNCwxOS40DQoJCWgxOTUuMWMxMC4" +
   "3LDAsMTkuNC04LjcsMTkuNC0xOS40VjE0NC4zQzI1OC43LDEzMy42LDI1MCwxMjQuOSwyMzkuMywxMjQuOXogTTg2LjcsMjg3LjRIMzh2LTQ4LjdoMTkuNXYyOS4yaDI5LjJWMjg3LjR6DQoJCSBNODYuNywxNTYuMkg1Ny41djI5LjJIMzh2LTQ4LjdoNDguN1YxNTYuMnogTTI0NS41LDI4Ny40aC00OC43di0xOS41SDIyNnYtMjkuMmgxOS41VjI4Ny40eiBNMjQ1LjUsMTg1LjR" +
   "IMjI2di0yOS4yaC0yOS4ydi0xOS41DQoJCWg0OC43VjE4NS40eiIvPg0KPC9nPg0KPHBhdGggc3R5bGU9ImZpbGw6I0QwRDBEMjsiIGQ9Ik0yOS43LDIwMy41bDEwOS43LTc3LjhjMi45LTIsNy4yLTAuMiw3LjIsM3YxNjcuNmMwLDMuMy00LjMsNS4xLTcuMiwzTDI5LjcsMjIxLjcNCglDMjMuMiwyMTcsMjMuMiwyMDguMiwyOS43LDIwMy41eiIvPg0KPHBhdGggc3R5bGU9ImZ" +
   "pbGw6I0QwRDBEMjsiIGQ9Ik0xNDEuOCwyMDMuNWwxMDkuNy03Ny44YzIuOS0yLDcuMi0wLjIsNy4yLDN2MTY3LjZjMCwzLjMtNC4zLDUuMS03LjIsM2wtMTA5LjctNzcuOA0KCUMxMzUuMiwyMTcsMTM1LjIsMjA4LjIsMTQxLjgsMjAzLjV6Ii8+DQo8L3N2Zz4=";
 
-var theatermode_active = DEFAULT_THEATERMODE;
-var carbon_mode = "default";
+let theatermode_active = DEFAULT_THEATERMODE;
+let carbon_mode = "default";
 if (window.location.hash.split("_")[0] == "#carbon") {
   carbon_mode = window.location.hash.split("_")[1];
 }
@@ -77,7 +77,7 @@ function toggleTheaterMode(temporary) {
   }
 }
 
-var popouts = [];
+const popouts = [];
 function addPopout() {
   let popoutId;
   let createTime = Date.now();
@@ -121,7 +121,7 @@ function deletePopout(p) {
 
 
 if (carbon_mode !== "popout") {
-  var pushProgressToPopouts = setInterval(function () {
+  const pushProgressToPopouts = setInterval(function () {
 
     // delete closed popouts
     for (let p in popouts) {
@@ -160,7 +160,7 @@ if (carbon_mode !== "popout") {
 }
 
 if (carbon_mode == "popout") {
-  var syncData = setInterval(function () {
+  const syncData = setInterval(function () {
     if ($(".player-container.shown .bitmovinplayer-container.carbon-player").length > 0) {
       let thisProgressRealtime = $(".carbon-player video")[0].currentTime;
       $("#this-progress-realtime").text(thisProgressRealtime);
@@ -227,7 +227,7 @@ if (carbon_mode == "popout") {
   }, 500);
 } else {
 
-  var latencyModeData = setInterval(function () {
+  const latencyModeData = setInterval(function () {
     if ($(".player-container.shown .bitmovinplayer-container.carbon-player").length > 0) {
       let thisProgress = $(".carbon-player video")[0].currentTime;
       $("#this-progress").text(thisProgress);
@@ -372,7 +372,7 @@ function injectPlayerFeatures() {
   $(".player-container.shown .bitmovinplayer-container").addClass("carbon-player");
 
 
-  var multi_channels;
+  let multi_channels;
   if ($(".embedded-player-container .channel-switcher-container").length > 0) {
     log("player has multiple channels");
     multi_channels = true;
@@ -380,7 +380,7 @@ function injectPlayerFeatures() {
     multi_channels = false;
   }
 
-  var is_live;
+  let is_live;
   if ($(".bmpui-ui-playbacktimelabel-live").length > 0) {
     log("player is live");
     is_live = true;
@@ -397,7 +397,7 @@ function injectPlayerFeatures() {
     // show pip button
     $(".carbon-player .bmpui-ui-piptogglebutton").removeClass("bmpui-hidden");
     // fix pip button
-    var pipBtn = $(".carbon-player .bmpui-ui-piptogglebutton")[0];
+    const pipBtn = $(".carbon-player .bmpui-ui-piptogglebutton")[0];
     $(pipBtn).addClass("carbon-btn-piptoggle");
     pipBtn.replaceWith(pipBtn.cloneNode(true));
 
@@ -518,8 +518,6 @@ function injectPlayerFeatures() {
 
   if (carbon_mode == "popout") {
     $(".carbon-player .bmpui-ui-casttogglebutton").addClass("bmpui-hidden");
-    //$(".carbon-player .bmpui-ui-forwardbutton").addClass("bmpui-hidden");
-    //$(".carbon-player .bmpui-ui-rewindbutton").addClass("bmpui-hidden");
 
     let syncToggleHtml = "<span class='carbon-btn-synctoggle bmpui-ui-playbacktimelabel' style='cursor: pointer; min-width: 80px; position: relative; padding-left: 18px;'><span class='carbon-btn-synctoggle-label'>SYNC ON</span><div class='carbon-btn-synctoggle-dot' style='background-color: #56ff63; width: 8px; height: 8px; border-radius: 8px; position: absolute; left: 0; top: 5px;'></div></span>";
     $(".carbon-player .bmpui-controlbar-top .bmpui-container-wrapper")[0].insertAdjacentHTML("afterbegin", syncToggleHtml);
@@ -739,7 +737,7 @@ function waitForHomepage() {
 
 function waitForPageLoad() {
   if ($("#app .app-wrapper").length > 0) {
-    clearInterval(waitForPageLoad);
+    clearInterval(waitForPageLoadLoop);
     $("#app")[0].insertAdjacentHTML("beforeEnd", "<div id='carbon-helper'></div>");
     if (carbon_mode == "popout") {
       let syncDataHtml = "<div class='sync-data'>" +
@@ -786,9 +784,9 @@ function waitForPageLoad() {
   }
 }
 
-var waitForPageLoad = setInterval(waitForPageLoad, 50);
-var playerInjectLoop;
-var homepageInjectLoop;
+let waitForPageLoadLoop = setInterval(waitForPageLoad, 50);
+let playerInjectLoop;
+let homepageInjectLoop;
 
 function pageChanged() {
   clearInterval(playerInjectLoop);
