@@ -2,7 +2,7 @@
 // @name           Carbon for F1TV
 // @namespace      https://Carbon-for-F1TV.github.io/Carbon-for-F1TV/
 // @match          https://f1tv.formula1.com/*
-// @version        1.0.8
+// @version        1.0.9
 // @author         Carbon-for-F1TV
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
@@ -715,8 +715,8 @@ function waitForPlayer() {
   } else {
     // no player found
     // check for watch live popup
-    if ($("button.btn-main:contains('WATCH LIVE')").length > 0) {
-      $("button.btn-main:contains('WATCH LIVE')")[0].click();
+    if ($("button.btn-popup-primary:contains('WATCH LIVE')").length > 0) {
+      $("button.btn-popup-primary:contains('WATCH LIVE')")[0].click();
     }
   }
 }
