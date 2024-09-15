@@ -2,7 +2,7 @@
 // @name           Carbon for F1TV
 // @namespace      https://Carbon-for-F1TV.github.io/Carbon-for-F1TV/
 // @match          https://f1tv.formula1.com/*
-// @version        1.0.9
+// @version        1.1.0
 // @author         Carbon-for-F1TV
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
@@ -187,6 +187,15 @@ if (carbon_mode == "popout") {
       $("#diff-to-target").text(diffToTarget);
     } else {
       log("can't sync, player not loaded");
+      // check for error popup
+      if ($(".modal-dialog .error-code").length > 0) {
+        // if it's error BM1200, dismiss it
+        if ($(".modal-dialog .error-code")[0].innerText == "(BM1200)") {
+          log("dismissing error popup");
+          $(".modal-dialog .btn-close")[0].click();
+          $(".channel-switcher-controls-list li button")[0].click();
+        }
+      }
     }
   }, 500);
 
