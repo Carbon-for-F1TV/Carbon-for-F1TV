@@ -2,7 +2,7 @@
 // @name           Carbon for F1TV
 // @namespace      https://Carbon-for-F1TV.github.io/Carbon-for-F1TV/
 // @match          https://f1tv.formula1.com/*
-// @version        1.1.0
+// @version        1.1.1
 // @author         Carbon-for-F1TV
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
@@ -405,6 +405,7 @@ function injectPlayerFeatures() {
   if ((window.navigator.userAgent.indexOf("Chrome") > -1) || (window.navigator.userAgent.indexOf("Edg/") > -1)) {
     // show pip button
     $(".carbon-player .bmpui-ui-piptogglebutton").removeClass("bmpui-hidden");
+    $(".carbon-player .bmpui-ui-piptogglebutton").attr("style", "display: block !important");
     // fix pip button
     const pipBtn = $(".carbon-player .bmpui-ui-piptogglebutton")[0];
     $(pipBtn).addClass("carbon-btn-piptoggle");
@@ -431,7 +432,7 @@ function injectPlayerFeatures() {
   }
 
   if ((multi_channels == true) && (carbon_mode !== "popout")) {
-    let popoutBtnHtml = "<button aria-label='New Popout' class='carbon-btn-popout bmpui-ui-piptogglebutton bmpui-off' style='background-image: url(" + popup_btn_image + ");' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label'>New Popout</span></button>";
+    let popoutBtnHtml = "<button aria-label='New Popout' class='carbon-btn-popout bmpui-ui-settingstogglebutton bmpui-off' style='background-image: url(" + popup_btn_image + ");' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label'>New Popout</span></button>";
     $(".carbon-player .bmpui-container-wrapper .carbon-btn-theatermode")[0].insertAdjacentHTML("beforebegin", popoutBtnHtml);
     $(".carbon-player .carbon-btn-popout").on("click", function () {
       addPopout();
