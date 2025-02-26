@@ -24,11 +24,14 @@ sed -i "s/0.1000.1000/$VERSION/" manifest_firefox.json
 sed -i "s/0.1000.1000/$VERSION/" popup.html
 
 
-mv manifest_firefox.json ../
+mv manifest_firefox.json background_firefox.js load_firefox.js ../
+
 
 7z a -tzip ../chrome.zip *
 rm manifest.json
 mv ../manifest_firefox.json manifest.json
+mv ../background_firefox.js ../load_firefox.js ./
+
 7z a -tzip ../firefox.zip *
 
 cd ../../

@@ -10,14 +10,19 @@
         "512": "icon/512.png"
       },
     "permissions": [
+      "webRequest",
+      "webRequestBlocking",
       "https://f1tv.formula1.com/*"
     ],
+    "background": {
+      "scripts": ["background_firefox.js"]
+    },
     "content_scripts":[
         {
           "matches":[
             "https://f1tv.formula1.com/*"
           ],
-          "js": ["load.js"]
+          "js": ["load_firefox.js"]
         }
       ],
       "browser_action": {
