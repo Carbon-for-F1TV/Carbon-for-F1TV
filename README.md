@@ -2,7 +2,6 @@
  <img src="./description/logo_128.png" width="64" />
 </p>
 <h1 align="center">Carbon for F1TV</h1>
-<p align="center">(Formerly F1TV+)</p>
 
 
 Enhance your F1TV experience with this extension! Enjoy theater mode for full-screen viewing and sync mode for simultaneous playback of multiple streams.
@@ -14,8 +13,8 @@ Enhance your F1TV experience with this extension! Enjoy theater mode for full-sc
 
 ### Userscript (alternative method)
 * Install extension for loading userscripts in your browser:
-  * Google Chrome: [[Violent Monkey]](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)
-  * Microsoft Edge: [[Violent Monkey]](https://microsoftedge.microsoft.com/addons/detail/violentmonkey/eeagobfjdenkkddmbclomhiblgggliao)
+  * Google Chrome: [[Tampermonkey]](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+  * Microsoft Edge: [[Tampermonkey]](https://microsoftedge.microsoft.com/addons/detail/tampermonkey/iikmkjmpaadaobahmlepeloendndfphd)
   * Mozilla Firefox: [[Violent Monkey]](https://addons.mozilla.org/firefox/addon/violentmonkey/)
 * Click here to get the latest version of userscript: [[carbon-for-f1tv.user.js]](https://github.com/Carbon-for-F1TV/Carbon-for-F1TV/raw/master/extension/carbon-for-f1tv.user.js)
 
