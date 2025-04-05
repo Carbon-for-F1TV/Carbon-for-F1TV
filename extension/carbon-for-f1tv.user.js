@@ -2,7 +2,7 @@
 // @name           Carbon for F1TV
 // @namespace      https://Carbon-for-F1TV.github.io/Carbon-for-F1TV/
 // @match          https://f1tv.formula1.com/*
-// @version        1.1.2
+// @version        1.1.3
 // @author         Carbon-for-F1TV
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
@@ -379,7 +379,6 @@ function videoLatencyJumpToProgress(progress) {
 function injectPlayerFeatures() {
   log("Injecting player features");
   $(".player-container.shown .bitmovinplayer-container").addClass("carbon-player");
-
 
   let multi_channels;
   if ($(".embedded-player-container .channel-switcher-container").length > 0) {
@@ -790,6 +789,15 @@ function waitForPageLoad() {
       "<div style='font-size: 14px;'><span class='sync-toppopup-diff' style='font-weight: bold; color: #ffff78;'></span></div>" +
       "</div>";
     $("#carbon-helper")[0].insertAdjacentHTML("beforeEnd", syncTopPopupHtml);
+
+    let carbonStyleHtml = "<div class='carbon-style'>" +
+      "<style>" +
+      // This disables official theater mode
+      ".embedded-player-container .btn-more-tray, .embedded-player-container .back-button {display: none;}" +
+      ".video-grid {position: absolute; z-index: 1;}"
+      "</style>" +
+      "</div>";
+    $("#carbon-helper")[0].insertAdjacentHTML("beforeEnd", carbonStyleHtml);
 
   }
 }
