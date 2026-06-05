@@ -4,7 +4,7 @@
 <h1 align="center">Carbon for F1TV</h1>
 
 
-Enhance your F1TV experience with this extension! Enjoy theater mode for full-screen viewing and sync mode for simultaneous playback of multiple streams.
+Enhance your F1TV experience with this extension! Enjoy sync mode for simultaneous playback of multiple streams.
 
 ## Installation
 
@@ -20,8 +20,6 @@ Enhance your F1TV experience with this extension! Enjoy theater mode for full-sc
 
 
 ## Screenshots
-
-![Theater Mode](description/screenshot_01.png)
 
 ![Sync Mode](description/screenshot_02.png)
 

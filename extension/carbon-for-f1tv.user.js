@@ -2,13 +2,11 @@
 // @name           Carbon for F1TV
 // @namespace      https://Carbon-for-F1TV.github.io/Carbon-for-F1TV/
 // @match          https://f1tv.formula1.com/*
-// @version        1.1.3
+// @version        1.1.4
 // @author         Carbon-for-F1TV
 // @description    Enhance your F1TV experience
 // @require        https://code.jquery.com/jquery-3.7.1.min.js
 // ==/UserScript==
-
-const DEFAULT_THEATERMODE = true;
 
 const DEFAULT_LATENCY = 20;
 
@@ -18,10 +16,6 @@ const popup_btn_image = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlb
   "aXNwbGF5Om5vbmU7fQ0KCS5zdDF7Zm9udC1mYW1pbHk6J0NhbGlicmktQm9sZCc7fQ0KCS5zdDJ7Zm9udC1zaXplOjIwOS41MzAycHg7fQ0KCS5zdDN7ZmlsbDojRDBEMEQyO30NCjwvc3R5bGU+DQo8dGV4dCB0cmFuc2Zvcm09Im1hdHJpeCgxIDAgMCAxIDQ1LjIzMzcgMjcxLjExMDcpIiBjbGFzcz0ic3QwIHN0MSBzdDIiPisxPC90ZXh0Pg0KPGc+DQoJPHBhdGggY2xhc3M9" +
   "InN0MyIgZD0iTTIzOS4zLDEyNC45SDQ0LjJjLTEwLjcsMC0xOS40LDguNy0xOS40LDE5LjR2MTM2LjZjMCwxMC43LDguNywxOS40LDE5LjQsMTkuNGgxOTUuMQ0KCQljMTAuNywwLDE5LjQtOC43LDE5LjQtMTkuNFYxNDQuM0MyNTguNywxMzMuNiwyNTAsMTI0LjksMjM5LjMsMTI0Ljl6IE0xMzYuNSwyMjEuOEg5NS45djQwLjZINzcuNXYtNDAuNkgzNi45di0xOC40aDQwLjZ2" +
   "LTQwLjYNCgkJaDE4LjR2NDAuNmg0MC42VjIyMS44eiBNMjQ2LjIsMjc4LjdoLTgxLjF2LTIwLjJoMzAuOHYtODYuOGwtMzQuMiwyMi42bC0xMS42LTE3LjZsNDUuOC0zMC4zbDAsMHYwaDI0LjR2MTEyaDI1LjhWMjc4Ljd6Ii8+DQo8L2c+DQo8L3N2Zz4NCg==";
-
-  const theatermode_btn_image = "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPScxLjEnIGlkPSdMYXllcl8xJyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHhtbG5zOnhsaW5rPSdodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rJyB4PScwcHgnIHk9JzBweCcgdmlld0JveD0nMCAwIDI4My41IDQyNS4yJyBzdHlsZT0nZW5hYmxlLWJhY2tncm91bm" +
-  "Q6bmV3IDAgMCAyODMuNSA0MjUuMjsnIHhtbDpzcGFjZT0ncHJlc2VydmUnPjxnPjxwYXRoIHN0eWxlPSdmaWxsOiNEMEQwRDI7JyBkPSdNMjM5LjMsMTI0LjlINDQuMmMtMTAuNywwLTE5LjQsOC43LTE5LjQsMTkuNHYxMzYuNmMwLDEwLjcsOC43LDE5LjQsMTkuNCwxOS40aDE5NS4xICBjMTAuNywwLDE5LjQtOC43LDE5LjQtMTkuNFYxNDQuM0MyNTguNywxMzMuNiwyNTAsMT" +
-  "I0LjksMjM5LjMsMTI0Ljl6IE04Ni43LDI4Ny40SDM4di00OC43aDE5LjV2MjkuMmgyOS4yVjI4Ny40eiBNODYuNywxNTYuMiBINTcuNXYyOS4ySDM4di00OC43aDQ4LjdWMTU2LjJ6IE0yNDUuNSwyODcuNGgtNDguN3YtMTkuNUgyMjZ2LTI5LjJoMTkuNVYyODcuNHogTTI0NS41LDE4NS40SDIyNnYtMjkuMmgtMjkuMnYtMTkuNWg0OC43VjE4NS40eicvPjwvZz48L3N2Zz4NCg==";
 
   const syncoffset_btn_a_image = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdC" +
   "b3g9IjAgMCAyODMuNSA0MjUuMiIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjgzLjUgNDI1LjI7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtkaXNwbGF5Om5vbmU7fQ0KCS5zdDF7ZGlzcGxheTppbmxpbmU7ZmlsbDojRDBEMEQyO30NCgkuc3Qye2ZpbGw6I0QwRDBEMjt9DQo8L3N0eWxlPg0KPGcgY2xhc" +
@@ -35,7 +29,6 @@ const popup_btn_image = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlb
   "IMjI2di0yOS4yaC0yOS4ydi0xOS41DQoJCWg0OC43VjE4NS40eiIvPg0KPC9nPg0KPHBhdGggc3R5bGU9ImZpbGw6I0QwRDBEMjsiIGQ9Ik0yOS43LDIwMy41bDEwOS43LTc3LjhjMi45LTIsNy4yLTAuMiw3LjIsM3YxNjcuNmMwLDMuMy00LjMsNS4xLTcuMiwzTDI5LjcsMjIxLjcNCglDMjMuMiwyMTcsMjMuMiwyMDguMiwyOS43LDIwMy41eiIvPg0KPHBhdGggc3R5bGU9ImZ" +
   "pbGw6I0QwRDBEMjsiIGQ9Ik0xNDEuOCwyMDMuNWwxMDkuNy03Ny44YzIuOS0yLDcuMi0wLjIsNy4yLDN2MTY3LjZjMCwzLjMtNC4zLDUuMS03LjIsM2wtMTA5LjctNzcuOA0KCUMxMzUuMiwyMTcsMTM1LjIsMjA4LjIsMTQxLjgsMjAzLjV6Ii8+DQo8L3N2Zz4=";
 
-let theatermode_active = DEFAULT_THEATERMODE;
 let carbon_mode = "default";
 if (window.location.hash.split("_")[0] == "#carbon") {
   carbon_mode = window.location.hash.split("_")[1];
@@ -45,36 +38,6 @@ function log(msg) {
   let d = new Date();
   let dt = d.toISOString().split('T')[0] + " " + d.toTimeString().split(' ')[0];
   console.log("[Carbon for F1TV] [" + dt + "]: " + msg);
-}
-
-function isTheaterMode() {
-  if ($("#carbon-helper .carbon-theatermode-style").length > 0) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-function toggleTheaterMode(temporary) {
-  log("Theater mode toggle");
-  if (isTheaterMode()) {
-    //disabling theater mode
-    $("#carbon-helper .carbon-theatermode-style").remove();
-    if (temporary !== true) {
-      theatermode_active = false;
-    }
-  } else {
-    let theaterModeStyleHtml = "<div class='carbon-theatermode-style'>" +
-      "<style>" +
-      "body {overflow: hidden;}" +
-      ".inset-video-item-image-container {position: fixed !important; z-index: 1000; top: 0; left: 0; height: 100%; width: 100%; margin: 0 !important; background-color: #000;}" +
-      ".inset-video-item-image {margin-top: 50vh; transform: translateY(-50%);}" +
-      ".inset-video-item-play-action-container {width: 100%;}" +
-      "</style>" +
-      "</div>";
-    $("#carbon-helper")[0].insertAdjacentHTML("beforeEnd", theaterModeStyleHtml);
-    theatermode_active = true;
-  }
 }
 
 const popouts = [];
@@ -416,23 +379,9 @@ function injectPlayerFeatures() {
     })
   }
 
-  // add theater mode button
-  if (carbon_mode !== "popout") {
-    let theaterBtnHtml = "<button aria-label='Theater mode' class='carbon-btn-theatermode bmpui-off' style='background-color: transparent; background-origin: content-box; background-position: center; background-repeat: no-repeat; background-size: 1.5em; border: 0; -webkit-box-sizing: content-box; box-sizing: content-box; cursor: pointer; font-size: 1em; height: 1.5em; min-width: 1.5em; padding: 0.25em; background-image: url(" + theatermode_btn_image + ")' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label' style='display: none;'>Theater mode</span></button>";
-    $(".carbon-player .bmpui-container-wrapper .bmpui-ui-piptogglebutton")[0].insertAdjacentHTML("beforebegin", theaterBtnHtml);
-    $(".carbon-player .carbon-btn-theatermode").on("click", function () {
-      toggleTheaterMode();
-    })
-  }
-
-  // set theater mode state
-  if ((!isTheaterMode() && (theatermode_active == true)) || (!isTheaterMode() && (carbon_mode == "popout"))) {
-    toggleTheaterMode();
-  }
-
   if ((multi_channels == true) && (carbon_mode !== "popout")) {
     let popoutBtnHtml = "<button aria-label='New Popout' class='carbon-btn-popout bmpui-ui-settingstogglebutton bmpui-off' style='background-image: url(" + popup_btn_image + ");' type='button' aria-pressed='false' tabindex='0' role='button'><span class='bmpui-label'>New Popout</span></button>";
-    $(".carbon-player .bmpui-container-wrapper .carbon-btn-theatermode")[0].insertAdjacentHTML("beforebegin", popoutBtnHtml);
+    $(".carbon-player .bmpui-container-wrapper .bmpui-ui-piptogglebutton")[0].insertAdjacentHTML("beforebegin", popoutBtnHtml);
     $(".carbon-player .carbon-btn-popout").on("click", function () {
       addPopout();
     })
@@ -792,10 +741,11 @@ function waitForPageLoad() {
 
     let carbonStyleHtml = "<div class='carbon-style'>" +
       "<style>" +
-      // This disables official theater mode
-      ".embedded-player-container .btn-more-tray, .embedded-player-container .back-button {display: none;}" +
-      ".video-grid {position: absolute; z-index: 1;}"
-      "</style>" +
+      ".embedded-player-container .btn-more-tray { display: none; }";
+    if (carbon_mode === "popout") {
+      carbonStyleHtml += ".embedded-player-container > .back-button { display: none; }";
+    }
+    carbonStyleHtml += "</style>" +
       "</div>";
     $("#carbon-helper")[0].insertAdjacentHTML("beforeEnd", carbonStyleHtml);
 
@@ -817,9 +767,6 @@ function pageChanged() {
     //homepageInjectLoop = setInterval(waitForHomepage, 50);
   } else {
     log("Page changed (not video)");
-    if (isTheaterMode()) {
-      toggleTheaterMode(true);
-    }
   }
 }
 
