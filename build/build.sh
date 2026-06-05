@@ -7,6 +7,15 @@ DATE=`date +"%Y%m%d_%H%M%S"`
 
 echo $DATE
 
+if command -v 7z > /dev/null; then
+  ZIP_BIN="7z"
+elif command -v 7zz > /dev/null; then
+  ZIP_BIN="7zz"
+else
+  echo "Error: 7z or 7zz not found."
+  exit 1
+fi
+
 if [ -d tmp ]; then
   rm -rf tmp
 fi
@@ -27,12 +36,12 @@ sed -i "" "s/0.1000.1000/$VERSION/" popup.html
 mv manifest_firefox.json background_firefox.js load_firefox.js ../
 
 
-7z a -tzip ../chrome.zip *
+$ZIP_BIN a -tzip ../chrome.zip *
 rm manifest.json
 mv ../manifest_firefox.json manifest.json
 mv ../background_firefox.js ../load_firefox.js ./
 
-7z a -tzip ../firefox.zip *
+$ZIP_BIN a -tzip ../firefox.zip *
 
 cd ../../
 
